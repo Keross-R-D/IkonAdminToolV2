@@ -1,0 +1,24 @@
+[
+  {
+    "id": "06a91931ffea672b",
+    "name": "package.json",
+    "path": "C:\\Users\\KER-LPTP-48\\Downloads\\Demo\\package.json",
+    "type": "file",
+    "children": []
+  },
+  {
+    "id": "a558d357fddcbad7",
+    "name": "src",
+    "path": "C:\\Users\\KER-LPTP-48\\Downloads\\Demo\\src",
+    "type": "folder",
+    "children": [
+      {
+        "id": "1742281909870",
+        "name": "F1",
+        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\Demo\\src\\F1",
+        "type": "folder",
+        "children": []
+      }
+    ]
+  }
+]
