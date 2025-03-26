@@ -11,7 +11,7 @@ async function postMessage(message: any, retryCallback:any) {
             requirement: message,
         };
 
-        const response = await axios.post('http://localhost:5678/webhook/chatworflow', data);
+        const response = await axios.post('https://ikoncloud-dev.keross.com/aiagent/webhook/generateworkflow', data);
         
         const responseMessage = response.data.message;
 
@@ -37,7 +37,7 @@ async function generateWorklow(workflowMsg: any,retryCallback:any) {
             requirement: workflowMsg,
         };
 
-        const response = await axios.post('http://localhost:5678/webhook/generateworkflow', data);
+        const response = await axios.post('https://ikoncloud-dev.keross.com/aiagent/webhook/generateworkflow', data);
         
         const responseMessage: {nodes: any[], edges: any[]} = response.data?.output || {nodes: [], edges: []};
         console.log(responseMessage);
@@ -100,8 +100,8 @@ interface ChatMessage {
 
 async function getLLMCompletion(messages: any[],retryCallback:any): Promise<any> {
 
-    const apiUrl = 'http://localhost:9078/api/chat/completions';
-    const authKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg4OTdjNmJlLTlmNTgtNDA5ZC1iODU1LWVjYjRiM2M3ZDRkMiJ9.VA_grNlSUKG1mZqkBHhRz1ImTfQ0puE8kRsBeozUfAg';
+    const apiUrl = 'https://ikoncloud-uat.keross.com/ikonopenui/api/chat/completions';
+    const authKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZlYmU3YWQxLTM0ZTQtNGQwNi05Y2M5LTY0NWIxYmE5OThiZSJ9.yraBzDBQgF8AjGIuWJ6kc6vQUne1vHyQo_RaHhe9bWA';
 
     // Transform the Message array into the API's expected structure.
     const chatMessages: ChatMessage[] = messages.map((msg) => ({
@@ -113,7 +113,7 @@ async function getLLMCompletion(messages: any[],retryCallback:any): Promise<any>
         const response = await axios.post(
             apiUrl, // dummy URL
             {   
-                model: "workflow-maker",
+                model: "process-model-workflow-gpt",
                 messages: chatMessages 
             },
             {

@@ -152,10 +152,10 @@ const AppCanvas = () => {
   };
   
   useEffect(() => {
-    if (!selectedApp?.id) return;
+    if (!selectedApp[0]?.id) return;
 
     const fetchProcessModel = async () => {
-            const data = await readProcessModel(selectedApp.id);
+            const data = await readProcessModel(selectedApp[0].id);
             if (data) {
                 data.nodes.forEach((node:any) => node.data.deleteNode = deleteNode);
                 setNodes(data.nodes);
@@ -164,7 +164,7 @@ const AppCanvas = () => {
         };
 
         fetchProcessModel();
-    }, [selectedApp?.id]);
+    }, [selectedApp[0]?.id]);
   
 
     const updateNodeLabel = (nodeId: string, newLabel: string) => {
@@ -388,7 +388,7 @@ const AppCanvas = () => {
         <ResizablePanelGroup direction='horizontal' className='' style={{height: "calc(-3.59rem + 100vh)"}}>
             <ResizablePanel defaultSize={50}>
                 <div className='h-full flex flex-col'>
-                    <AppHeader  setProcessModel={setProcessModel} downloadProcessModel={downloadProcessModel} getLayoutedElements={getLayoutedElements} saveProcessModel={() => saveProcessModel({ folderId: selectedApp?.id })}/>
+                    <AppHeader  setProcessModel={setProcessModel} downloadProcessModel={downloadProcessModel} getLayoutedElements={getLayoutedElements} saveProcessModel={() => saveProcessModel({ folderId: selectedApp[0]?.id })}/>
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
@@ -406,14 +406,22 @@ const AppCanvas = () => {
                         className='flex-1'
                     >
                         <Controls />
-                        <MiniMap />
+                        <MiniMap 
+                    nodeColor={(node) => String(node.style?.background) || "#ccc"}
+                    maskColor="rgba(240, 240, 240, 0.6)"
+                    nodeStrokeColor="#000"
+                    nodeBorderRadius={2}
+                    pannable
+                    zoomable
+                    className="bg-white shadow-md border border-gray-300 rounded-md"
+                />
                         <Background variant={BackgroundVariant.Dots} gap={24} size={2} />
                         <NodeResizer />
                     </ReactFlow>
                 </div>
             </ResizablePanel>
             <ResizableHandle withHandle  className='h-80'/>
-            <ResizablePanel defaultSize={25} className='h-full'>
+            <ResizablePanel defaultSize={25}  className='h-full'>
                 <Chat setWorkflow={setWorkflow}/>
             </ResizablePanel>
         </ResizablePanelGroup>

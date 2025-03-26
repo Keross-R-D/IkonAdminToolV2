@@ -18,7 +18,7 @@ import {
   TableBody, 
   TableCell 
 } from "@/components/ui/table";
-import { CornerDownRight, Ellipsis, Plus } from "lucide-react";
+import { CornerDownRight, Ellipsis, Plus, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
                         
@@ -130,7 +130,7 @@ const Chat: React.FC<ChatProps> = ({setWorkflow}:ChatProps) => {
             setMessages([]);
             setInput("")
           }}>
-            <Plus/>
+            <RefreshCcw/>
           </Button>
         </div>
       </div>

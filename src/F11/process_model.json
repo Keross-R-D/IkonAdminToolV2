@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "start_c0e7009a-149a-4323-9671-bcbf0cdad1ae",
+      "type": "start",
+      "position": {
+        "x": 12,
+        "y": 12
+      },
+      "data": {
+        "id": "start_c0e7009a-149a-4323-9671-bcbf0cdad1ae",
+        "label": "New Node"
+      },
+      "measured": {
+        "width": 256,
+        "height": 170
+      },
+      "selected": true,
+      "dragging": false
+    },
+    {
+      "id": "task_03efcd4a-092b-4940-aadd-3888f5522552",
+      "type": "task",
+      "position": {
+        "x": 668,
+        "y": 12
+      },
+      "data": {
+        "id": "task_03efcd4a-092b-4940-aadd-3888f5522552",
+        "label": "task 1"
+      },
+      "measured": {
+        "width": 352,
+        "height": 170
+      },
+      "selected": false,
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "source": "start_c0e7009a-149a-4323-9671-bcbf0cdad1ae",
+      "sourceHandle": null,
+      "target": "task_03efcd4a-092b-4940-aadd-3888f5522552",
+      "targetHandle": null,
+      "type": "selfConnecting",
+      "label": "Testing ...",
+      "animated": true,
+      "markerEnd": {
+        "type": "arrowclosed"
+      },
+      "deleteAble": true,
+      "data": {
+        "height": 160,
+        "edgeColor": "89",
+        "edgeTransitionCategory": 2,
+        "edgeAdditionalInfo": {}
+      },
+      "id": "e15b5973-eb9e-4ec3-86a3-a36cb55696f4"
+    }
+  ]
+}

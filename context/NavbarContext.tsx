@@ -13,8 +13,8 @@ interface LinkType {
 interface NavbarContextType {
   // links: LinkType[];
   // setLinks: (newLinks: LinkType[]) => void;
-  selectedApp: LinkType | null;
-  setSelectedApp: (app: LinkType) => void;
+  selectedApp: LinkType[];
+  setSelectedApp: (app: LinkType[]) => void;
 }
 
 // Create context
@@ -33,7 +33,7 @@ export const useNavbar = () => {
 
 // Provider Component
 export function NavbarProvider({ children }: { children: ReactNode }) {
-  const [selectedApp, setSelectedApp] = useState<LinkType | null>(null);
+  const [selectedApp, setSelectedApp] = useState<LinkType[]>([]);
 
   return (
     <NavbarContext.Provider value={{ selectedApp, setSelectedApp }}>

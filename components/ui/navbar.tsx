@@ -7,21 +7,25 @@ import { Menu, X, ChevronRight } from "lucide-react"; // Icons for mobile menu
 import { ThemeSelector } from "@/components/generic/themeSelector";
 
 export default function Navbar() {
-  const { selectedApp } = useNavbar(); // Get links from context
+  const { selectedApp,setSelectedApp } = useNavbar(); // selectedApp is now an array
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter(); // Initialize Next.js router
-  
 
-  // Set the link dynamically based on selectedApp
-  let link = "";
-  if (selectedApp) {
-    link = `/workflow/${encodeURIComponent(selectedApp.id)}`;
-  }
+  // Function to determine the correct link based on app type
+  const getAppLink = (app: { id: string; name: string }) => {
+    if (app.name === "Modal") {
+      return `/workflow/${encodeURIComponent(app.id)}`;
+    }
+    if (app.name === "Script") {
+      return `/workflow/${encodeURIComponent(app.id)}/scripts/${encodeURIComponent(app.id)}`;
+    }
+    return "/"; // Default fallback link
+  };
 
-  // Function to handle click and force reload
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault(); // Prevent default link behavior
-    router.replace(link); // Replace the URL (this will reload the page)
+  // Function to handle navigation
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, link: string) => {
+    e.preventDefault();
+    router.replace(link);
   };
 
   return (
@@ -32,20 +36,22 @@ export default function Navbar() {
           <a href="/">Application Management</a>
         </h5>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-2">
-          {/* Show Selected App in Navbar if Available */}
-          {selectedApp && (
-            <div className="hidden md:flex items-center">
-              <ChevronRight size={20} />
-              <h5 className="font-bold">
-                {/* Call handleNavClick on click */}
-                <a href={link} onClick={handleNavClick}>
-                  {selectedApp.name}
-                </a>
-              </h5>
-            </div>
-          )}
+        {/* Desktop Menu: Show all selected apps */}
+        <div className="hidden md:flex gap-2 items-center">
+          {selectedApp?.length > 0 &&
+            selectedApp.map((app) => {
+              const link = getAppLink(app);
+              return (
+                <div key={app.id} className="flex items-center">
+                  <ChevronRight size={20} />
+                  <h5 className="font-bold">
+                    <a href={link} onClick={(e) => handleNavClick(e, link)}>
+                      {app.name}
+                    </a>
+                  </h5>
+                </div>
+              );
+            })}
         </div>
 
         {/* Mobile Menu Button */}
@@ -53,16 +59,24 @@ export default function Navbar() {
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
+
       <div>
-        <ThemeSelector/>
+        <ThemeSelector />
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {menuOpen && selectedApp && (
+      {menuOpen && selectedApp?.length > 0 && (
         <div className="md:hidden mt-2 p-4 rounded-lg">
-          <h5 className="font-bold">
-            <a href={link} onClick={handleNavClick}>{selectedApp.name}</a>
-          </h5>
+          {selectedApp.map((app) => {
+            const link = getAppLink(app);
+            return (
+              <h5 key={app.id} className="font-bold">
+                <a href={link} onClick={(e) => handleNavClick(e, link)}>
+                  {app.name}
+                </a>
+              </h5>
+            );
+          })}
         </div>
       )}
     </nav>

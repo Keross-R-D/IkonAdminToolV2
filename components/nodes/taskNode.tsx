@@ -49,7 +49,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
             if (taskName !== data.label) {
                 updateNodeLabel(data.id, taskName);
             }
-        }, 500); // ✅ 500ms delay before updating
+        }, 1000); // ✅ 500ms delay before updating
 
         return () => clearTimeout(timeout); // Cleanup timeout on unmount or re-run
     }, [taskName]); // Runs when `taskName` changes
