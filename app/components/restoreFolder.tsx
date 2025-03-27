@@ -228,6 +228,7 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
     if (folderStructure) {
         setShowRestoreDialog(false)
         onRestoreFolder(folderStructure);
+        window.location.reload();
     }
   };
 

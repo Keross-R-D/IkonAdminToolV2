@@ -178,84 +178,86 @@ debugger
   
 
   return (
-    <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
-    {/* Header Section */}
-    <div className="flex items-center justify-between p-3">
-      <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-        📂 Process
-      </h1>
-      <div className="flex gap-2"> 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => setShowRestoreDialog(true)}
-              >
-                <Upload className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent >
-              <p>Restore Folder</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() => setShowFolderCreationForm(true)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent >
-              <p>Create Folder</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <div className=" h-full p-3 ">
+      <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
+      {/* Header Section */}
+      <div className="flex items-center justify-between p-3">
+        <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          📂 Process
+        </h1>
+        <div className="flex gap-2"> 
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() => setShowRestoreDialog(true)}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent >
+                <p>Restore Folder</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() => setShowFolderCreationForm(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent >
+                <p>Create Folder</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
+      {/* Folder List */}
+      <div className="border-t border-gray-200 dark:border-gray-700">
+        {folderStructure ? (
+          <div className="p-3 ">
+            {folderStructure.map((node) => (
+              <FileExplorer key={node.id} node={node} openEditFolderModal={handleEditFolder} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-600 dark:text-gray-400 text-sm text-center">Loading...</p>
+        )}
+      </div>
+
+      {/* Restore Folder Dialog */}
+      {showRestoreDialog && folderStructure  && (
+          <RestoreFolderDialog
+            onRestoreFolder={handleRestoreFolder}
+            onClose={() => setShowRestoreDialog(false)}
+          />
+        )}
+
+      {/* Folder Creation Form */}
+      {showFolderCreationForm && folderStructure && (
+        <FolderCreationForm
+          folders={folderStructure}
+          onCreateFolder={handleFolderOperation}
+          onClose={() => {
+            setShowFolderCreationForm(false);
+            setEditingFolder(null);
+          }}
+          editingFolder={editingFolder ? { id: editingFolder.id, name: editingFolder.name, parentId: editingFolder.parentId || "" } : undefined}
+        />
+      )}
       </div>
     </div>
-
-  {/* Folder List */}
-  <div className="border-t border-gray-200 dark:border-gray-700">
-    {folderStructure ? (
-      <div className="p-3 ">
-        {folderStructure.map((node) => (
-          <FileExplorer key={node.id} node={node} openEditFolderModal={handleEditFolder} />
-        ))}
-      </div>
-    ) : (
-      <p className="text-gray-600 dark:text-gray-400 text-sm text-center">Loading...</p>
-    )}
-  </div>
-
-   {/* Restore Folder Dialog */}
-   {showRestoreDialog && folderStructure  && (
-      <RestoreFolderDialog
-        onRestoreFolder={handleRestoreFolder}
-        onClose={() => setShowRestoreDialog(false)}
-      />
-    )}
-
-  {/* Folder Creation Form */}
-  {showFolderCreationForm && folderStructure && (
-    <FolderCreationForm
-      folders={folderStructure}
-      onCreateFolder={handleFolderOperation}
-      onClose={() => {
-        setShowFolderCreationForm(false);
-        setEditingFolder(null);
-      }}
-      editingFolder={editingFolder ? { id: editingFolder.id, name: editingFolder.name, parentId: editingFolder.parentId || "" } : undefined}
-    />
-  )}
-</div>
 
   );
 }
