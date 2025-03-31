@@ -70,7 +70,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <Square />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Task Node</CardTitle>
                         <CardDescription>The basic component for designing the flow</CardDescription>
                     </div>

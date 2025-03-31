@@ -1,53 +1,40 @@
+import "@/ikon/styles/globals.css";
 import type { Metadata } from "next";
-//import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Toaster } from "@/shadcn/ui/sonner";
+import MainLayout from "@/ikon/components/main-layout";
+import { DialogProvider } from "@/ikon/components/alert-dialog/dialog-context";
+import { ThemeProvider } from "@/ikon/components/theme-provider";
 import { NavbarProvider } from "@/context/NavbarContext";
-import Navbar from "@/components/ui/navbar";
-import { ThemeProvider } from "@/components/providers/themeProvider";
-import { Toaster } from "@/components/ui/sonner";
-import Sidebar from "./components/homeSidebar";
 
+export const metadata: Metadata = {
+  title: "IKON - Keross",
+  description: "IKON - Keross",
+};
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
-      <body
-        className={`antialiased h-full`}
-      >
-        <ThemeProvider
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <body>
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <div className="h-screen flex flex-col">
-              <NavbarProvider>
-                <Navbar />
-                <div className="flex-grow w-full overflow-auto dark:bg-muted/50">
-                  {/* ✅ New Div - Takes full height of the available space */}
-                  <div className="h-full flex flex-row">
-                    <Sidebar />
-                    {/* Put your content inside here */}
-                    <div className="flex-grow sbg-gray-100">
-                    {children}
-                    </div>
-                  </div>
-                </div>
-                
-              </NavbarProvider>
-              
-            </div>
-            <Toaster/>
+            <DialogProvider>
+              <MainLayout>
+                <NavbarProvider>{children}</NavbarProvider>
+              </MainLayout>
+            </DialogProvider>
+            <Toaster richColors closeButton visibleToasts={5} />
           </ThemeProvider>
-        
-        
-       
-      </body>
-    </html>
+        </body>
+      </html>
+    </>
   );
 }

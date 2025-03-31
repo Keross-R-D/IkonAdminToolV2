@@ -43,7 +43,7 @@ const XORNode = ({data,selected}: xorNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <XSquare />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>XOR Node </CardTitle>
                         <CardDescription>Select a single flow based on condition</CardDescription>
                     </div>

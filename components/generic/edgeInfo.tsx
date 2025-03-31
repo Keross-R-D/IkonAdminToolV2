@@ -283,7 +283,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                     control={form.control}
                     name="isJobActive"
                     render={({ field }) => (
-                      <FormItem className="my-2 flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <FormItem className="my-2 flex flex-row items-center justify-between rounded-lg border p-3 shadow-xs">
                         <div className="space-y-0.5">
                           <FormLabel>Execute Job</FormLabel>
                           <FormDescription>

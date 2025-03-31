@@ -41,7 +41,7 @@ const EndNode = ({data,selected}: endNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <CircleDot />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>End Node</CardTitle>
                         <CardDescription>Exit point for the process</CardDescription>
                     </div>

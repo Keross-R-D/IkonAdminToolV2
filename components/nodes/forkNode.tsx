@@ -42,7 +42,7 @@ const ForkNode = ({data,selected}: forkNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <PlusSquare />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Fork Node </CardTitle>
                         <CardDescription>Break flow into mutiple parallal flows</CardDescription>
                     </div>

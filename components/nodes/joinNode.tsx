@@ -42,7 +42,7 @@ const JoinNode = ({data,selected}: joinNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <Merge />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Join Node </CardTitle>
                         <CardDescription>Join multiple flows into a single flow</CardDescription>
                     </div>

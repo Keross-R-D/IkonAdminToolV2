@@ -48,7 +48,7 @@ const WaitNode = ({data,selected}: waitNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <Pause />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Wait Node</CardTitle>
                         <CardDescription>stopping flow for a signal</CardDescription>
                     </div>

@@ -46,7 +46,7 @@ const StartNode = ({data,selected}: startNodeProps) => {
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <Circle />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Start Node</CardTitle>
                         <CardDescription>Entry point for the process</CardDescription>
                     </div>
