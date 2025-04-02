@@ -1,7 +1,13 @@
-import React from 'react'
+import React from "react";
+import UsersTable from "./components/users-table";
+import dummyUserData from "./data/dummy-user-data";
 
-export default function page() {
+async function page() {
   return (
-    <div>page</div>
-  )
+    <>
+      <UsersTable users={dummyUserData} />
+    </>
+  );
 }
+
+export default page;
