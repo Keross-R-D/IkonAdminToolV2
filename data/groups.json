@@ -75,5 +75,12 @@
     "softwareId": "d341e790-91b3-4d29-b43c-0c9510b46e17",
     "active": true,
     "id": "1743663495499"
+  },
+  {
+    "name": "Software Developer Level 1",
+    "description": "Software Developer Level 1",
+    "softwareId": "11fd5d7c-876e-4494-ac31-c6c9114e5d42",
+    "active": true,
+    "id": "1743679906820"
   }
 ]

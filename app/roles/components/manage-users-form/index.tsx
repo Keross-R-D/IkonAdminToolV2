@@ -26,16 +26,16 @@ const formSchema = z.object({
 interface ManageUsersFormProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  groupId: string;
-  groupName: string;
-  onSave?: (groupId: string, userIds: string[]) => void;
+  roleId: string;
+  roleName: string;
+  onSave?: (roleId: string, userIds: string[]) => void;
 }
 
 export function ManageUsersForm({
   open,
   setOpen,
-  groupId,
-  groupName,
+  roleId,
+  roleName,
   onSave,
 }: ManageUsersFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,21 +47,21 @@ export function ManageUsersForm({
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     try {
-      const groupUserData = {
-        groupId,
+      const roleUserData = {
+        roleId,
         userIds: data.users,
         updatedAt: new Date().toISOString(),
       };
 
-      console.log("Saving group-user association:", groupUserData);
+      console.log("Saving role-user association:", roleUserData);
 
       if (onSave) {
-        onSave(groupId, data.users);
+        onSave(roleId, data.users);
       }
 
       setOpen(false);
     } catch (error) {
-      console.error("Failed to save user-group association:", error);
+      console.error("Failed to save user-role association:", error);
     }
     setOpen(false);
   };
@@ -99,7 +99,7 @@ export function ManageUsersForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[800px] max-w-[90vw]">
         <DialogHeader>
-          <DialogTitle>Manage Users for {groupName}</DialogTitle>
+          <DialogTitle>Manage Users for {roleName}</DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
           <form

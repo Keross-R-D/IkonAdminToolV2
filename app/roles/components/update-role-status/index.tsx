@@ -1,7 +1,7 @@
 "use server";
 import { revalidateTag } from "next/cache";
 
-interface GroupData {
+interface RoleData {
   id?: string;
   name: string;
   description?: string;
@@ -9,12 +9,12 @@ interface GroupData {
   active: boolean;
 }
 
-export const updateGroupStatus = async (
-  updatedRow: GroupData
-): Promise<GroupData> => {
+export const updateRoleStatus = async (
+  updatedRow: RoleData
+): Promise<RoleData> => {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/update-group-status",
+      "http://localhost:3000/api/update-role-status",
       {
         method: "PUT",
         headers: {
@@ -28,14 +28,14 @@ export const updateGroupStatus = async (
     );
 
     if (!response.ok) {
-      throw new Error("Failed to update group status");
+      throw new Error("Failed to update role status");
     }
 
     const result = await response.json();
-    revalidateTag("groups");
+    revalidateTag("roles");
     return result.data;
   } catch (error) {
-    console.error("Error saving group:", error);
+    console.error("Error saving role:", error);
     throw error;
   }
 };

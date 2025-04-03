@@ -16,11 +16,12 @@ import {
   User,
 } from "lucide-react";
 import React, { useState } from "react";
-import GroupForm from "../role-form";
+import RoleForm from "../role-form";
 import { ManageUsersForm } from "../manage-users-form";
-import { updateGroupStatus } from "../update-role-status";
+import { updateRoleStatus } from "../update-role-status";
 
-interface GroupProps {
+
+interface RoleProps {
   active: any;
   id: string;
   name: string;
@@ -28,48 +29,48 @@ interface GroupProps {
   softwareId: string;
 }
 
-function GroupTable({
+function RoleTable({
   softwareId,
-  groups,
+  roles,
 }: {
   softwareId: string;
-  groups: any;
+  roles: any;
 }) {
   const [open, setOpen] = useState(false);
-  const [groupData, setGroupData] = useState<GroupProps[]>([]);
+  const [roleData, setRoleData] = useState<RoleProps[]>([]);
   const [openUsersForm, setOpenUsersForm] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<GroupProps | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RoleProps | null>(null);
 
-  const handleToggleActive = async (row: GroupProps) => {
+  const handleToggleActive = async (row: RoleProps) => {
     try {
       const updatedRow = {
         ...row,
         active: !row.active,
       };
   
-      await updateGroupStatus(updatedRow);
+      await updateRoleStatus(updatedRow);
   
-      setGroupData((prevGroups) =>
-        prevGroups.map((group) =>
-          group.id === updatedRow.id ? updatedRow : group
+      setRoleData((prevRoles) =>
+        prevRoles.map((role) =>
+          role.id === updatedRow.id ? updatedRow : role
         )
       );
   
-      setSelectedGroup(updatedRow);
+      setSelectedRole(updatedRow);
   
-      console.log(`Group "${row.name}" status toggled to ${updatedRow.active}`);
+      console.log(`Role "${row.name}" status toggled to ${updatedRow.active}`);
     } catch (error) {
-      console.error("Error toggling group status:", error);
-      alert('Failed to update group status.');
+      console.error("Error toggling role status:", error);
+      alert('Failed to update role status.');
       
-      setGroupData((prevGroups) => prevGroups);
+      setRoleData((prevRoles) => prevRoles);
     }
   };
 
-  const appColumns: DTColumnsProps<GroupProps>[] = [
+  const appColumns: DTColumnsProps<RoleProps>[] = [
     {
       accessorKey: "name",
-      header: "Group Name",
+      header: "Role Name",
     },
     {
       accessorKey: "description",
@@ -86,7 +87,7 @@ function GroupTable({
           icon: Edit,
           onClick: (row) => {
             console.log("Edit users for:", row);
-            setSelectedGroup(row);
+            setSelectedRole(row);
             setOpen(true);
           },
         },
@@ -94,7 +95,7 @@ function GroupTable({
           label: "Manage Users",
           icon: User,
           onClick: (row) => {
-            setSelectedGroup(row);
+            setSelectedRole(row);
             setOpenUsersForm(true);
           },
         },
@@ -102,7 +103,7 @@ function GroupTable({
           label: "Deactivate" ,
           icon: Ban ,
           onClick: (row) => {
-            setSelectedGroup(row);
+            setSelectedRole(row);
             handleToggleActive(row);
           },
           visibility:(row) => {
@@ -113,7 +114,7 @@ function GroupTable({
           label: "Activate" ,
           icon: Ban ,
           onClick: (row) => {
-            setSelectedGroup(row);
+            setSelectedRole(row);
             handleToggleActive(row);
           },
           visibility:(row) => {
@@ -125,37 +126,37 @@ function GroupTable({
     extraTools: [
       <IconTextButton
         onClick={() => {
-          setSelectedGroup(null);
+          setSelectedRole(null);
           setOpen(true);
         }}
       >
         <Plus />
-        Group
+        Role
       </IconTextButton>,
     ],
   };
 
   return (
     <>
-      <DataTable data={groups} columns={appColumns} extraParams={extraParams} />
+      <DataTable data={roles} columns={appColumns} extraParams={extraParams} />
       {open && (
-        <GroupForm
+        <RoleForm
           open={open}
           setOpen={setOpen}
           softwareId={softwareId}
-          groupData={selectedGroup}
+          roleData={selectedRole}
         />
       )}
 
-      {openUsersForm && selectedGroup && (
+      {openUsersForm && selectedRole && (
         <ManageUsersForm
           open={openUsersForm}
           setOpen={setOpenUsersForm}
-          groupId={selectedGroup.id}
-          groupName={selectedGroup.name}
-          onSave={(groupId: any, userIds: string | any[]) => {
+          roleId={selectedRole.id}
+          roleName={selectedRole.name}
+          onSave={(roleId: any, userIds: string | any[]) => {
             return console.log(
-              `Saved ${userIds.length} users to group ${groupId}`
+              `Saved ${userIds.length} users to role ${roleId}`
             );
           }}
         />
@@ -164,4 +165,4 @@ function GroupTable({
   );
 }
 
-export default GroupTable;
+export default RoleTable;

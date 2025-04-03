@@ -13,34 +13,34 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
-import { saveGroupData } from "../role-save";
+import { saveRoleData } from "../role-save";
 
 
-interface GroupData {
+interface RoleData {
   id?: string;
   name: string;
   description?: string;
   softwareId: string;
 }
 
-interface GroupFormProps {
+interface RoleFormProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   softwareId: string;
-  groupData: GroupData | null;
+  roleData: RoleData | null;
 }
 
 const schema = z.object({
   name: z
     .string()
-    .min(1, "Group name is required")
-    .max(63, "Group name must be at most 63 characters long"),
+    .min(1, "Role name is required")
+    .max(63, "Role name must be at most 63 characters long"),
   description: z.string().optional(),
   softwareId: z.string().min(1, "Software selection is required"),
 });
 
-function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
-  const isEditMode = !!groupData?.id;
+function RoleForm({ open, setOpen, softwareId, roleData }: RoleFormProps) {
+  const isEditMode = !!roleData?.id;
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -52,11 +52,11 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
   });
 
   useEffect(() => {
-    if (isEditMode && groupData) {
+    if (isEditMode && roleData) {
       form.reset({
-        name: groupData.name,
-        description: groupData.description || "",
-        softwareId: groupData.softwareId || "",
+        name: roleData.name,
+        description: roleData.description || "",
+        softwareId: roleData.softwareId || "",
       });
     } else {
       form.reset({
@@ -65,21 +65,21 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
         softwareId: softwareId || "",
       });
     }
-  }, [groupData, open, softwareId, isEditMode, form]);
+  }, [roleData, open, softwareId, isEditMode, form]);
 
   const handleSubmit = async (data: z.infer<typeof schema>) => {
     try {
-      const groupDatas = {
+      const roleDatas = {
         ...data,
         active: true,
-        ...(isEditMode && { id: groupData?.id }),
+        ...(isEditMode && { id: roleData?.id }),
       };
 
-      await saveGroupData(groupDatas);
+      await saveRoleData(roleDatas);
       setOpen(false);
       form.reset();
     } catch (error) {
-      console.error("Error saving group data:", error);
+      console.error("Error saving role data:", error);
     }
   };
 
@@ -96,28 +96,28 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? "Edit Group" : "Create Group"}</DialogTitle>
+          <DialogTitle>{isEditMode ? "Edit Role" : "Create Role"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormInput
               formControl={form.control}
               name="name"
-              label="Group Name"
-              placeholder="Enter group name"
+              label="Role Name"
+              placeholder="Enter role name"
             />
             
             <FormTextarea
               formControl={form.control}
               name="description"
-              label="Group Description"
-              placeholder="Enter group description (optional)"
+              label="Role Description"
+              placeholder="Enter role description (optional)"
               rows={3}
             />
             
             <DialogFooter>
               <TextButton type="submit">
-                {isEditMode ? "Update Group" : "Create Group"}
+                {isEditMode ? "Update Role" : "Create Role"}
               </TextButton>
             </DialogFooter>
           </form>
@@ -127,4 +127,4 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
   );
 }
 
-export default GroupForm;
+export default RoleForm;
