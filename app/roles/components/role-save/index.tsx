@@ -19,7 +19,7 @@ interface RoleData {
       if (!response.ok) throw new Error('Failed to save role');
       
       const result = await response.json();
-      revalidateTag("roles")
+      revalidateTag("roles");
       return result.data;
       
     } catch (error) {

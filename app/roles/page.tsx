@@ -14,7 +14,7 @@ async function Page() {
       console.error("Failed to fetch roles:", response.statusText);
       return (
         <div>
-          <RoleTable softwareId={uuidv4()} roles={[]} />
+          <RoleTable softwareId={uuidv4()} roles={[]} groups ={[]} />
         </div>
       );
     }
@@ -22,16 +22,23 @@ async function Page() {
     const roles = await response.json();
     const safeRoles = Array.isArray(roles) ? roles : [];
 
+    const responseGroups = await fetch("http://localhost:3000/api/groups", {
+      next: {
+        tags: ["groups"],
+      },
+    });
+    const groups = await responseGroups.json();
+
     return (
       <div>
-        <RoleTable softwareId={uuidv4()} roles={safeRoles} />
+        <RoleTable softwareId={uuidv4()} roles={safeRoles} groups={groups} />
       </div>
     );
   } catch (error) {
     console.error("Error fetching roles:", error);
     return (
       <div>
-        <RoleTable softwareId={uuidv4()} roles={[]} />
+        <RoleTable softwareId={uuidv4()} roles={[]} groups ={[]} />
       </div>
     );
   }

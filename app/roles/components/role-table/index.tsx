@@ -11,6 +11,7 @@ import {
   Blocks,
   CheckCircle,
   Edit,
+  Group,
   LucideBlocks,
   Plus,
   User,
@@ -32,13 +33,16 @@ interface RoleProps {
 function RoleTable({
   softwareId,
   roles,
+  groups
 }: {
   softwareId: string;
   roles: any;
+  groups: any;
 }) {
   const [open, setOpen] = useState(false);
   const [roleData, setRoleData] = useState<RoleProps[]>([]);
   const [openUsersForm, setOpenUsersForm] = useState(false);
+  const [openGroupForm, setOpenGroupForm] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleProps | null>(null);
 
   const handleToggleActive = async (row: RoleProps) => {
@@ -94,6 +98,14 @@ function RoleTable({
         {
           label: "Manage Users",
           icon: User,
+          onClick: (row) => {
+            setSelectedRole(row);
+            setOpenUsersForm(true);
+          },
+        },
+        {
+          label: "Manage Groups",
+          icon: Group,
           onClick: (row) => {
             setSelectedRole(row);
             setOpenUsersForm(true);
