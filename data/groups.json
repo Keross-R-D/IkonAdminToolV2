@@ -3,60 +3,77 @@
     "name": "Supplier Mgmt ",
     "description": "manage to supply",
     "softwareId": "c1946fbe-d5bd-4ea8-8e49-d6bac362fe2c",
+    "active": false,
     "id": "1743503606937"
   },
   {
     "name": "Keross R&D_1",
     "description": "abcde",
     "softwareId": "c1946fbe-d5bd-4ea8-8e49-d6bac362fe2c",
+    "active": true,
     "id": "1743503740345"
   },
   {
     "name": "Keross Research & Development Center",
     "description": "keross group",
     "softwareId": "c1946fbe-d5bd-4ea8-8e49-d6bac362fe2c",
+    "active": true,
     "id": "1743504177684"
   },
   {
     "name": "Keross R&D",
     "description": "keross",
     "softwareId": "00f14128-7fef-47c9-a16f-e486b27caebf",
+    "active": true,
     "id": "1743506177966"
   },
   {
     "name": "vdvdf",
     "description": "bgbgvbg",
     "softwareId": "ab6d656f-3bd2-47bf-b4a1-d4a38a70d513",
+    "active": true,
     "id": "1743506250888"
   },
   {
     "name": "Keross 1223",
     "description": "2323",
     "softwareId": "1c686f7e-3ca2-40fa-97d4-4c3d33ac759a",
+    "active": true,
     "id": "1743507577169"
   },
   {
     "name": "Test 223434",
     "description": "Test 223434",
     "softwareId": "283d79dd-b662-4b91-9466-7da210221633",
+    "active": true,
     "id": "1743507729281"
   },
   {
     "name": "KRD",
     "description": "KRD",
     "softwareId": "124b667c-2556-4dd1-a00a-eac17296b9fe",
+    "active": true,
     "id": "1743507792881"
   },
   {
     "name": "new group",
     "description": "new group",
     "softwareId": "11bfed3e-4c37-4af3-b678-fb9ce383a912",
+    "active": true,
     "id": "1743508050165"
   },
   {
     "name": "new group 2",
     "description": "new group 2",
     "softwareId": "32e7bea6-0f42-43ea-98ac-6a275da814d1",
+    "active": true,
     "id": "1743572196127"
+  },
+  {
+    "name": "Dm User",
+    "description": "Document Management Users",
+    "softwareId": "d341e790-91b3-4d29-b43c-0c9510b46e17",
+    "active": true,
+    "id": "1743663495499"
   }
 ]

@@ -16,9 +16,9 @@ import {
   User,
 } from "lucide-react";
 import React, { useState } from "react";
-import GroupForm from "../group-form";
+import GroupForm from "../role-form";
 import { ManageUsersForm } from "../manage-users-form";
-import { updateGroupStatus } from "../update-group-status";
+import { updateGroupStatus } from "../update-role-status";
 
 interface GroupProps {
   active: any;

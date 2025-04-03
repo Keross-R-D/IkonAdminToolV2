@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
-import { saveGroupData } from "../group-save";
+import { saveGroupData } from "../role-save";
 
 
 interface GroupData {
