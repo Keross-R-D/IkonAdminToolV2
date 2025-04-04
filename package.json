@@ -1,5 +1,5 @@
 {
-  "name": "app1",
+  "name": "ikon_admintool",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -66,6 +66,6 @@
     "typescript": "^5"
   },
   "bin": {
-    "app1": "./cli.js"
+    "ikon_admintool": "./cli.js"
   }
 }
