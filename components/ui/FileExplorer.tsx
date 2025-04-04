@@ -46,8 +46,9 @@ export default function FileExplorer({ node,openEditFolderModal }: { node: FileN
   function openTasks(id: string) {
     console.log("Open Tasks: ", id);
   }
-  const handleDownloadFolder = async (folderId: string) => {
+  const handleDownloadFolder = async (node: FileNode) => {
     try {
+      const folderId = node.id; // Assuming node has an id property
       const response = await fetch(`/api/download-folder`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,7 +65,7 @@ export default function FileExplorer({ node,openEditFolderModal }: { node: FileN
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = `${folderId}.zip`;
+      link.download = `${node.name}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -127,7 +128,7 @@ export default function FileExplorer({ node,openEditFolderModal }: { node: FileN
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
-                            <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => handleDownloadFolder(node.id)}>
+                            <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => handleDownloadFolder(node)}>
                               <Download />Backup
                             </Button>
                             </TooltipTrigger>
