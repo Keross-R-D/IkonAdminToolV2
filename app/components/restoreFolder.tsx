@@ -90,6 +90,7 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
     
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    debugger;
     if (!event.target.files) return;
 
     const files = Array.from(event.target.files);
@@ -108,11 +109,12 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
       if (!processedFolder) return; // Handle null case
       rootFolder = processedFolder;
     }
-
-    setFolderStructure(rootFolder);
+debugger
+    setFolderStructure(rootFolder.children ? rootFolder.children[0] : null); // Set folder structure
   };
 
   const processFolderUpload = async (files: File[]) => {
+    debugger
     const rootFolderName = files[0]?.webkitRelativePath.split("/")[0]; // Get top-level folder name
     if (!rootFolderName) return null;
   
@@ -171,9 +173,10 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
     return rootFolder;
   };
 
-  const extractZipFile = async (zipFile: File) => {
-    const zip = await JSZip.loadAsync(zipFile);
+  const extractZipFile = async (zipFile: File): Promise<FolderNode> => {
     debugger
+    const zip = await JSZip.loadAsync(zipFile);
+  
     const rootFolder: FolderNode = {
       id: crypto.randomUUID(),
       name: zipFile.name.replace(".zip", ""),
@@ -182,31 +185,22 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
     };
   
     const fileMap = new Map<string, FolderNode>();
-    fileMap.set(rootFolder.name, rootFolder);
+    fileMap.set("", rootFolder); // root path is empty string
   
     for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
-      const parts = relativePath.split("/");
+      const parts = relativePath.split("/").filter(Boolean);
+      let currentPath = "";
       let parent = rootFolder;
   
       for (let i = 0; i < parts.length; i++) {
         const partName = parts[i];
-        const fullPath = parts.slice(0, i + 1).join("/");
+        currentPath = currentPath ? `${currentPath}/${partName}` : partName;
   
-        if (zipEntry.dir) {
-          // It's a folder
-          if (!fileMap.has(fullPath)) {
-            const newFolder: FolderNode = {
-              id: crypto.randomUUID(),
-              name: partName,
-              type: "folder",
-              children: [],
-            };
-            fileMap.set(fullPath, newFolder);
-            parent.children?.push(newFolder);
-          }
-          parent = fileMap.get(fullPath)!;
-        } else if (i === parts.length - 1) {
-          // It's a file, read its content
+        const isLast = i === parts.length - 1;
+        const isDir = zipEntry.dir && isLast;
+  
+        if (isLast && !zipEntry.dir) {
+          // It's a file
           const content = await zipEntry.async("text");
           parent.children?.push({
             id: crypto.randomUUID(),
@@ -214,12 +208,26 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
             type: "file",
             content,
           });
+        } else {
+          // It's a folder
+          if (!fileMap.has(currentPath)) {
+            const newFolder: FolderNode = {
+              id: crypto.randomUUID(),
+              name: partName,
+              type: "folder",
+              children: [],
+            };
+            fileMap.set(currentPath, newFolder);
+            parent.children?.push(newFolder);
+          }
+          parent = fileMap.get(currentPath)!;
         }
       }
     }
   
     return rootFolder;
   };
+  
   
   
 
