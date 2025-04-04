@@ -20,9 +20,11 @@ import React, { useState } from "react";
 import RoleForm from "../role-form";
 import { ManageUsersForm } from "../manage-users-form";
 import { updateRoleStatus } from "../update-role-status";
-
+import { ManageGroupsForm } from "../manage-group-form";
+import { updateGroupStatusInRole } from "../manage-group-form/update-group-in-role";
 
 interface RoleProps {
+  groups: never[];
   active: any;
   id: string;
   name: string;
@@ -33,7 +35,7 @@ interface RoleProps {
 function RoleTable({
   softwareId,
   roles,
-  groups
+  groups,
 }: {
   softwareId: string;
   roles: any;
@@ -45,28 +47,28 @@ function RoleTable({
   const [openGroupForm, setOpenGroupForm] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleProps | null>(null);
 
+  console.log("group details ", groups);
+
   const handleToggleActive = async (row: RoleProps) => {
     try {
       const updatedRow = {
         ...row,
         active: !row.active,
       };
-  
+
       await updateRoleStatus(updatedRow);
-  
+
       setRoleData((prevRoles) =>
-        prevRoles.map((role) =>
-          role.id === updatedRow.id ? updatedRow : role
-        )
+        prevRoles.map((role) => (role.id === updatedRow.id ? updatedRow : role))
       );
-  
+
       setSelectedRole(updatedRow);
-  
+
       console.log(`Role "${row.name}" status toggled to ${updatedRow.active}`);
     } catch (error) {
       console.error("Error toggling role status:", error);
-      alert('Failed to update role status.');
-      
+      alert("Failed to update role status.");
+
       setRoleData((prevRoles) => prevRoles);
     }
   };
@@ -108,30 +110,30 @@ function RoleTable({
           icon: Group,
           onClick: (row) => {
             setSelectedRole(row);
-            setOpenUsersForm(true);
+            setOpenGroupForm(true);
           },
         },
         {
-          label: "Deactivate" ,
-          icon: Ban ,
+          label: "Deactivate",
+          icon: Ban,
           onClick: (row) => {
             setSelectedRole(row);
             handleToggleActive(row);
           },
-          visibility:(row) => {
-            return row?.active
-          }
+          visibility: (row) => {
+            return row?.active;
+          },
         },
         {
-          label: "Activate" ,
-          icon: Ban ,
+          label: "Activate",
+          icon: Ban,
           onClick: (row) => {
             setSelectedRole(row);
             handleToggleActive(row);
           },
-          visibility:(row) => {
-            return !row?.active
-          }
+          visibility: (row) => {
+            return !row?.active;
+          },
         },
       ],
     },
@@ -147,6 +149,16 @@ function RoleTable({
       </IconTextButton>,
     ],
   };
+
+  async function handleSaveGroups(roleId: string, selectedGroupIds: string[]) {
+    await updateGroupStatusInRole(roleId, selectedGroupIds);
+
+    //  setRoles(prevRoles =>
+    //       prevRoles.map((role: { id: any; }) =>
+    //         role.id === updatedRole?.id ? updatedRole : role
+    //       )
+    //     );
+  }
 
   return (
     <>
@@ -171,6 +183,19 @@ function RoleTable({
               `Saved ${userIds.length} users to role ${roleId}`
             );
           }}
+        />
+      )}
+
+      {openGroupForm && selectedRole && (
+        <ManageGroupsForm
+          open={openGroupForm}
+          setOpen={setOpenGroupForm}
+          groups={groups}
+          initialSelectedGroups={selectedRole.groups || []}
+          onSave={(selectedGroupIds) => {
+            handleSaveGroups(selectedRole.id, selectedGroupIds);
+          }}
+          roleName={selectedRole.name}
         />
       )}
     </>

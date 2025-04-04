@@ -17,76 +17,103 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
-import dummyUserData from "@/app/users/data/dummy-user-data";
 
 const formSchema = z.object({
-  users: z.array(z.string()).min(1, "Select at least one user"),
+  groups: z.array(z.string()).min(1, "Select at least one group"),
 });
+
+interface Group {
+  id: string;
+  name: string;
+  description?: string;
+  softwareId: string;
+  active: boolean;
+}
 
 interface ManageGroupsFormProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  groupId: string;
-  groupName: string;
-  onSave?: (groupId: string, userIds: string[]) => void;
+  groups: Group[];
+  initialSelectedGroups?: string[];
+  onSave: (groupIds: string[]) => void;
+  roleName?: string;
 }
 
 export function ManageGroupsForm({
   open,
   setOpen,
-  groupId,
-  groupName,
+  groups,
+  initialSelectedGroups = [],
   onSave,
+  roleName,
 }: ManageGroupsFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      users: [],
+      groups: initialSelectedGroups,
     },
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     try {
-      const groupUserData = {
-        groupId,
-        userIds: data.users,
-        updatedAt: new Date().toISOString(),
-      };
-
-      console.log("Saving group-user association:", groupUserData);
-
-      if (onSave) {
-        onSave(groupId, data.users);
-      }
-
+      onSave(data.groups);
       setOpen(false);
     } catch (error) {
-      console.error("Failed to save user-group association:", error);
+      console.error("Failed to save groups:", error);
     }
-    setOpen(false);
   };
 
-  const userColumns: DTColumnsProps<(typeof dummyUserData)[0]>[] = [
-    {
-      accessorKey: "userName",
-      header: "User Name",
-    },
+  const groupColumns: DTColumnsProps<Group>[] = [
     {
       id: "select",
       header: "Select",
+      cell: ({ row }) => {
+        const isActive = row.original.active;
+        const isChecked = form.watch("groups").includes(row.original.id);
+
+        return (
+          <Checkbox
+            checked={isChecked}
+            onCheckedChange={(checked) => {
+              if (isActive) {
+                const currentGroups = form.getValues("groups");
+                form.setValue(
+                  "groups",
+                  checked
+                    ? [...currentGroups, row.original.id]
+                    : currentGroups.filter((id) => id !== row.original.id)
+                );
+              }
+            }}
+            disabled={!isActive}
+            className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
+          />
+        );
+      },
+    },
+    {
+      accessorKey: "name",
+      header: "Group Name",
       cell: ({ row }) => (
-        <Checkbox
-          checked={form.watch("users").includes(row.original.userId)}
-          onCheckedChange={(checked) => {
-            const currentGroups = form.getValues("users");
-            form.setValue(
-              "users",
-              checked
-                ? [...currentGroups, row.original.userId]
-                : currentGroups.filter((id) => id !== row.original.userId)
-            );
-          }}
-        />
+        <div className="flex flex-col">
+          <span className="font-medium">{row.original.name}</span>
+          {row.original.description && (
+            <span className="text-sm text-muted-foreground">
+              {row.original.description}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "active",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={row.original.active ? "text-green-500" : "text-red-500"}
+        >
+          {row.original.active ? "Active" : "Inactive"}
+        </span>
       ),
     },
   ];
@@ -99,20 +126,20 @@ export function ManageGroupsForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[800px] max-w-[90vw]">
         <DialogHeader>
-          <DialogTitle>Manage Groups for {groupName}</DialogTitle>
+          <DialogTitle>
+            {roleName ? `Manage Groups for ${roleName}` : "Manage Groups"}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex-1 overflow-hidden"
           >
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto max-h-[60vh]">
               <DataTable
-                data={dummyUserData}
-                columns={userColumns}
-                extraParams={{
-                  ...extraParams,
-                }}
+                data={groups}
+                columns={groupColumns}
+                extraParams={extraParams}
               />
             </div>
             <DialogFooter className="mt-4 py-2 border-t">
