@@ -1,5 +1,6 @@
 "use server";
 import { revalidateTag } from "next/cache";
+import { headers } from "next/headers";
 
 interface RoleData {
   id?: string;
@@ -13,7 +14,12 @@ export const updateGroupStatusInRole = async (
   selectedGroupIds: string[]
 ): Promise<RoleData> => {
   try {
-    const response = await fetch("http://localhost:3000/api/roles/update-groups", {
+    const header = await headers();
+  const host =
+    (header.get("x-forwarded-proto") || "http") +
+    "://" +
+    (header.get("host") || "localhost:3000");
+    const response = await fetch(`${host}/api/roles/update-groups`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

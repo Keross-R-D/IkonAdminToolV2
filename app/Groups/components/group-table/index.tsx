@@ -8,10 +8,7 @@ import {
 } from "@/ikon/components/data-table/type";
 import {
   Ban,
-  Blocks,
-  CheckCircle,
   Edit,
-  LucideBlocks,
   Plus,
   User,
 } from "lucide-react";

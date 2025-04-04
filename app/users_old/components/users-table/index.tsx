@@ -5,7 +5,6 @@ import {
     DTExtraParamsProps,
 } from "@/ikon/components/data-table/type";
 import React from "react";
-
 import { Edit, Plus, Trash, UserCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import { IconTextButton } from "@/ikon/components/buttons";
@@ -14,7 +13,21 @@ import UserForm from "../create-user-form";
 import { useRouter } from "next/navigation";
 
 import MembershipForm from "../platform-membership-form";
-import { UserData } from "../../data/dummy-user-data";
+
+interface UserData {
+    userId: string;
+    userName: string;
+    userLogin: string;
+    password: string;
+    userPhone?: string;
+    userEmail: string;
+    userThumbnail?: string | null;
+    userType?: string;
+    active?: boolean;
+    accountId?: string;
+    userDeleted?: boolean;
+}
+
 
 function UsersTable({ users }: { users: UserData[] }) {
     const router = useRouter();

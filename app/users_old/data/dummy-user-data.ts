@@ -1,6 +1,4 @@
-
-
-export interface UserData {
+interface UserData {
     userId: string;
     userName: string;
     userLogin: string;

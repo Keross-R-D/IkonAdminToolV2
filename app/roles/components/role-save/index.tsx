@@ -1,5 +1,6 @@
 "use server"
 import { revalidateTag } from "next/cache";
+import { headers } from "next/headers";
 
 interface RoleData {
     id?: string;
@@ -10,7 +11,12 @@ interface RoleData {
   
   export const saveRoleData = async (role: RoleData): Promise<RoleData> => {
     try {
-      const response = await fetch('http://localhost:3000/api/roles', {
+      const header = await headers();
+  const host =
+    (header.get("x-forwarded-proto") || "http") +
+    "://" +
+    (header.get("host") || "localhost:3000");
+      const response = await fetch(`${host}/api/roles`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(role),

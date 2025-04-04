@@ -2,7 +2,6 @@
 import { DataTable } from "@/ikon/components/data-table";
 import { DTColumnsProps, DTExtraParamsProps } from "@/ikon/components/data-table/type";
 import React from "react";
-import { useRouter } from "next/navigation";
 import { Checkbox } from "@/shadcn/ui/checkbox";
 import { GroupData } from "../../data/dummy-platform-groups";
 
@@ -19,14 +18,27 @@ function GroupsTable({ groups }: { groups: GroupData[] }) {
             accessorKey: "groupDescription",
             header: "Description",
         },
+        {
+            header: "Assign",
+            cell: ({ row }) => (
+                <Checkbox
+                    id={row.original.groupId}
+                    checked={row.original.users.includes(row.original.groupId)}
+                    onCheckedChange={(checked) => {
+                        if (checked) {
+                            setGroupData(row.original);
+                        }
+                        else {
+                            setGroupData(null);
+                        }
+                    }}
+                />
+            ),
+        }
     ];
 
     const extraParams: DTExtraParamsProps = {
         grouping: false,
-        checkBoxColumn: true,
-        checkBoxColumnCallback:(selectedRows : GroupData[])=> {
-            console.log("Selected Rows: ", selectedRows);  
-        }
     };
     return (
         <>

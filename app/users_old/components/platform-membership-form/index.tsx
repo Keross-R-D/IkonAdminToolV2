@@ -8,7 +8,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
 import dummyGroupData from "../../data/dummy-platform-groups";
 import GroupsTable from "../platform-groups-table";
-import { UserData } from "../../data/dummy-user-data";
+
+interface UserData {
+    userId: string;
+    userName: string;
+    userLogin: string;
+    password: string;
+    userPhone?: string;
+    userEmail: string;
+    userThumbnail?: string | null;
+    userType?: string;
+    active?: boolean;
+    accountId?: string;
+    userDeleted?: boolean;
+}
 
 
 function MembershipForm({
@@ -22,14 +35,14 @@ function MembershipForm({
     userData: UserData | null;
     setUserData: React.Dispatch<React.SetStateAction<UserData | null>>;
 }) {
-    const schema: any = z.object({
-
+    const schema : any = z.object({
+        
     });
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-
+           
         },
     });
     useEffect(() => {
@@ -48,7 +61,7 @@ function MembershipForm({
 
     return (
         <>
-            <Dialog
+            <Dialog 
                 open={open}
                 onOpenChange={(isOpen) => {
                     if (!isOpen) {
@@ -59,17 +72,16 @@ function MembershipForm({
                 }}
                 modal={true}
             >
-                <DialogContent className="sm:max-w-5xl">
-                    <DialogHeader className="">
+                <DialogContent className="">
+                    <DialogHeader>
                         <DialogTitle>{userData?.userName} - Platform Membership</DialogTitle>
                     </DialogHeader>
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(saveUserWiseMembershipData)}
+                            className="space-y-4"
                         >
-                            <div className="" style={{ height: "500px" }}>
-                                <GroupsTable groups={dummyGroupData} />
-                            </div>
+                            <GroupsTable groups={dummyGroupData} />
                             <DialogFooter>
                                 <TextButton type="submit">Save</TextButton>
                             </DialogFooter>
