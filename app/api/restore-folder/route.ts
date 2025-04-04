@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 
     // ✅ Create folder and files inside `src`
     if (folderStructure.children) {
-      folderStructure.children.forEach((child) => createFolderStructure(child, srcPath));
+       createFolderStructure(folderStructure, srcPath);
     }
 
     // 🔍 Verify the folder was created correctly
