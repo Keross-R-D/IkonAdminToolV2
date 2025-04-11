@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     
     fs.writeFileSync(structurePath, JSON.stringify(existingStructure, null, 2));
 
-    return NextResponse.json({ success: true, message: "Folder restored successfully!", path: newFolderPath });
+    return NextResponse.json({fs : existingStructure, success: true, message: "Folder restored successfully!", path: newFolderPath });
   } catch (error) {
     console.error("🔥 Error restoring folder:", error);
     return NextResponse.json({ error: "Internal Server Error", details: (error as any).message }, { status: 500 });

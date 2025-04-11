@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import EdgeTransitionCategory from "@/enums/edgeTransitionType";
+import { useParams } from "next/navigation";
 
 interface EdgeInfoDefaultValues {
   //edge label
@@ -62,7 +63,7 @@ interface EdgeInfoDefaultValues {
 
 interface edgeInfoModalProps {
   edgeInfoDefaultValues: EdgeInfoDefaultValues;
-  onSubmitCallback: (values: { [key:string]: string }) => void;
+  onSubmitCallback: (values: { [key: string]: string }) => void;
   edgeTransitionCategory: EdgeTransitionCategory;
 }
 
@@ -147,9 +148,12 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   onSubmitCallback,
   edgeTransitionCategory,
 }) => {
-
+  
+  const [open, setOpen] = useState(false);
   const zSchemaObj = getZschema(edgeTransitionCategory);
   const formSchema = z.object(zSchemaObj);
+  const params = useParams();
+  const [scripts, setScripts] = useState<any[]>([]);
 
   const defaultValues = getDefaultValue(edgeTransitionCategory, edgeInfoDefaultValues)
 
@@ -161,16 +165,37 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   const internalJobFrequencyType = form.watch("jobFreqency");
 
 
+  useEffect(() => {
+          const createScriptFile = async () => {
+            const response = await fetch("/api/read-script-metadata", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                folderId: params?.workflow,
+              }),
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || "Failed to Create script file");
+            } 
+            const data = await response.json();
+            setScripts(data.metadata); // Update state with the fetched scripts
+          };
+      
+          createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
+        }, []);
+
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-
     onSubmitCallback(values);
+    setOpen(false);
     console.log(values);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"} style={{ pointerEvents: "auto" }}>
           <Cog />
@@ -227,10 +252,24 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Action Validation Script</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Action Validation Script"
-                              {...field}
-                            />
+                            
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.type === "Action Validation") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.id} value={script.id}>
+                                            {script.fileName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This script will validate the incoming data
@@ -246,7 +285,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Transition Script</FormLabel>
                           <FormControl>
-                            <Input placeholder="Transition Script" {...field} />
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.type === "Transition Action - After Transaction" || script.type === "Transition Action - Befor Transaction") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.id} value={script.id}>
+                                            {script.fileName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This script will be executed during transition
@@ -308,7 +363,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                       <FormItem className="my-2">
                         <FormLabel>Job Script</FormLabel>
                         <FormControl>
-                          <Input placeholder="Job script" {...field} />
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.type === "Job Script") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.id} value={script.id}>
+                                            {script.fileName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                         </FormControl>
                         <FormDescription>
                           This script will be executed by the job.
@@ -511,11 +582,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Edge Conditional Script</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Edge Conditional Script"
-                              {...field}
-                            />
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.type === "Process Condition") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.id} value={script.id}>
+                                            {script.fileName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This transition will be selected if this script is
@@ -544,3 +627,5 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
 };
 
 export default EdgeInfoModal;
+
+

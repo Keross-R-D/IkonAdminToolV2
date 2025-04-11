@@ -31,9 +31,44 @@ import {
 import {z} from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NodeProps } from "@xyflow/react";
+
+interface nodeInfoModalProps {
+    nodeInfoDefaultValues: any;
+  }
 
 
-const ScriptsModal = () => {
+const ScriptsModal = (prop: nodeInfoModalProps) => {
+    const params = useParams();
+    const [ppScript, setPpScript] = useState("");
+    const [scripts, setScripts] = useState<any[]>([]);
+    const [showModal, setShowModal] = useState(false);
+    debugger
+    const onSubmitCallback = prop.nodeInfoDefaultValues.modifyNodeInfo;
+    const nodeAdditionalInfo = prop.nodeInfoDefaultValues.nodeAdditionalInfo;
+
+    useEffect(() => {
+        const createScriptFile = async () => {
+          const response = await fetch("/api/read-script-metadata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              folderId: params?.workflow,
+            }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to Create script file");
+          } 
+          const data = await response.json();
+          setScripts(data.metadata); // Update state with the fetched scripts
+        };
+    
+        createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
+      }, []);
     
     const formSchema = z.object({
         postProcessingScript: z.string().optional(),
@@ -43,42 +78,63 @@ const ScriptsModal = () => {
     
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
+        defaultValues: nodeAdditionalInfo? nodeAdditionalInfo :{
             postProcessingScript: "",
             taskActionScript: ""
         }
     })
     
     const onSubmit = (value: any) => {
+        debugger;
         console.log(value)
+        onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.label}); 
+        setShowModal(false);
     }
 
     return (
-        <Dialog>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <DialogTrigger asChild>
-                        <Button variant={"outline"}>
-                            <Braces/>
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
+        <Dialog open={showModal} onOpenChange={setShowModal}>
+            <DialogTrigger asChild>
+                <Button variant={"outline"}>
+                    <Braces/>
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    
+                    
+                        <DialogHeader className="pb-4">
                             <DialogTitle>Script Assocition</DialogTitle>
                         </DialogHeader>
                         
                         <FormField
                             control={form.control}
                             name="postProcessingScript"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel> Post processing script</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Post processing script" {...field}/>
-                                    </FormControl>
-                                    <FormDescription>
-                                        This script can be dynamically executed for this task for a specific instance
-                                    </FormDescription>
+                                <FormLabel>Post Processing Script</FormLabel>
+                                <FormControl>
+                                    <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select script" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {scripts
+                                        .filter((script) => script.type === "Form Data Post Processing") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.id} value={script.id}>
+                                            {script.fileName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormDescription>
+                                    This script can be dynamically executed for this task for a specific instance.
+                                </FormDescription>
                                 </FormItem>
                             )}
                         />
@@ -90,7 +146,23 @@ const ScriptsModal = () => {
                                 <FormItem>
                                     <FormLabel> Task Action script</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Task Action script" {...field}/>
+                                        <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select script" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {scripts
+                                            .filter((script) => script.type === "Task Action") // ✅ filter only post-processing scripts
+                                            .map((script) => (
+                                                <SelectItem key={script.id} value={script.id}>
+                                                {script.fileName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormDescription>
                                         Description to be done
@@ -102,9 +174,10 @@ const ScriptsModal = () => {
                         <DialogFooter>
                             <Button type="submit">Submit</Button>
                         </DialogFooter>
-                    </DialogContent>
-                </form>
-            </Form>
+                    
+                    </form>
+                </Form>
+            </DialogContent>
         </Dialog>
     )
 }

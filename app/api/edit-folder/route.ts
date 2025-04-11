@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     // Save updated structure
     fs.writeFileSync(structurePath, JSON.stringify(structure, null, 2));
 
-    return NextResponse.json({ success: true, newFolderPath });
+    return NextResponse.json({fs:structure, success: true, newFolderPath });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error", details: (error as any).message }, { status: 500 });
   }

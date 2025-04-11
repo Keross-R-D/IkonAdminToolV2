@@ -23,7 +23,7 @@ function MainLayout({ children }: { children: ReactNode }) {
             <div className="grow overflow-hidden flex">
               <AppSidebarProvider>
                 <AppSidebar />
-                <div className="p-2 lg:p-4 grow overflow-hidden">{children}</div>
+                <div className="grow overflow-hidden">{children}</div>
               </AppSidebarProvider>
             </div>
             <Footer />

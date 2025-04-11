@@ -22,6 +22,8 @@ interface taskNodeProps {
         label: string;
         deleteNode: (id: string) => void;
         id: string;
+        modifyNodeInfo: (nodeId: string) => void,
+        nodeAdditionalInfo: any,
     };
     selected: boolean;
     updateNodeLabel: (id: string, label: string) => void;
@@ -64,7 +66,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
                 <Trash/>
             </Button>
             <AssignmentModal/>
-            <ScriptsModal/>
+            <ScriptsModal nodeInfoDefaultValues={data}/>
         </NodeToolbar>
         <Card className={cardClassNames}>
             <CardHeader>
