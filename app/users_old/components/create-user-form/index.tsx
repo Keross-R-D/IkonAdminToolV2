@@ -6,7 +6,20 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
-import { UserData } from "../../data/dummy-user-data";
+
+interface UserData {
+    userId: string;
+    userName: string;
+    userLogin: string;
+    password: string;
+    userPhone?: string;
+    userEmail: string;
+    userThumbnail?: string | null;
+    userType?: string;
+    active?: boolean;
+    accountId?: string;
+    userDeleted?: boolean;
+}
 
 
 function UserForm({

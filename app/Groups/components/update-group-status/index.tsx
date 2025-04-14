@@ -1,5 +1,6 @@
 "use server";
 import { revalidateTag } from "next/cache";
+import { headers } from "next/headers";
 
 interface GroupData {
   id?: string;
@@ -13,8 +14,12 @@ export const updateGroupStatus = async (
   updatedRow: GroupData
 ): Promise<GroupData> => {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/update-group-status",
+    const header = await headers();
+  const host =
+    (header.get("x-forwarded-proto") || "http") +
+    "://" +
+    (header.get("host") || "localhost:3000");
+    const response = await fetch(`${host}/api/update-group-status`,
       {
         method: "PUT",
         headers: {
