@@ -245,9 +245,7 @@ debugger;
             
           </div>
         </div>
-        <div>
         {showscripts()}
-        </div>
       </div>
       
 

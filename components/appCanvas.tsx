@@ -136,11 +136,7 @@ debugger
    const readProcessModel = async (folderId: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch("/api/read_processModal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folderId }),
-      });
+      const response = await fetch(`/api/read_processModal?folderId=${folderId}`);
   
       const data = await response.json();
   

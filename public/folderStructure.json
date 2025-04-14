@@ -1,241 +1,241 @@
 [
   {
-    "id": "79ef8146af78292f",
+    "id": "4e18ed870f9f050d",
     "name": "package.json",
     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\package.json",
     "type": "file",
     "children": []
   },
   {
-    "id": "62455382731b4cf0",
+    "id": "bbb30cd3d62d5e75",
     "name": "project.json",
     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\project.json",
     "type": "file",
     "children": []
   },
   {
-    "id": "e84ef54f47bef952",
+    "id": "79b8e77a345fa106",
     "name": "src",
     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src",
     "type": "folder",
     "children": [
       {
-        "id": "6d5db7b2594c3fb3",
+        "id": "a43caa9d24c57c45",
         "name": "Build Checking",
         "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking",
         "type": "folder",
         "children": [
           {
-            "id": "52c9ef966dd5226f",
+            "id": "714f3006bb72cd3e",
             "name": "children",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children",
             "type": "folder",
             "children": []
           },
           {
-            "id": "04d42b59f56c6282",
+            "id": "f0e5f9115e4fee1a",
             "name": "instances",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\instances",
             "type": "folder",
             "children": []
           },
           {
-            "id": "2dcd92a9d78cb1e3",
+            "id": "c581b0d88836050a",
             "name": "metadata.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\metadata.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "ca523bfd40269d27",
+            "id": "77bf1784366b8fc6",
             "name": "process_model.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\process_model.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "a36a2614424f9c1b",
+            "id": "4ecec184e469a93c",
             "name": "scripts",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts",
             "type": "folder",
             "children": [
               {
-                "id": "3a6b60cf8daf34ed",
+                "id": "4a00bbbdd66ea676",
                 "name": "add more bug.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\add more bug.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "1a872495260e9ea8",
+                "id": "1865cf3c52da0aa7",
                 "name": "after_transition_action_script_emp_gr_1 ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\after_transition_action_script_emp_gr_1 ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "c71e253bc5aa15fd",
+                "id": "5301185593f87b7d",
                 "name": "after_transition_action_script_emp_gr_1 .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\after_transition_action_script_emp_gr_1 .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "b86106cb5997e17c",
+                "id": "aa3494f428162da4",
                 "name": "after_transition_action_script_emp_gr_2.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\after_transition_action_script_emp_gr_2.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "852f46d5463b4ffc",
+                "id": "1a563c99bfd5ad4a",
                 "name": "distribute task.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\distribute task.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "7e30efeddfbe817c",
+                "id": "7e8270caaea35fe7",
                 "name": "employee_grp1_access ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp1_access ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "89305b86cafac4c8",
+                "id": "d83e6778b5725b41",
                 "name": "employee_grp1_access .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp1_access .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "563457974034f942",
+                "id": "1763381938fda7ca",
                 "name": "employee_grp2_access ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp2_access ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "817141e8d840b355",
+                "id": "1c3bac09fafa931e",
                 "name": "employee_grp2_access .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp2_access .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "e3cc20ed36b728d2",
+                "id": "a042dd053291f98c",
                 "name": "employee_grp_access ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp_access ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "15eb5626aa20c44c",
+                "id": "ecf928ba6799371c",
                 "name": "employee_grp_access .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\employee_grp_access .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "407277c6793d95ca",
+                "id": "01fa168c6456fa9d",
                 "name": "end bug test.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\end bug test.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "1ebf53b890f2e4fa",
+                "id": "865b9634b4a55db6",
                 "name": "Lead tester visiting data.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\Lead tester visiting data.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "c2e2ed4ff025d51e",
+                "id": "2ca0618a53a7052e",
                 "name": "lead_tester_group_access ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\lead_tester_group_access ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "7baab4459c633815",
+                "id": "ee785007ce35e207",
                 "name": "lead_tester_group_access .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\lead_tester_group_access .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "faecc31ae15512c0",
+                "id": "6c8142d4535e9a3d",
                 "name": "metadata.json",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\metadata.json",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "6c336f38a3bc5410",
+                "id": "3a4f8c9aaad22647",
                 "name": "Normal tester visiting data ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\Normal tester visiting data ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "0fd8b89db9b78120",
+                "id": "8e7c55a8cdc946fc",
                 "name": "Normal tester visiting data .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\Normal tester visiting data .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "54be293c7f461eda",
+                "id": "ba4a24e689acbd1e",
                 "name": "post_processing_emp_gr-1.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\post_processing_emp_gr-1.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "4a9403ae727496a8",
+                "id": "3cd53b7f2e87f29d",
                 "name": "post_processing_emp_gr-2.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\post_processing_emp_gr-2.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "d74f3d48e0de22d2",
+                "id": "fc9d43e5ba25bbb2",
                 "name": "send to lead tester.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\send to lead tester.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "10a9ba4388fb9fc6",
+                "id": "2bb68bd6bdd5ed75",
                 "name": "submit bug - normal tester.js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\submit bug - normal tester.js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "f51d1a7776b09332",
+                "id": "d903c6d4c53efab8",
                 "name": "tester_users_access ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\tester_users_access ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "ca4714a65e93e685",
+                "id": "8f984bfb90dbc502",
                 "name": "tester_users_access .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\tester_users_access .js",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "2817dbfce7ea61ac",
+                "id": "67890cbd97deea4a",
                 "name": "test_job ",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\test_job ",
                 "type": "file",
                 "children": []
               },
               {
-                "id": "dcccd152a1dd874c",
+                "id": "4fc5e8b9aa2de53f",
                 "name": "test_job .js",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\scripts\\test_job .js",
                 "type": "file",
@@ -246,128 +246,186 @@
         ]
       },
       {
-        "id": "271de371e6549b23",
+        "id": "9592d55820f9fe33",
         "name": "hello 1",
         "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1",
         "type": "folder",
         "children": [
           {
-            "id": "6a2e15dcd229ab95",
+            "id": "d9a122c7bb1c2e3d",
             "name": "children",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children",
             "type": "folder",
             "children": [
               {
-                "id": "89c7c2c9b8442ba8",
+                "id": "03632ea4ed7fb9e4",
                 "name": "F1",
                 "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1",
                 "type": "folder",
                 "children": [
                   {
-                    "id": "979598880b1a47b3",
+                    "id": "712b7b3d5397e98b",
                     "name": "children",
                     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\children",
                     "type": "folder",
                     "children": []
                   },
                   {
-                    "id": "7a5775129e175a9c",
+                    "id": "107f110e97acac2f",
                     "name": "instances",
                     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\instances",
                     "type": "folder",
                     "children": []
                   },
                   {
-                    "id": "17513071a415d0bf",
+                    "id": "f5036a881bd5da77",
                     "name": "metadata.json",
                     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\metadata.json",
                     "type": "file",
                     "children": []
                   },
                   {
-                    "id": "732c0616c461e6a9",
+                    "id": "09646e11624fc4e7",
                     "name": "process_model.json",
                     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\process_model.json",
                     "type": "file",
                     "children": []
                   },
                   {
-                    "id": "4a5e9c3587b6ff3a",
+                    "id": "f64d68c19e72aea9",
                     "name": "scripts",
                     "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\scripts",
                     "type": "folder",
                     "children": []
+                  },
+                  {
+                    "id": "dc9a4eae45272ba6",
+                    "name": "test new",
+                    "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\children\\F1\\children\\test new",
+                    "type": "folder",
+                    "children": [
+                      {
+                        "id": "eb26e5ea6d3be7af",
+                        "name": "children",
+                        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\children",
+                        "type": "folder",
+                        "children": []
+                      },
+                      {
+                        "id": "5f5047463ec81591",
+                        "name": "instances",
+                        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\instances",
+                        "type": "folder",
+                        "children": []
+                      },
+                      {
+                        "id": "bf230a92cd88ab9e",
+                        "name": "metadata.json",
+                        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\metadata.json",
+                        "type": "file",
+                        "children": []
+                      },
+                      {
+                        "id": "3145d1298ddd1382",
+                        "name": "process_model.json",
+                        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\process_model.json",
+                        "type": "file",
+                        "children": []
+                      },
+                      {
+                        "id": "59ab12fd21c36bb3",
+                        "name": "scripts",
+                        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\scripts",
+                        "type": "folder",
+                        "children": []
+                      }
+                    ]
                   }
                 ]
               }
             ]
           },
           {
-            "id": "b2530119e6f47b82",
+            "id": "9efac6087ebc61e7",
             "name": "instances",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\instances",
             "type": "folder",
             "children": []
           },
           {
-            "id": "04cd73ee5240771d",
+            "id": "666d264acfe0ccf3",
             "name": "metadata.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\metadata.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "6f349a1b588c1109",
+            "id": "aea4f080d32e1386",
             "name": "process_model.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\process_model.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "64bdade1e1565e55",
+            "id": "95a1b3c9ac70d8ca",
             "name": "scripts",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\scripts",
             "type": "folder",
-            "children": []
+            "children": [
+              {
+                "id": "e7c14a932d76fc9f",
+                "name": "metadata.json",
+                "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\scripts\\metadata.json",
+                "type": "file",
+                "children": []
+              },
+              {
+                "id": "35e3af54d7181d68",
+                "name": "S1.js",
+                "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\hello 1\\scripts\\S1.js",
+                "type": "file",
+                "children": []
+              }
+            ]
           }
         ]
       },
       {
-        "id": "02f1cc26526be8ad",
+        "id": "a41b05e1cdc5041b",
         "name": "test 1",
         "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1",
         "type": "folder",
         "children": [
           {
-            "id": "5763cdc3d33d810c",
+            "id": "8efbedb302cb9f41",
             "name": "children",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1\\children",
             "type": "folder",
             "children": []
           },
           {
-            "id": "d438b4f8d7f6d3b7",
+            "id": "a76cecf7877641d5",
             "name": "instances",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1\\instances",
             "type": "folder",
             "children": []
           },
           {
-            "id": "d924fa74a312bd96",
+            "id": "2676a6e02eb94f9a",
             "name": "metadata.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1\\metadata.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "ddaac1d3ad7a7bfc",
+            "id": "73e3e8180e055d4d",
             "name": "process_model.json",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1\\process_model.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "ab58e6bdbb72977d",
+            "id": "034d82d8d7a94836",
             "name": "scripts",
             "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test 1\\scripts",
             "type": "folder",
@@ -376,52 +434,52 @@
         ]
       },
       {
-        "id": "547175d1327e3451",
-        "name": "test new",
-        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new",
+        "id": "206da9be25f2659e",
+        "name": "TEST1",
+        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\TEST1",
         "type": "folder",
         "children": [
           {
-            "id": "6de66cbc6c8eed14",
+            "id": "eaac89896bd0d3f7",
             "name": "children",
-            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\children",
+            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children\\TEST1\\children",
             "type": "folder",
             "children": []
           },
           {
-            "id": "964010a4e06187d4",
+            "id": "8a39e5c07ecef370",
             "name": "instances",
-            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\instances",
+            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children\\TEST1\\instances",
             "type": "folder",
             "children": []
           },
           {
-            "id": "bbd1479ee239c47d",
+            "id": "f274171ae4334c8a",
             "name": "metadata.json",
-            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\metadata.json",
+            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children\\TEST1\\metadata.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "812a5c511bc78fac",
+            "id": "4b3447bfc8e950f5",
             "name": "process_model.json",
-            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\process_model.json",
+            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children\\TEST1\\process_model.json",
             "type": "file",
             "children": []
           },
           {
-            "id": "ab6d51ca07f11646",
+            "id": "06b226755fe02391",
             "name": "scripts",
-            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\test new\\scripts",
+            "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\Build Checking\\children\\TEST1\\scripts",
             "type": "folder",
             "children": []
           }
         ]
       },
       {
-        "id": "1744354222630",
-        "name": "TEst1",
-        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\TEst1",
+        "id": "1744612434474",
+        "name": "F1",
+        "path": "C:\\Users\\KER-LPTP-48\\Downloads\\test\\test\\bpmn\\src\\F1",
         "type": "folder",
         "children": []
       }

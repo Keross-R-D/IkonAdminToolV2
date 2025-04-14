@@ -1,18 +1,18 @@
-"use client"
 import { RenderAppBreadcrumb } from '@/ikon/components/app-breadcrumb';
-import { useParams } from 'next/navigation';
 import React from 'react'
 
 export default async function Layout({
     children,
+    params
 }: Readonly<{
     children: React.ReactNode;
+    params: Promise<{ workflow: string; }>
 }>) {
-    const params = useParams();
+    const paramsData = await params
     return (
         <>
-            <RenderAppBreadcrumb breadcrumb={{ level: 1, title: "Workflow", href: `/workflow/${params?.workflow}` }} />
-            {children   }
+            <RenderAppBreadcrumb breadcrumb={{ level: 1, title: "Workflow", href: `/workflow/${paramsData?.workflow}` }} />
+            {children}
         </>
     )
 }

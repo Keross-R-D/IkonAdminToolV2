@@ -40,9 +40,10 @@ export default function Home() {
   const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
+    debugger
     fetch("/folderStructure.json")
       .then((res) => res.json())
-      .then((data) => {setShowSpinner(false); setFolderStructure(filterFolders(data))})
+      .then((data) => {debugger;setShowSpinner(false); setFolderStructure(filterFolders(data))})
       .catch((err) => console.error("Error fetching folder structure:", err));
 
   }, []);
@@ -214,7 +215,7 @@ export default function Home() {
                 
               </Tooltip>
             
-              <Tooltip tooltipContent="Upload Process" side={"top"}>
+              <Tooltip tooltipContent="Create Process" side={"top"}>
                   <Button
                     variant="outline"
                     size="sm"
