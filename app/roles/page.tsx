@@ -25,7 +25,6 @@ async function Page() {
   const softwareId = uuidv4();
 
   try {
-    // Fetch roles with better error handling
     let safeRoles: Role[] = [];
     try {
       const rolesResponse = await fetch(`${host}/api/roles`, {
@@ -43,7 +42,6 @@ async function Page() {
       console.error("Roles fetch error:", error);
     }
 
-    // Fetch groups
     let safeGroups: Group[] = [];
     try {
       const groupsResponse = await fetch(`${host}/api/groups`, {
@@ -62,7 +60,7 @@ async function Page() {
     }
 
     return (
-      <div>
+      <div className="p-2">
         <RoleTable 
           softwareId={softwareId} 
           roles={safeRoles} 
