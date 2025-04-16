@@ -65,7 +65,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
             }}>
                 <Trash/>
             </Button>
-            <AssignmentModal/>
+            <AssignmentModal nodeInfoDefaultValues={data} />
             <ScriptsModal nodeInfoDefaultValues={data}/>
         </NodeToolbar>
         <Card className={cardClassNames}>

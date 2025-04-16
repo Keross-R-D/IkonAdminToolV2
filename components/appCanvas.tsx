@@ -287,7 +287,7 @@ debugger
             return;
         }
 
-        const newNodeId: string = `${uuidv4()}`;
+        const newNodeId: string = `${type}_${uuidv4()}`;
         
         const position = screenToFlowPosition({
             x: event.clientX,
@@ -295,9 +295,7 @@ debugger
         })
 debugger
         console.log(nodes);
-        setNodes((nodes) => [
-            ...nodes,
-            {
+        let newNode = {
                 id: newNodeId,
                 type,
                 position,
@@ -307,8 +305,14 @@ debugger
                     'label': 'New Node',
                     'nodeAdditionalInfo' : {},
                     modifyNodeInfo: getNodeSpecificModifyCallback(newNodeId),
-                }
-            },
+                },
+                edges: type === "task" ? edges : undefined,
+            }
+        
+        setNodes((nodes) => [
+            ...nodes,
+            newNode
+            ,
         ]);
     } 
 
