@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
+import { promises as fs } from "fs";
 import path from "path";
 import archiver from "archiver";
 
@@ -38,9 +38,11 @@ function findAndRemoveFolder(
   return { updatedNodes: filteredNodes, deletedPath };
 }
 
-function deleteFolderRecursive(folderPath: string) {
-  if (fs.existsSync(folderPath)) {
-    fs.rmSync(folderPath, { recursive: true, force: true });
+async function deleteFolderRecursive(folderPath: string) {
+  try {
+    await fs.rm(folderPath, { recursive: true, force: true });
+  } catch (err) {
+    console.error(`Failed to delete folder: ${folderPath}`, err);
   }
 }
 
@@ -53,12 +55,13 @@ export async function DELETE(req: NextRequest) {
     if (!folderId) {
       return NextResponse.json({ error: "Missing folderId" }, { status: 400 });
     }
-
-    if (!fs.existsSync(structurePath)) {
+    try{
+      await fs.access(structurePath)
+    }catch{
       return NextResponse.json({ error: "folderStructure.json not found" }, { status: 404 });
     }
 
-    const structure = JSON.parse(fs.readFileSync(structurePath, "utf-8")) as FolderNode[];
+    const structure = JSON.parse(await fs.readFile(structurePath, "utf-8")) as FolderNode[];
 
     const { updatedNodes, deletedPath } = findAndRemoveFolder(structure, folderId);
 
@@ -68,7 +71,7 @@ export async function DELETE(req: NextRequest) {
 
     deleteFolderRecursive(deletedPath);
 
-    fs.writeFileSync(structurePath, JSON.stringify(updatedNodes, null, 2));
+    await fs.writeFile(structurePath, JSON.stringify(updatedNodes, null, 2));
 
     return NextResponse.json({ fs: updatedNodes, success: true, message: "Folder and contents deleted" });
   } catch (error) {
@@ -82,9 +85,9 @@ export async function DELETE(req: NextRequest) {
 // ✅ POST - Folder creation logic remains unchanged
 export async function POST(req: Request) {
   try {
-    const { parentId, folderName } = await req.json();
+    const { parentId, folderName , folderId } = await req.json();
 
-    const fileData = fs.readFileSync(structurePath, "utf-8");
+    const fileData = await fs.readFile(structurePath, "utf-8");
     const structure = JSON.parse(fileData);
 
     let parentFolderPath: string | null = null;
@@ -119,58 +122,80 @@ export async function POST(req: Request) {
 
     let newFolderPath;
     if (parentNode.name === "src") {
-      newFolderPath = path.join(parentFolderPath, folderName);
+      newFolderPath = path.join(parentFolderPath, folderName+"_" + folderId);
     } else {
       const childrenFolderPath = path.join(parentFolderPath, "children");
 
-      if (!fs.existsSync(childrenFolderPath) || !fs.statSync(childrenFolderPath).isDirectory()) {
+      try {
+        const stats = await fs.stat(childrenFolderPath);
+        if (!stats.isDirectory()) {
+          return NextResponse.json(
+            { error: `⚠️ "children" is not a directory in ${parentFolderPath}` },
+            { status: 400 }
+          );
+        }
+      } catch {
         return NextResponse.json(
           { error: `⚠️ "children" folder is missing inside ${parentFolderPath}` },
           { status: 400 }
         );
       }
 
-      newFolderPath = path.join(childrenFolderPath, folderName);
+      newFolderPath = path.join(childrenFolderPath, folderName+"_" + folderId);
     }
 
-    if (!fs.existsSync(newFolderPath)) {
-      fs.mkdirSync(newFolderPath, { recursive: true });
-    } else {
+    try {
+      await fs.access(newFolderPath);
       return NextResponse.json({ error: "Folder already exists!" }, { status: 400 });
+    } catch {
+      await fs.mkdir(newFolderPath, { recursive: true });
     }
 
     const subfolders = ["children", "instances", "scripts"];
-    subfolders.forEach((subfolder) => {
+    for (const subfolder of subfolders) {
       const subfolderPath = path.join(newFolderPath, subfolder);
-      if (!fs.existsSync(subfolderPath)) {
-        fs.mkdirSync(subfolderPath, { recursive: true });
+      try {
+        await fs.access(subfolderPath);
+      } catch {
+        await fs.mkdir(subfolderPath, { recursive: true });
       }
-    });
+    }
+
+    //find src folder data
+    let srcNode: FolderNode | null = null;
+    for (const node of structure) {
+      if (node.name === "src") {
+        srcNode = node;
+        break;
+      }
+    }
 
     const jsonFiles = ["metadata.json", "process_model.json"];
-    jsonFiles.forEach((file) => {
+    for (const file of jsonFiles) {
       const filePath = path.join(newFolderPath, file);
-      let metadata = {};
-      if (file === "metadata.json") {
-        metadata = {
-          processName: folderName,
-          parentProcess: {
-            parent: parentName,
-            path: parentFolderPath,
-          },
-          isLockRequired: true,
-          isSharedProcess: true,
-          scripts: [],
-          processVariableFields: [],
-        };
+      try {
+        await fs.access(filePath);
+      } catch {
+        let metadata = {};
+        if (file === "metadata.json") {
+          metadata = {
+            processName: folderName,
+            parentProcess: {
+              parent: parentName,
+              path: srcNode ? newFolderPath.replace(srcNode.path, "") : parentFolderPath,
+            },
+            isLockRequired: true,
+            isSharedProcess: true,
+            scripts: [],
+            processVariableFields: [],
+          };
+        }
+        await fs.writeFile(filePath, JSON.stringify(metadata, null, 2), "utf-8");
       }
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(metadata, null, 2));
-      }
-    });
+    }
 
     const newFolder = {
-      id: Date.now().toString(),
+      id: folderId,
       name: folderName,
       path: newFolderPath,
       type: "folder",
@@ -181,9 +206,9 @@ export async function POST(req: Request) {
       parentNode.children.push(newFolder);
     }
 
-    fs.writeFileSync(structurePath, JSON.stringify(structure, null, 2));
+    await fs.writeFile(structurePath, JSON.stringify(structure, null, 2));
 
-    return NextResponse.json({ success: true, newFolderPath });
+    return NextResponse.json({fs: structure, success: true, newFolderPath });
   } catch (error) {
     return NextResponse.json(
       { error: "Internal Server Error", details: (error as any).message },

@@ -67,6 +67,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   }
   const handleDownloadFolder = async (node: FileNode) => {
     try {
+      debugger
       setIsLoading(true); // Start loading spinner
       // ✅ Send request to backend to download folder
       const folderId = node.id; // Assuming node has an id property
@@ -80,18 +81,22 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
         console.error("❌ Failed to download:", errorData);
         alert("Download failed: " + errorData.error);
         toast.error("Download failed: " + errorData.error);
+        setIsLoading(false); // Stop loading spinner
         return;
       }
   
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
+    
       link.href = downloadUrl;
       link.download = `${node.name}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
       setIsLoading(false); // Stop loading spinner
+      
       toast.success(`${node.name} downloaded successfully!`);
     } catch (error) {
       console.error("Error downloading folder:", error);
@@ -111,6 +116,9 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
 
     if (!response.ok) {
       console.error("Failed to Delete folder");
+      const errorData = await response.json();
+      toast.error("Failed to delete folder: " + errorData.error);
+      setIsLoading(false);
       return;
     }
     else{

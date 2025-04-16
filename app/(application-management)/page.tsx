@@ -136,26 +136,27 @@ export default function Home() {
         children: [],
       };
 
-      parentNode.children.push(newFolder);
-
+      //parentNode.children.push(newFolder);
       // ✅ Send request to backend
       const response = await fetch("/api/create-folder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ parentId, folderName: name }),
+        body: JSON.stringify({ parentId, folderName: name, folderId: newFolder.id }),
       });
-
       if (!response.ok) {
+        var errorData = await response.json();
+        toast.error(errorData.error || "Failed to create folder");
         console.error("Failed to create folder");
+        setShowSpinner(false);
         return;
       }
       else{
         setShowSpinner(false);
         toast.success(`Process Added: ${name}`);
         const data = await response.json();
-        // if(data){
-        //   newFolderStructure = data?.fs; // Update the folder structure in the parent component
-        // }
+        if(data){
+          newFolderStructure = filterFolders(data?.fs); // Update the folder structure in the parent component
+        }
       // Handle successful response if needed
       }
     }

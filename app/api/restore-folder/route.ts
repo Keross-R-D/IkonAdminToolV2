@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     }
 
     // ✅ Ensure the new folder is created directly inside `src`
-    const newFolderPath = path.join(srcPath, folderStructure.name);
+    const newFolderPath = path.join(srcPath, folderStructure.name+"_" + folderStructure.id);
 
     
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     // Recursive function to create folders and files
     const createFolderStructure = (node: FolderNode, currentPath: string) => {
-      const itemPath = path.join(currentPath, node.name);
+      const itemPath = path.join(currentPath, (node.name === "children" || node.name === "instances" || node.name === "scripts" || node.type === "file")? node.name: node.name+"_" + node.id);
 
       if (node.type === "folder") {
         if (!fs.existsSync(itemPath)) {

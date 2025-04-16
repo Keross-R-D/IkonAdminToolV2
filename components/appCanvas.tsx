@@ -287,7 +287,7 @@ debugger
             return;
         }
 
-        const newNodeId: string = `${type}_${uuidv4()}`;
+        const newNodeId: string = `${uuidv4()}`;
         
         const position = screenToFlowPosition({
             x: event.clientX,

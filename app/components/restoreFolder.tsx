@@ -58,7 +58,7 @@ debugger
   
     const rootFolder: FolderNode = {
       id: crypto.randomUUID(),
-      name: rootFolderName,
+      name: rootFolderName.split("_")[0], // Remove extension if any
       type: "folder",
       children: [],
     };
@@ -96,7 +96,7 @@ debugger
           if (!fileMap.has(fullPath)) {
             const newFolder: FolderNode = {
               id: crypto.randomUUID(),
-              name: partName,
+              name: partName.split("_")[0],
               type: "folder",
               children: [],
             };
@@ -117,7 +117,7 @@ debugger
   
     const rootFolder: FolderNode = {
       id: crypto.randomUUID(),
-      name: zipFile.name.replace(".zip", ""),
+      name: (zipFile.name.replace(".zip", "")).split("_")[0],
       type: "folder",
       children: [],
     };
@@ -141,7 +141,7 @@ debugger
           // It's a file
           const content = await zipEntry.async("text");
           parent.children?.push({
-            id: crypto.randomUUID(),
+            id: Date.now().toString(),
             name: partName,
             type: "file",
             content,
@@ -150,8 +150,8 @@ debugger
           // It's a folder
           if (!fileMap.has(currentPath)) {
             const newFolder: FolderNode = {
-              id: crypto.randomUUID(),
-              name: partName,
+              id: Date.now().toString(),
+              name: partName.split("_")[0],
               type: "folder",
               children: [],
             };

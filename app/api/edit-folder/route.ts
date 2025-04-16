@@ -84,11 +84,11 @@ export async function POST(req: Request) {
     if (newParentName === "src") {
       
       // ✅ Place the folder directly inside "src"
-      newFolderPath = path.join(findSrcPath(structure),  newFolderName);
+      newFolderPath = path.join(findSrcPath(structure),  newFolderName+"_"+folderId);
     } else {
       // ✅ Place inside "children" of the new parent
       const newParentPath = newParentNode.path;
-      newFolderPath = path.join(newParentPath, "children", newFolderName);
+      newFolderPath = path.join(newParentPath, "children", newFolderName+"_"+folderId);
 
       // Ensure "children" folder exists inside the new parent
       const childrenFolderPath = path.join(newParentPath, "children");
