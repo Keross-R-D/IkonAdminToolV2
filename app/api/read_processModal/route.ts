@@ -1,21 +1,21 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
+import { NextRequest, NextResponse } from "next/server";
+import { promises as fs } from "fs";
 import path from "path";
 
 export const runtime = "nodejs";
 
 const structurePath = path.join(process.cwd(), "public/folderStructure.json");
 
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { folderId } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const folderId = searchParams.get("folderId");
 
     if (!folderId) {
       return NextResponse.json({ error: "Missing folderId" }, { status: 400 });
     }
 
-    // Read the folder structure to locate the folder path
-    const fileData = fs.readFileSync(structurePath, "utf-8");
+    const fileData = await fs.readFile(structurePath, "utf-8");
     const structure = JSON.parse(fileData);
 
     function findFolderById(nodes: any[]): any {
@@ -40,17 +40,20 @@ export async function POST(req: Request) {
     const folderPath = folderNode.path;
     const processModelPath = path.join(folderPath, "process_model.json");
 
-    // Check if process_model.json exists
-    if (!fs.existsSync(processModelPath)) {
+    try {
+      await fs.access(processModelPath);
+    } catch {
       return NextResponse.json({ error: `"process_model.json" not found in folder` }, { status: 400 });
     }
 
-    // Read the file data
-    const processModelData = fs.readFileSync(processModelPath, "utf-8");
+    const processModelData = await fs.readFile(processModelPath, "utf-8");
     const jsonData = JSON.parse(processModelData);
 
     return NextResponse.json({ success: true, data: jsonData });
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error", details: (error as any).message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error", details: (error as any).message },
+      { status: 500 }
+    );
   }
 }

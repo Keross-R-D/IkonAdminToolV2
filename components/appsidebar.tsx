@@ -14,12 +14,7 @@ import { Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JSX } from 'react/jsx-runtime';
 import { cn } from '@/lib/utils'; // Utility for merging class names
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip"
+import { Tooltip } from "@/ikon/components/tooltip"
 
 interface AppSidebarProps {
     className?: string;
@@ -53,9 +48,7 @@ const AppSidebar = ({ nodeTypes,className }: AppSidebarProps) => {
                                 nodeTypes.map((nodeType) => (
                                     <SidebarMenuItem key={nodeType.type}>
                                         <SidebarMenuButton asChild>
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
+                                        <Tooltip tooltipContent={nodeType.displayName} side="right">
                                                     <Button 
                                                     variant={'outline'} 
                                                     draggable
@@ -67,12 +60,8 @@ const AppSidebar = ({ nodeTypes,className }: AppSidebarProps) => {
                                                     {nodeType.displayIcon}
                                                     
                                                 </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="right" align="center">
-                                                <p>{nodeType.displayName}</p>
-                                                </TooltipContent>
+                                                
                                             </Tooltip>
-                                        </TooltipProvider>
 
                                             
                                         </SidebarMenuButton>

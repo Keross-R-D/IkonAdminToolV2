@@ -84,11 +84,11 @@ export async function POST(req: Request) {
     if (newParentName === "src") {
       
       // ✅ Place the folder directly inside "src"
-      newFolderPath = path.join(findSrcPath(structure),  newFolderName);
+      newFolderPath = path.join(findSrcPath(structure),  newFolderName+"_"+folderId);
     } else {
       // ✅ Place inside "children" of the new parent
       const newParentPath = newParentNode.path;
-      newFolderPath = path.join(newParentPath, "children", newFolderName);
+      newFolderPath = path.join(newParentPath, "children", newFolderName+"_"+folderId);
 
       // Ensure "children" folder exists inside the new parent
       const childrenFolderPath = path.join(newParentPath, "children");
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
     // Save updated structure
     fs.writeFileSync(structurePath, JSON.stringify(structure, null, 2));
 
-    return NextResponse.json({ success: true, newFolderPath });
+    return NextResponse.json({fs:structure, success: true, newFolderPath });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error", details: (error as any).message }, { status: 500 });
   }

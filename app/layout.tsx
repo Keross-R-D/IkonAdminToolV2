@@ -4,7 +4,6 @@ import { Toaster } from "@/shadcn/ui/sonner";
 import MainLayout from "@/ikon/components/main-layout";
 import { DialogProvider } from "@/ikon/components/alert-dialog/dialog-context";
 import { ThemeProvider } from "@/ikon/components/theme-provider";
-import { NavbarProvider } from "@/context/NavbarContext";
 
 export const metadata: Metadata = {
   title: "IKON - Keross",
@@ -28,7 +27,7 @@ export default async function RootLayout({
           >
             <DialogProvider>
               <MainLayout>
-                <NavbarProvider>{children}</NavbarProvider>
+                {children}
               </MainLayout>
             </DialogProvider>
             <Toaster richColors closeButton visibleToasts={5} />

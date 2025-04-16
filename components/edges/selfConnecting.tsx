@@ -9,7 +9,7 @@ import {
   type EdgeProps 
 } from '@xyflow/react';
 import EdgeTransitionCategory from '@/enums/edgeTransitionType';
-
+import { Handle, NodeToolbar, Position } from '@xyflow/react';
 
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ interface CustomEdgeProps extends EdgeProps {
     deleteEdge: (id: string) => void;
     height: number;
     edgeColor: string;
-    modifyEdgeInfo: (values: { [key:string]: any }) => void;
+    modifyEdgeInfo: (edgeId: string) => void;
     edgeTransitionCategory: EdgeTransitionCategory,
     edgeAdditionalInfo: any
   }
@@ -37,8 +37,8 @@ const SelfConnecting = (props: CustomEdgeProps) => {
     // if (props.source !== props.target) {
     //     return <SmoothStepEdge {...props} />;
     // }
-    
-    const { sourceX, sourceY, targetX, targetY, id, markerEnd, label = '' } = props;
+    debugger
+    const { sourceX, sourceY, targetX, targetY, id, markerEnd, label } = props;
     //const height = 150 + Math.floor(Math.random() * 100);
     
     const x = sourceX;
@@ -94,14 +94,15 @@ const SelfConnecting = (props: CustomEdgeProps) => {
                   }}
                   className="button-edge__label nodrag nopan absolute"
               >
-                <Card>
-                  <CardContent className='p-2'>
-                    <Label className='mb-2'>{label}</Label>
+               
+                <Card className='!p-0'>
+                  <CardContent className='p-3'>
+                    <Label className=''>{label}</Label>
                     <div className="flex flex-col items-center gap-2">
                       {
                         (isSelected) ? 
                         (
-                          <div className='flex gap-2'>
+                          <div className='flex gap-2 pt-2'>
                             <Button variant={'outline'} style={{ pointerEvents: 'auto'}} onClick={
                               () => {
                                 if(props && props.data && props.data.deleteEdge){

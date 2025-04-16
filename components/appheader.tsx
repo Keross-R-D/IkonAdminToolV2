@@ -1,72 +1,56 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import FileUploader from "@/components/generic/fileUploader";
-import { Download, Workflow, Save, Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useNavbar } from "@/context/NavbarContext";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip";
 
-const AppHeader = ({ setProcessModel, downloadProcessModel, getLayoutedElements, saveProcessModel }: { setProcessModel: any, downloadProcessModel: any, getLayoutedElements: any, saveProcessModel: any }) => {
-    const { selectedApp,setSelectedApp } = useNavbar();
+import { Download, Workflow, Save, Settings } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { Tooltip } from "@/ikon/components/tooltip"
+import { useState } from "react";
+
+
+const AppHeader = ({ setProcessModel, downloadProcessModel, getLayoutedElements, saveProcessModel, setIsLoading }: { setProcessModel: any, downloadProcessModel: any, getLayoutedElements: any, saveProcessModel: any,  setIsLoading :any }) => {
+
     const router = useRouter();
+    const params =  useParams();
+
+
+    const openScripts = () => {
+        setIsLoading(true);
+        debugger
+        if (params?.workflow) {
+            router.push(`/workflow/${params.workflow}/scripts/${params.workflow}`);
+            
+        }
+
+     }
 
     return (
         <>
-            <header className="flex flex-row align-middle m-2 justify-between gap-2">
-            <TooltipProvider>            
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="outline" onClick={() => {
-                            if (selectedApp[0]?.id) {
-                                router.push(`/workflow/${encodeURIComponent(selectedApp[0].id)}/scripts/${encodeURIComponent(selectedApp[0].id)}`);
-                                setSelectedApp([...selectedApp,{name: "Script", id: selectedApp[0].id}]);
-                            }
-                        }}>
-                        <Settings /> Scripts
-                        </Button>
-                        </TooltipTrigger>
-                            <TooltipContent>
-                            <p>Scripts</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-
+            <header className="flex flex-row align-middle m-2 justify-end gap-2">
+            
+            
                 
                 <div className="flex gap-2">
                     {/* <FileUploader setProcessModel={setProcessModel} />
                     <Button variant="outline" onClick={downloadProcessModel} size="icon">
                         <Download />
                     </Button> */}
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
+                    <Tooltip tooltipContent="Scripts" side={"top"} >
+                            <Button variant="outline" onClick={() => openScripts()}>
+                                <Settings /> Scripts
+                            </Button>
+                    </Tooltip>
+                    <Tooltip tooltipContent="Save Process Model" side={"top"}>
                             <Button variant="outline" onClick={saveProcessModel} size="icon">
                                 <Save />
                             </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                            <p>Save</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
+                            
+                    </Tooltip>
+                    <Tooltip tooltipContent="Arrange" side={"top"}>
                             <Button variant="outline" onClick={() => getLayoutedElements({})} size="icon">
                                 <Workflow />
                             </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                            <p>Arrange</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    </Tooltip>
                 </div>
             </header>
             <Separator className="mr-2 w-full" />

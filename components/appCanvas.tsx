@@ -45,14 +45,18 @@ import Chat from '@/components/generic/chat';
 
 import ELK, {ElkNode} from 'elkjs';
 import useLayoutedElements from '@/hooks/autolayout';
-import { useNavbar } from '@/context/NavbarContext';
+import { useParams } from 'next/navigation';
+import { LoadingSpinner } from '@/ikon/components/loading-spinner';
+import { toast } from 'sonner';
 
 interface Node {
     id: string,
     type: string,
     data: {
         id: string,
-        label: string
+        label: string,
+        nodeAdditionalInfo: any,
+        deleteNode: any,
     },
     position: {
         x: number,
@@ -111,7 +115,7 @@ const AppCanvas = () => {
 
     const initialNodes: Node[] = [];
     const initialEdges: Edge[] = [];
-
+debugger
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -121,20 +125,18 @@ const AppCanvas = () => {
 
     const [getNextHeight,removeEdge] = getEdgeHeightManager(150,10);
 
+    const [isLoading , setIsLoading] = useState(false)
+
     // interface App {
     //     id: string;
     //     // Add other properties if needed
     // }
-    
-   const { selectedApp,setSelectedApp } = useNavbar();
+    const params =  useParams()
 
    const readProcessModel = async (folderId: string) => {
+    setIsLoading(true)
     try {
-      const response = await fetch("/api/read_processModal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folderId }),
-      });
+      const response = await fetch(`/api/read_processModal?folderId=${folderId}`);
   
       const data = await response.json();
   
@@ -152,19 +154,31 @@ const AppCanvas = () => {
   };
   
   useEffect(() => {
-    if (!selectedApp[0]?.id) return;
 
     const fetchProcessModel = async () => {
-            const data = await readProcessModel(selectedApp[0].id);
+            const data =  typeof params?.workflow === "string" ? await readProcessModel(params.workflow) : null;
+            setIsLoading(false)
+            debugger
             if (data) {
-                data.nodes.forEach((node:any) => node.data.deleteNode = deleteNode);
-                setNodes(data.nodes);
-                setEdges(data.edges);
+                data.nodes?.forEach((node: any) => {
+                    if (node?.data) {
+                        node.data.deleteNode = deleteNode;
+                        node.data.modifyNodeInfo = getNodeSpecificModifyCallback(node.id);
+                    }
+                });
+                data.edges?.forEach((edge: any) => {
+                    if (edge.data) {
+                        edge.data.deleteEdge = deleteEdge;
+                        edge.data.modifyEdgeInfo = getEdgeSpecificModifyCallback(edge.id);
+                    }
+                });
+                setNodes(data.nodes === undefined? []: data.nodes);
+                setEdges(data.edges === undefined? []: data.edges);
             }
         };
 
         fetchProcessModel();
-    }, [selectedApp[0]?.id]);
+    }, [params?.id]);
   
 
     const updateNodeLabel = (nodeId: string, newLabel: string) => {
@@ -179,7 +193,7 @@ const AppCanvas = () => {
     const onConnect = useCallback(
         (params: any) => setEdges((eds) => {
 
-            const label = "Testing ..."
+            const label = "Transition"
             const animated = true
             const markerEnd = {
                 type: MarkerType.ArrowClosed,
@@ -239,8 +253,29 @@ const AppCanvas = () => {
                 return modifiedEdges
             })
         }
-
+debugger
         return modifyEdgeInfo;
+    }
+
+    const getNodeSpecificModifyCallback = (nodeId: string) => {
+        const modifyNodeInfo = (nodeInfo: { [key:string]: any }) => {
+            setNodes((eds) => {
+                
+                const modifiedNode = eds.map(e => {
+                    if (e.data.id === nodeId){
+                        e.data.label = nodeInfo.label
+
+                        e.data.nodeAdditionalInfo = nodeInfo.nodeAdditionalInfo
+                    }
+
+                    return e;
+                })
+
+                return modifiedNode
+            })
+        }
+debugger
+        return modifyNodeInfo;
     }
     
 
@@ -252,13 +287,13 @@ const AppCanvas = () => {
             return;
         }
 
-        const newNodeId: string = `${type}_${uuidv4()}`;
+        const newNodeId: string = `${uuidv4()}`;
         
         const position = screenToFlowPosition({
             x: event.clientX,
             y: event.clientY,
         })
-
+debugger
         console.log(nodes);
         setNodes((nodes) => [
             ...nodes,
@@ -270,6 +305,8 @@ const AppCanvas = () => {
                     'id': newNodeId,
                     'deleteNode': deleteNode,
                     'label': 'New Node',
+                    'nodeAdditionalInfo' : {},
+                    modifyNodeInfo: getNodeSpecificModifyCallback(newNodeId),
                 }
             },
         ]);
@@ -292,7 +329,7 @@ const AppCanvas = () => {
 
     const setProcessModel = ({nodes,edges}:{nodes: any, edges: any}) => {
 
-        nodes.forEach((node:any) => node.data.deleteNode = deleteNode);
+        nodes.forEach((node:any) => {node.data.deleteNode = deleteNode; node.data.modifyNodeInfo = getNodeSpecificModifyCallback(node.id)});
         edges.forEach((edge:any) => {
             
             const sourceType = edge.source.split('_')[0];
@@ -327,11 +364,11 @@ const AppCanvas = () => {
 
     const saveProcessModel = async ({folderId}:{folderId: any}) => {
         debugger;
+        setIsLoading(true);
         const saveData = {
             nodes: nodes,
             edges: edges
         }
-        console.log("Save Data for: ", selectedApp);
         
         try {
             const response = await fetch("/api/update_processModal", {
@@ -347,6 +384,8 @@ const AppCanvas = () => {
             }
         
             console.log("✅ Success:", result.message);
+            setIsLoading(false);
+            toast.success("Process modal saved")
             return result;
           } catch (error) {
             console.error("❌ Error updating process_model.json:", error);
@@ -356,7 +395,7 @@ const AppCanvas = () => {
 
     const setWorkflow = ({nodes,edges}: {nodes:any[],edges:any[]}) => {
         console.log({nodes,edges});
-
+debugger
         nodes.forEach((node:any) => node.data.deleteNode = deleteNode);
         edges.forEach((edge:any) => {
             
@@ -386,9 +425,10 @@ const AppCanvas = () => {
     return (
 
         <ResizablePanelGroup direction='horizontal' className='' style={{height: "calc(-3.59rem + 100vh)"}}>
+            <LoadingSpinner visible={isLoading}/>
             <ResizablePanel defaultSize={50}>
                 <div className='h-full flex flex-col'>
-                    <AppHeader  setProcessModel={setProcessModel} downloadProcessModel={downloadProcessModel} getLayoutedElements={getLayoutedElements} saveProcessModel={() => saveProcessModel({ folderId: selectedApp[0]?.id })}/>
+                    <AppHeader  setIsLoading={setIsLoading} setProcessModel={setProcessModel} downloadProcessModel={downloadProcessModel} getLayoutedElements={getLayoutedElements} saveProcessModel={() => saveProcessModel({ folderId: params?.workflow })}/>
                     <ReactFlow
                         nodes={nodes}
                         edges={edges}
@@ -417,10 +457,11 @@ const AppCanvas = () => {
                 />
                         <Background variant={BackgroundVariant.Dots} gap={24} size={2} />
                         <NodeResizer />
+                        
                     </ReactFlow>
                 </div>
             </ResizablePanel>
-            <ResizableHandle withHandle  className='h-80'/>
+            <ResizableHandle withHandle  className=''/>
             <ResizablePanel defaultSize={25}  className='h-full'>
                 <Chat setWorkflow={setWorkflow}/>
             </ResizablePanel>

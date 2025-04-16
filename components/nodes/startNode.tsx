@@ -19,13 +19,16 @@ import ScriptsModal from '@/components/generic/scriptsModal';
 interface startNodeProps {
     data: {
         id: string,
-        deleteNode:any
+        deleteNode:any,
+        label: string,
+        modifyNodeInfo: (nodeId: string) => void,
+        nodeAdditionalInfo: any,
     },
     selected: boolean
 }
 
 const StartNode = ({data,selected}: startNodeProps) => {
-
+debugger;
     let cardClassNames = "w-64";
     if (selected){
         cardClassNames += " ring-2 ring-primary"
@@ -40,7 +43,7 @@ const StartNode = ({data,selected}: startNodeProps) => {
             }}>
                 <Trash/>
             </Button>
-            <ScriptsModal/>
+            <ScriptsModal nodeInfoDefaultValues={data} />
         </NodeToolbar>
         <Card className={cardClassNames}>
             <CardHeader>

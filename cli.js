@@ -18,8 +18,8 @@ function readDirectory(dir, base = dir) {
     const stats = fs.statSync(fullPath);
 
     const node = {
-      id: generateId(),
-      name: file,
+      id: file === "src"? Date.now().toString() : file.split("_")[1],
+      name: file.split("_")[0],
       path: fullPath, // ✅ Include absolute path
       type: stats.isDirectory() ? "folder" : "file",
       children: stats.isDirectory() ? readDirectory(fullPath, base) : [],
