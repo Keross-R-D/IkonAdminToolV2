@@ -87,14 +87,14 @@ function GroupTable({
             setOpen(true);
           },
         },
-        {
-          label: "Manage Users",
-          icon: User,
-          onClick: (row) => {
-            setSelectedGroup(row);
-            setOpenUsersForm(true);
-          },
-        },
+        // {
+        //   label: "Manage Users",
+        //   icon: User,
+        //   onClick: (row) => {
+        //     setSelectedGroup(row);
+        //     setOpenUsersForm(true);
+        //   },
+        // },
         {
           label: "Deactivate" ,
           icon: Ban ,

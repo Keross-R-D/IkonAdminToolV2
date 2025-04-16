@@ -1,53 +1,123 @@
-import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'roles.json');
+interface Role {
+  id: string;
+  name: string;
+  active: boolean;
+  description?: string;
+}
 
-export async function GET() {
+interface FileData {
+  roles: Role[];
+}
+
+interface StructureItem {
+  name: string;
+  path: string;
+}
+
+const structurePath = path.join(process.cwd(), "public/folderStructure.json");
+let DATA_FILE_PATH: string = "";
+
+export async function GET(): Promise<NextResponse> {
   try {
-    const fileData = await fs.readFile(DATA_FILE_PATH, 'utf8');
-    const roles = JSON.parse(fileData);
-    
-    return NextResponse.json(roles);
-  } catch (error) {
-    console.error('Error reading roles file:', error);
+    const structure: StructureItem[] = JSON.parse(
+      await fs.readFile(structurePath, "utf8")
+    );
+    console.log("strcture ",structure)
+    const rolesFile = structure.find((item) => item.name === "project.json");
+
+    if (!rolesFile) {
+      return NextResponse.json(
+        { error: "project.json not found in folder structure" },
+        { status: 404 }
+      );
+    }
+
+    DATA_FILE_PATH = rolesFile.path;
+    console.log("Roles data file path:", DATA_FILE_PATH);
+
+    const fileData = await fs.readFile(DATA_FILE_PATH, "utf8");
+    const rolesData: FileData = JSON.parse(fileData);
+
+    return NextResponse.json(rolesData.roles || []);
+  } catch (error: unknown) {
+    console.error("Error reading roles file:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
-      { error: 'Failed to load roles' },
+      {
+        error: "Failed to load roles",
+        details: errorMessage,
+      },
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const newRole = await request.json();
-    let roles = [];
-    
-     try {
-      const fileData = await fs.readFile(DATA_FILE_PATH, 'utf8');
-      roles = JSON.parse(fileData);
+    const newRole: Partial<Role> = await request.json();
+
+    let fileData: FileData = { roles: [] };
+
+    const structure: StructureItem[] = JSON.parse(
+      await fs.readFile(structurePath, "utf8")
+    );
+    const rolesFile = structure.find((item) => item.name === "project.json");
+
+    if (!rolesFile) {
+      return NextResponse.json(
+        { error: "project.json not found in folder structure" },
+        { status: 404 }
+      );
+    }
+
+    DATA_FILE_PATH = rolesFile.path;
+    console.log("Roles data file path:", DATA_FILE_PATH);
+
+    try {
+      const existingData = await fs.readFile(DATA_FILE_PATH, "utf8");
+      fileData = JSON.parse(existingData);
     } catch (error) {
-      console.log('Creating new roles file');
+      console.log("Creating new roles file");
     }
 
-    if (newRole.id) {
-      const index = roles.findIndex((g: { id: any; }) => g.id === newRole.id);
-      if (index !== -1) {
-        roles[index] = newRole;
-      } else {
-        roles.push(newRole);
-      }
+    const roles = fileData.roles || [];
+    const roleId = newRole.id || Date.now().toString();
+
+    const updatedRole: Role = {
+      id: roleId,
+      name: newRole.name || "",
+      active: true,
+      description: newRole.description,
+    };
+
+    const existingIndex = roles.findIndex((r) => r.id === roleId);
+    if (existingIndex !== -1) {
+      roles[existingIndex] = updatedRole;
     } else {
-      roles.push({ ...newRole, id: Date.now().toString() });
+      roles.push(updatedRole);
     }
 
-    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(roles, null, 2));
-    
-    return NextResponse.json({ success: true, data: roles });
-  } catch (error) {
+    fileData.roles = roles;
+    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(fileData, null, 2));
+
+    return NextResponse.json({
+      success: true,
+      data: updatedRole,
+    });
+  } catch (error: unknown) {
+    console.error("Error saving role data:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
-      { error: 'Failed to save role data' },
+      {
+        error: "Failed to save role data",
+        details: errorMessage,
+      },
       { status: 500 }
     );
   }

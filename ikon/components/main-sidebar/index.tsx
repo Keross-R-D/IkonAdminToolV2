@@ -40,12 +40,12 @@ const navManu = [
     icon: Users,
     isActive: false,
   },
-  {
-    title: "Users",
-    href: "users",
-    icon: User,
-    isActive: false,
-  },
+  // {
+  //   title: "Users",
+  //   href: "users",
+  //   icon: User,
+  //   isActive: false,
+  // },
 ];
 export default async function MainSideBar({
   ...props

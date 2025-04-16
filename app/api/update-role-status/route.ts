@@ -1,44 +1,85 @@
-import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'roles.json');
+interface Role {
+  id: string;
+  name: string;
+  permissions?: string[];
+  description?: string;
+  active?: boolean;
+}
 
-export async function PUT(request: Request) {
+interface FileData {
+  roles: Role[];
+}
+
+interface StructureItem {
+  name: string;
+  path: string;
+}
+
+const structurePath = path.join(process.cwd(), "public/folderStructure.json");
+let DATA_FILE_PATH: string = "";
+
+export async function PUT(request: Request): Promise<NextResponse> {
   try {
     const { id, active } = await request.json();
 
-    if (!id || typeof active !== 'boolean') {
+    if (!id || typeof active !== "boolean") {
       return NextResponse.json(
-        { error: 'Invalid request body' },
+        {
+          error:
+            "Invalid request body - both id and active (boolean) are required",
+        },
         { status: 400 }
       );
     }
 
-    const fileData = await fs.readFile(DATA_FILE_PATH, 'utf8');
-    const roles = JSON.parse(fileData);
+    const structure: StructureItem[] = JSON.parse(
+      await fs.readFile(structurePath, "utf8")
+    );
+    const rolesFile = structure.find((item) => item.name === "project.json");
 
-    const roleIndex = roles.findIndex((g: any) => g.id === id);
-    if (roleIndex === -1) {
+    if (!rolesFile) {
       return NextResponse.json(
-        { error: 'Role not found' },
+        { error: "project.json not found in folder structure" },
         { status: 404 }
       );
     }
 
-    const updatedRole = {
+    DATA_FILE_PATH = rolesFile.path;
+    console.log("Roles data file path:", DATA_FILE_PATH);
+
+    const fileData: FileData = JSON.parse(
+      await fs.readFile(DATA_FILE_PATH, "utf8")
+    );
+    const roles = fileData.roles || [];
+
+    const roleIndex = roles.findIndex((role) => role.id === id);
+    if (roleIndex === -1) {
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
+    }
+
+    const updatedRole: Role = {
       ...roles[roleIndex],
-      active
+      active,
     };
     roles[roleIndex] = updatedRole;
 
-   await fs.writeFile(DATA_FILE_PATH, JSON.stringify(roles, null, 2));
+    fileData.roles = roles;
+    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(fileData, null, 2));
 
     return NextResponse.json(updatedRole);
-  } catch (error) {
-    console.error('Error updating role status:', error);
+  } catch (error: unknown) {
+    console.error("Error updating role status:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: "Internal server error",
+        details: errorMessage,
+      },
       { status: 500 }
     );
   }
