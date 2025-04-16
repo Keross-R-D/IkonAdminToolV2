@@ -1,53 +1,107 @@
-import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'groups.json');
+interface Group {
+  id: string;
+  name: string;
+  description?: string;
+  softwareId: string;
+  active: boolean;
+  groupType: string;
+}
+
+interface FileData {
+  groups: Group[];
+}
+
+interface StructureItem {
+  name: string;
+  path: string;
+}
+const structurePath = path.join(process.cwd(), "public/folderStructure.json");
+
+// const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'groups.json');
+let DATA_FILE_PATH: string = "";
 
 export async function GET() {
   try {
-    const fileData = await fs.readFile(DATA_FILE_PATH, 'utf8');
-    const groups = JSON.parse(fileData);
-    
+    const structure: any = JSON.parse(await fs.readFile(structurePath, "utf8"));
+    for (const i of structure) {
+      if (i.name === "project.json") {
+        DATA_FILE_PATH = i.path;
+      }
+    }
+    console.log("data file path ", DATA_FILE_PATH);
+    const finalData = JSON.parse(await fs.readFile(DATA_FILE_PATH, "utf8"));
+    const groups = finalData.groups;
+
     return NextResponse.json(groups);
   } catch (error) {
-    console.error('Error reading groups file:', error);
+    console.error("Error reading groups file:", error);
     return NextResponse.json(
-      { error: 'Failed to load groups' },
+      { error: "Failed to load groups" },
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const newGroup = await request.json();
-    let groups = [];
-    
-     try {
-      const fileData = await fs.readFile(DATA_FILE_PATH, 'utf8');
-      groups = JSON.parse(fileData);
-    } catch (error) {
-      console.log('Creating new groups file');
-    }
+    const newGroup: Partial<Group> = await request.json();
+    let fileData: FileData = { groups: [] };
 
-    if (newGroup.id) {
-      const index = groups.findIndex((g: { id: any; }) => g.id === newGroup.id);
-      if (index !== -1) {
-        groups[index] = newGroup;
-      } else {
-        groups.push(newGroup);
+    try {
+      const structure: StructureItem[] = JSON.parse(await fs.readFile(structurePath, "utf8"));
+      const projectFile = structure.find((item: StructureItem) => item.name === "project.json");
+      
+      if (!projectFile) {
+        throw new Error("project.json not found in folder structure");
       }
-    } else {
-      groups.push({ ...newGroup, id: Date.now().toString() });
+      
+      DATA_FILE_PATH = projectFile.path;
+      console.log("Data file path:", DATA_FILE_PATH);
+
+      const existingData = await fs.readFile(DATA_FILE_PATH, "utf8");
+      fileData = JSON.parse(existingData) as FileData;
+    } catch (error) {
+      console.log("Creating new groups file or error reading existing:", error);
     }
 
-    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(groups, null, 2));
-    
-    return NextResponse.json({ success: true, data: groups });
-  } catch (error) {
+    const groups: Group[] = fileData.groups || [];
+    const groupId = newGroup.id || Date.now().toString();
+
+    const updatedGroup: Group = {
+      id: groupId,
+      name: newGroup.name || "",
+      description: newGroup.description,
+      softwareId: newGroup.softwareId || "",
+      active: true,
+      groupType: "static",
+    };
+
+    const existingIndex = groups.findIndex((g) => g.id === groupId);
+    if (existingIndex !== -1) {
+      groups[existingIndex] = updatedGroup;
+    } else {
+      groups.push(updatedGroup);
+    }
+
+    fileData.groups = groups;
+    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(fileData, null, 2));
+
+    return NextResponse.json({ 
+      success: true, 
+      data: updatedGroup 
+    });
+  } catch (error: unknown) {
+    console.error("Error in POST /api/groups:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
-      { error: 'Failed to save group data' },
+      { 
+        error: "Failed to save group data", 
+        details: errorMessage 
+      },
       { status: 500 }
     );
   }

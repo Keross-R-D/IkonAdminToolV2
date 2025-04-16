@@ -59,7 +59,7 @@
     "name": "new group",
     "description": "new group",
     "softwareId": "11bfed3e-4c37-4af3-b678-fb9ce383a912",
-    "active": true,
+    "active": false,
     "id": "1743508050165"
   },
   {
