@@ -12,7 +12,7 @@
     "children": []
   },
   {
-    "id": "1744864282227",
+    "id": "1744871463707",
     "name": "src",
     "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src",
     "type": "folder",
@@ -310,6 +310,64 @@
         "id": "1744866034623",
         "name": "Demo",
         "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623",
+        "type": "folder",
+        "children": [
+          {
+            "name": "children",
+            "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\children",
+            "type": "folder",
+            "children": []
+          },
+          {
+            "name": "instances",
+            "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\instances",
+            "type": "folder",
+            "children": []
+          },
+          {
+            "name": "metadata.json",
+            "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\metadata.json",
+            "type": "file",
+            "children": []
+          },
+          {
+            "id": "model.json",
+            "name": "process",
+            "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\process_model.json",
+            "type": "file",
+            "children": []
+          },
+          {
+            "name": "scripts",
+            "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\scripts",
+            "type": "folder",
+            "children": [
+              {
+                "name": "metadata.json",
+                "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\scripts\\metadata.json",
+                "type": "file",
+                "children": []
+              },
+              {
+                "name": "PP.js",
+                "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\scripts\\PP.js",
+                "type": "file",
+                "children": []
+              },
+              {
+                "name": "TA.js",
+                "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Demo_1744866034623\\scripts\\TA.js",
+                "type": "file",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "1744881897830",
+        "name": "D1",
+        "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\D1_1744881897830",
         "type": "folder",
         "children": []
       }

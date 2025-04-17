@@ -193,7 +193,6 @@ debugger
 
     const onConnect = useCallback(
         (params: any) => setEdges((eds) => {
-
             const label = "Transition"
             const animated = true
             const markerEnd = {
@@ -209,7 +208,16 @@ debugger
                 edgeColor: genNodeColor(),
                 modifyEdgeInfo: getEdgeSpecificModifyCallback(id),
                 edgeTransitionCategory: getEdgeTransitionCategory(sourceType),
-                edgeAdditionalInfo: {}
+                edgeAdditionalInfo: {
+                    sourceNodeId: params.source.split('_')[1],
+                    targetNodeId: params.target.split('_')[1],
+                    linkName: label,
+                    linkId: id,
+                    actionDefinition: {},
+                    processJob: {},
+                    isJobActive: false,
+                    conditionId: null,
+                }
             }
 
             const deleteAble=true
@@ -238,14 +246,17 @@ debugger
     }
 
     const getEdgeSpecificModifyCallback = (edgeId: string) => {
-        const modifyEdgeInfo = (edgeInfo: { [key:string]: any }) => {
+        const modifyEdgeInfo = (edgeInfo: any ) => {
             setEdges((eds) => {
                 
                 const modifiedEdges = eds.map(e => {
                     if (e.id === edgeId){
                         e.label = edgeInfo.edgeLabel
-
-                        e.data.edgeAdditionalInfo = edgeInfo
+                        e.data.edgeAdditionalInfo.linkName = edgeInfo.edgeLabel
+                        e.data.edgeAdditionalInfo.actionDefinition = edgeInfo.actionDefinition
+                        e.data.edgeAdditionalInfo.processJob = edgeInfo.processJob
+                        e.data.edgeAdditionalInfo.isJobActive = edgeInfo.isJobActive
+                        e.data.edgeAdditionalInfo.conditionId = edgeInfo.conditionId
                     }
 
                     return e;
@@ -345,7 +356,17 @@ debugger
                 edgeColor: genNodeColor(),
                 modifyEdgeInfo: getEdgeSpecificModifyCallback(edge.id),
                 edgeTransitionCategory: getEdgeTransitionCategory(sourceType),
-                edgeAdditionalInfo: {}
+                edgeAdditionalInfo: {
+                    sourceNodeId: edge.source.split('_')[1],
+                    targetNodeId: edge.target.split('_')[1],
+                    linkName: edge.label,
+                    linkId: edge.id,
+                    actionDefinition: {},
+                    processJob: {},
+                    isJobActive: false,
+                    conditionId: null,
+                }
+                    
             }
         });
 
@@ -412,7 +433,17 @@ debugger
                 edgeColor: genNodeColor(),
                 modifyEdgeInfo: getEdgeSpecificModifyCallback(edge.id),
                 edgeTransitionCategory: getEdgeTransitionCategory(sourceType),
-                edgeAdditionalInfo: {}
+                edgeAdditionalInfo: {
+                    sourceNodeId: edge.source.split('_')[1],
+                    targetNodeId: edge.target.split('_')[1],
+                    linkName: edge.label,
+                    linkId: edge.id,
+                    actionDefinition: {},
+                    processJob: {},
+                    isJobActive: false,
+                    conditionId: null,
+                }
+                    
             }
         });
 

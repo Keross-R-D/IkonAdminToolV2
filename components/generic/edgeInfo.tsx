@@ -44,21 +44,28 @@ interface EdgeInfoDefaultValues {
 
   //job
   isJobActive: boolean | undefined,
-  jobScript: string | undefined,
-  jobStartDelay: number | undefined,
-  jobStartDelayUnit: "hour" | "minute" | undefined,
-  jobFreqency: "once" | "repeating" | "cron" | undefined,
-  jobRepeatationCount: number,
-  jobRepeatationDelay: number,
-  jobRepeatationUnit: "hour" | "minute" | undefined
+  processJob:{
+    jobScriptId: string | null,
+    jobDelay: number | 0,
+    jobDelayUnit: "Hour" | "Minute" | undefined,
+    scheduleType: "once" | "simple" | "cron" | undefined,
+    repeatCount: number | 0 ,
+    interval: number | 0,
+    intervalUnit: "hour" | "minute" | undefined
+    cronExpression: string | null
+  }
+ 
 
   // action
-  actionValidatationScript: string | undefined,
-  messageBinding: string | undefined,
-  transitionScript: string | undefined
+  actionDefinition: {
+    actionValidationScriptId: string | null,
+    messageBinding: string | null,
+    transitionActionScriptId: string | null
+  },
+  
 
   // condition
-  edgeCondition: string | undefined
+  conditionId: string | null
 }
 
 interface edgeInfoModalProps {
@@ -80,7 +87,7 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
     jobScript: z.string().optional(),
     jobStartDelay: z.preprocess((val) => Number(val), z.number().min(0).optional()),
     jobStartDelayUnit: z.enum(["hour", "minute"]).optional(),
-    jobFreqency: z.enum(["once","repeating","cron"]).default("once").optional(),
+    jobFreqency: z.enum(["once","simple","cron"]).default("once").optional(),
     jobcron: z.string().optional(),
     jobRepeatationCount: z.preprocess(
       (val) => Number(val),
@@ -112,23 +119,23 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
 
     // job
     isJobActive: currentValues.isJobActive ? currentValues.isJobActive : false,
-    jobScript: currentValues.jobScript ? currentValues.jobScript : "",
-    jobStartDelay: currentValues.jobStartDelay ? currentValues.jobStartDelay : 0,
-    jobStartDelayUnit: currentValues.jobStartDelayUnit? currentValues.jobStartDelayUnit : "minute",
-    jobFreqency: currentValues.jobFreqency? currentValues.jobFreqency : "once",
-    jobcron: currentValues.jobcron? currentValues.jobcron : "",
-    jobRepeatationCount: currentValues.jobRepeatationCount? currentValues.jobRepeatationCount : 1,
-    jobRepeatationDelay: currentValues.jobRepeatationDelay? currentValues.jobRepeatationDelay : 1,
-    jobRepeatationUnit: currentValues.jobRepeatationUnit? currentValues.jobRepeatationUnit : "minute",
+    jobScript: currentValues.processJob.jobScriptId ? currentValues.processJob.jobScriptId : "",
+    jobStartDelay: currentValues.processJob.jobDelay ? currentValues.processJob.jobDelay : 0,
+    jobStartDelayUnit: currentValues.processJob.jobDelayUnit? currentValues.processJob.jobDelayUnit : "minute",
+    jobFreqency: currentValues.processJob.scheduleType? currentValues.processJob.scheduleType : "once",
+    jobcron: currentValues.processJob.cronExpression? currentValues.processJob.cronExpression : "",
+    jobRepeatationCount: currentValues.processJob.repeatCount? currentValues.processJob.repeatCount : 1,
+    jobRepeatationDelay: currentValues.processJob.interval? currentValues.processJob.interval : 1,
+    jobRepeatationUnit: currentValues.processJob.intervalUnit? currentValues.processJob.intervalUnit : "minute",
   }
 
   // action
   if(edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE){
     defaultValues = {
       ...defaultValues,
-      transitionScript: currentValues.transitionScript ? currentValues.transitionScript : '',
-      actionValidatationScript: currentValues.actionValidatationScript ? currentValues.actionValidatationScript : '',
-      messageBinding: currentValues.messageBinding ? currentValues.messageBinding : '',
+      transitionScript: currentValues.actionDefinition.transitionActionScriptId ? currentValues.actionDefinition.transitionActionScriptId : '',
+      actionValidatationScript: currentValues.actionDefinition.actionValidationScriptId ? currentValues.actionDefinition.actionValidationScriptId : '',
+      messageBinding: currentValues.actionDefinition.messageBinding ? currentValues.actionDefinition.messageBinding : '',
     }
   }
 
@@ -136,7 +143,7 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
   else if(edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE){
     defaultValues = {
       ...defaultValues,
-      edgeCondition: currentValues.edgeCondition? currentValues.edgeCondition : "",
+      edgeCondition: currentValues.conditionId? currentValues.conditionId : "",
     }
   }
 
@@ -190,7 +197,30 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     debugger
-    onSubmitCallback(values);
+    let returnValues = edgeInfoDefaultValues;
+    returnValues.edgeLabel = values.edgeLabel;
+    returnValues.isJobActive = values.isJobActive;
+    if(values.isJobActive){  
+      returnValues.processJob = {
+        jobScriptId: values.jobScript,
+        jobDelay: values.jobStartDelay,
+        jobDelayUnit: values.jobStartDelayUnit,
+        scheduleType: values.jobFreqency,
+        repeatCount: values.jobRepeatationCount, 
+        interval: values.jobRepeatationDelay,
+        intervalUnit: values.jobRepeatationUnit,
+        cronExpression: values.jobcron,
+      }
+    }
+    returnValues.actionDefinition = {
+      actionValidationScriptId: values.actionValidatationScript,
+      messageBinding: values.messageBinding,
+      transitionActionScriptId: values.transitionScript,
+    };
+    returnValues.conditionId = values.edgeCondition;
+   
+
+    onSubmitCallback(returnValues);
     setOpen(false);
     console.log(values);
   }
@@ -459,11 +489,11 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               <SelectGroup>
                                 <SelectLabel>freqency</SelectLabel>
                                 <SelectItem value="once">Once only</SelectItem>
-                                <SelectItem value="repeating">
+                                <SelectItem value="simple">
                                   Repeating Schedule
                                 </SelectItem>
                                 <SelectItem value="cron">
-                                  cron Based Schedule
+                                  Cron Based Schedule
                                 </SelectItem>
                               </SelectGroup>
                             </SelectContent>
