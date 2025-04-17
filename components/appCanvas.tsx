@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ReactFlow,
   useNodesState,
@@ -12,42 +12,51 @@ import {
   NodeResizer,
   MarkerType,
   BackgroundVariant,
-  useReactFlow
-} from '@xyflow/react';
+  useReactFlow,
+} from "@xyflow/react";
 
-import '@xyflow/react/dist/style.css';
-import { useTheme } from 'next-themes';
-
-import { Circle, Square, XSquare, Pause, Split, Merge, CircleDot } from "lucide-react";
-
-import TaskNode from '@/components/nodes/taskNode';
-import StartNode from '@/components/nodes/startNode';
-import XORNode from '@/components/nodes/xorNode';
-import EndNode from '@/components/nodes/endNode';
-import JoinNode from '@/components/nodes/joinNode';
-import WaitNode from '@/components/nodes/waitNode';
-import ForkNode from '@/components/nodes/forkNode';
-
-import AppHeader from "@/components/appheader";
-import SelfConnecting from '@/components/edges/selfConnecting';
-
-import { v4 as uuidv4 } from 'uuid';
-import { genNodeColor } from '@/lib/utils';
-import getEdgeHeightManager from '@/hooks/edgeHeightManager';
-import EdgeTransitionCategory from '@/enums/edgeTransitionType';
+import "@xyflow/react/dist/style.css";
+import { useTheme } from "next-themes";
 
 import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import Chat from '@/components/generic/chat';
+  Circle,
+  Square,
+  XSquare,
+  Pause,
+  Split,
+  Merge,
+  CircleDot,
+} from "lucide-react";
 
-import ELK, {ElkNode} from 'elkjs';
-import useLayoutedElements from '@/hooks/autolayout';
-import { useParams } from 'next/navigation';
-import { LoadingSpinner } from '@/ikon/components/loading-spinner';
-import { toast } from 'sonner';
+import TaskNode from "@/components/nodes/taskNode";
+import StartNode from "@/components/nodes/startNode";
+import XORNode from "@/components/nodes/xorNode";
+import EndNode from "@/components/nodes/endNode";
+import JoinNode from "@/components/nodes/joinNode";
+import WaitNode from "@/components/nodes/waitNode";
+import ForkNode from "@/components/nodes/forkNode";
+
+import AppHeader from "@/components/appheader";
+import SelfConnecting from "@/components/edges/selfConnecting";
+
+import { v4 as uuidv4 } from "uuid";
+import { genNodeColor } from "@/lib/utils";
+import getEdgeHeightManager from "@/hooks/edgeHeightManager";
+import EdgeTransitionCategory from "@/enums/edgeTransitionType";
+
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import Chat from "@/components/generic/chat";
+
+import ELK, { ElkNode } from "elkjs";
+import useLayoutedElements from "@/hooks/autolayout";
+import { useParams } from "next/navigation";
+import { LoadingSpinner } from "@/ikon/components/loading-spinner";
+import { toast } from "sonner";
+import { useAppCanvas } from "./appcanvasContext";
 
 interface Node {
     id: string,
@@ -66,37 +75,34 @@ interface Node {
 }
 
 interface Edge {
-    id: string,
-    source: string,
-    target: string,
-    type: string,
-    animated: boolean,
-    label: string,
-    markerEnd: {
-        type: MarkerType
-    },
-    deleteAble: boolean,
-    data: {
-        deleteEdge: any,
-        edgeColor: string,
-        height: number,
-        edgeTransitionCategory: EdgeTransitionCategory,
-        edgeAdditionalInfo: any
-    }
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  animated: boolean;
+  label: string;
+  markerEnd: {
+    type: MarkerType;
+  };
+  deleteAble: boolean;
+  data: {
+    deleteEdge: any;
+    edgeColor: string;
+    height: number;
+    edgeTransitionCategory: EdgeTransitionCategory;
+    edgeAdditionalInfo: any;
+  };
 }
 
-function getEdgeTransitionCategory(sourceType:string) {
-    if (sourceType === "xor") {
-        return EdgeTransitionCategory.XOR_TYPE
-    }
-    else if (sourceType === "fork" || sourceType === "join"){
-        return EdgeTransitionCategory.FORK_JOIN_TYPE
-    }
-    else {
-        return EdgeTransitionCategory.GENERIC_TYPE
-    }
+function getEdgeTransitionCategory(sourceType: string) {
+  if (sourceType === "xor") {
+    return EdgeTransitionCategory.XOR_TYPE;
+  } else if (sourceType === "fork" || sourceType === "join") {
+    return EdgeTransitionCategory.FORK_JOIN_TYPE;
+  } else {
+    return EdgeTransitionCategory.GENERIC_TYPE;
+  }
 }
-
 
 const AppCanvas = () => {
 
@@ -110,77 +116,88 @@ const AppCanvas = () => {
         End: EndNode,
     }
 
-    const edgeTypes = {
-        'selfConnecting': SelfConnecting
-    }
+  const edgeTypes = {
+    selfConnecting: SelfConnecting,
+  };
 
-    const initialNodes: Node[] = [];
-    const initialEdges: Edge[] = [];
-debugger
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const initialNodes: Node[] = [];
+  const initialEdges: Edge[] = [];
+  debugger;
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const {
+    edgesAppCanvas,
+    nodesAppCanvas,
+    setEdgesAppCanvas,
+    setNodesAppCanvas,
+  } = useAppCanvas();
 
-    const {getLayoutedElements} = useLayoutedElements();
+  const { getLayoutedElements } = useLayoutedElements();
 
-    const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition } = useReactFlow();
 
-    const [getNextHeight,removeEdge] = getEdgeHeightManager(150,10);
+  const [getNextHeight, removeEdge] = getEdgeHeightManager(150, 10);
 
-    const [isLoading , setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-    // interface App {
-    //     id: string;
-    //     // Add other properties if needed
-    // }
-    const params =  useParams()
+  // interface App {
+  //     id: string;
+  //     // Add other properties if needed
+  // }
+  const params = useParams();
 
-   const readProcessModel = async (folderId: string) => {
-    setIsLoading(true)
+  const readProcessModel = async (folderId: string) => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/read_processModal?folderId=${folderId}`);
-  
+      const response = await fetch(
+        `/api/read_processModal?folderId=${folderId}`
+      );
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         console.error("Error:", data.error);
         alert(`❌ Error: ${data.error}`);
         return null;
       }
-  
+
       console.log("Process Model Data:", data.data);
       return data.data;
     } catch (error) {
       console.error("Request failed:", error);
     }
   };
-  
+
   useEffect(() => {
-
     const fetchProcessModel = async () => {
-            const data =  typeof params?.workflow === "string" ? await readProcessModel(params.workflow) : null;
-            setIsLoading(false)
-            debugger
-            if (data) {
-                data.nodes?.forEach((node: any) => {
-                    if (node?.data) {
-                        node.data.deleteNode = deleteNode;
-                        node.data.modifyNodeInfo = getNodeSpecificModifyCallback(node.id);
-                    }
-                });
-                data.edges?.forEach((edge: any) => {
-                    if (edge.data) {
-                        edge.data.deleteEdge = deleteEdge;
-                        edge.data.modifyEdgeInfo = getEdgeSpecificModifyCallback(edge.id);
-                    }
-                });
-                setNodes(data.nodes === undefined? []: data.nodes);
-                setEdges(data.edges === undefined? []: data.edges);
-            }
-        };
+      const data =
+        typeof params?.workflow === "string"
+          ? await readProcessModel(params.workflow)
+          : null;
+      setIsLoading(false);
+      debugger;
+      if (data) {
+        data.nodes?.forEach((node: any) => {
+          if (node?.data) {
+            node.data.deleteNode = deleteNode;
+            node.data.modifyNodeInfo = getNodeSpecificModifyCallback(node.id);
+          }
+        });
+        data.edges?.forEach((edge: any) => {
+          if (edge.data) {
+            edge.data.deleteEdge = deleteEdge;
+            edge.data.modifyEdgeInfo = getEdgeSpecificModifyCallback(edge.id);
+          }
+        });
+        setNodes(data.nodes === undefined ? [] : data.nodes);
+        setEdges(data.edges === undefined ? [] : data.edges);
+        setNodesAppCanvas(data.nodes === undefined ? [] : data.nodes);
+        setEdgesAppCanvas(data.edges === undefined ? [] : data.edges);
+      }
+    };
 
-        fetchProcessModel();
-    }, [params?.id]);
-  
+    fetchProcessModel();
+  }, [params?.id]);
 
     const updateNodeLabel = (nodeId: string, newLabel: string) => {
         debugger;
@@ -191,15 +208,16 @@ debugger
         );
     };
 
-    const onConnect = useCallback(
-        (params: any) => setEdges((eds) => {
-            const label = "Transition"
-            const animated = true
-            const markerEnd = {
-                type: MarkerType.ArrowClosed,
-            }
-            
-            const sourceType = params.source.split('_')[0];
+  const onConnect = useCallback(
+    (params: any) =>
+      setEdges((eds) => {
+        const label = "Transition";
+        const animated = true;
+        const markerEnd = {
+          type: MarkerType.ArrowClosed,
+        };
+
+        const sourceType = params.source.split("_")[0];
 
             const id = uuidv4()
             const data = {
@@ -220,30 +238,39 @@ debugger
                 }
             }
 
-            const deleteAble=true
-            const type = "selfConnecting";
-            // const type = "smoothstep";
-            const modifiedParams = {...params,type,label,animated,markerEnd,deleteAble,data,id}
-
-            // return addEdge(modifiedParams, eds)
-            return [...eds,modifiedParams]
-        }),
-        [setEdges],
-    );
-
-    const getCurrentTheme = (): 'light' | 'dark' | 'system' | undefined => {
-        const { theme } = useTheme();
-        if (theme === 'light' || theme === 'dark' || theme === 'system') {
-            return theme;
-        }
-        return 'dark';
-    }
-
-    interface DropEvent extends React.DragEvent<HTMLDivElement> {
-        dataTransfer: DataTransfer & {
-            getData: (format: string) => string;
+        const deleteAble = true;
+        const type = "selfConnecting";
+        // const type = "smoothstep";
+        const modifiedParams = {
+          ...params,
+          type,
+          label,
+          animated,
+          markerEnd,
+          deleteAble,
+          data,
+          id,
         };
+
+        // return addEdge(modifiedParams, eds)
+        return [...eds, modifiedParams];
+      }),
+    [setEdges]
+  );
+
+  const getCurrentTheme = (): "light" | "dark" | "system" | undefined => {
+    const { theme } = useTheme();
+    if (theme === "light" || theme === "dark" || theme === "system") {
+      return theme;
     }
+    return "dark";
+  };
+
+  interface DropEvent extends React.DragEvent<HTMLDivElement> {
+    dataTransfer: DataTransfer & {
+      getData: (format: string) => string;
+    };
+  }
 
     const getEdgeSpecificModifyCallback = (edgeId: string) => {
         const modifyEdgeInfo = (edgeInfo: any ) => {
@@ -259,15 +286,15 @@ debugger
                         e.data.edgeAdditionalInfo.conditionId = edgeInfo.conditionId
                     }
 
-                    return e;
-                })
+          return e;
+        });
 
-                return modifiedEdges
-            })
-        }
-debugger
-        return modifyEdgeInfo;
-    }
+        return modifiedEdges;
+      });
+    };
+    debugger;
+    return modifyEdgeInfo;
+  };
 
     const getNodeSpecificModifyCallback = (nodeId: string) => {
         const modifyNodeInfo = (nodeInfo: { [key:string]: any }) => {
@@ -291,13 +318,13 @@ debugger
     }
     
 
-    const onDrop = (event: DropEvent) => {
-        event.preventDefault();
-        const type: string = event.dataTransfer.getData('type');
+  const onDrop = (event: DropEvent) => {
+    event.preventDefault();
+    const type: string = event.dataTransfer.getData("type");
 
-        if(!type){
-            return;
-        }
+    if (!type) {
+      return;
+    }
 
         const newNodeId: string = `${type}_${uuidv4()}`;
         
@@ -370,24 +397,26 @@ debugger
             }
         });
 
-        setNodes(nodes);
-        setEdges(edges);
-    }
+    setNodes(nodes);
+    setEdges(edges);
+  };
 
-    const downloadProcessModel = () => {
-        const downloadData = {
-            nodes: nodes,
-            edges: edges
-        }
+  const downloadProcessModel = () => {
+    const downloadData = {
+      nodes: nodes,
+      edges: edges,
+    };
 
-        const element = document.createElement('a');
-        const file = new Blob([JSON.stringify(downloadData,null,4)], { type: 'application/json' });
-        element.href = URL.createObjectURL(file);
-        element.download = 'process_model.json';
-        document.body.appendChild(element); // Required for this to work in FireFox
-        element.click();
-        document.body.removeChild(element);
-    }
+    const element = document.createElement("a");
+    const file = new Blob([JSON.stringify(downloadData, null, 4)], {
+      type: "application/json",
+    });
+    element.href = URL.createObjectURL(file);
+    element.download = "process_model.json";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+    document.body.removeChild(element);
+  };
 
     const saveProcessModel = async ({folderId}:{folderId: any}) => {
         debugger;
@@ -447,63 +476,72 @@ debugger
             }
         });
 
-        setNodes(nodes);
-        setEdges(edges);
+    setNodes(nodes);
+    setEdges(edges);
 
-        // auto layout
-        setTimeout(()=>{
-            getLayoutedElements({});
-        },100)
-    }
+    // auto layout
+    setTimeout(() => {
+      getLayoutedElements({});
+    }, 100);
+  };
 
-    const theme = getCurrentTheme();
+  const theme = getCurrentTheme();
 
-    
-    return (
-
-        <ResizablePanelGroup direction='horizontal' className='' style={{height: "calc(-3.59rem + 100vh)"}}>
-            <LoadingSpinner visible={isLoading}/>
-            <ResizablePanel defaultSize={50}>
-                <div className='h-full flex flex-col'>
-                    <AppHeader  setIsLoading={setIsLoading} setProcessModel={setProcessModel} downloadProcessModel={downloadProcessModel} getLayoutedElements={getLayoutedElements} saveProcessModel={() => saveProcessModel({ folderId: params?.workflow })}/>
-                    <ReactFlow
-                        nodes={nodes}
-                        edges={edges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                        onConnect={onConnect}
-                        nodeTypes={nodeTypes}
-                        edgeTypes={edgeTypes}
-                        onDragOver={(event) => {
-                            event.preventDefault();
-                            event.dataTransfer.dropEffect = 'move';            
-                        }}
-                        onDrop={onDrop}
-                        colorMode={theme}
-                        className='flex-1'
-                    >
-                        <Controls />
-                        <MiniMap 
-                    nodeColor={(node) => String(node.style?.background) || "#ccc"}
-                    maskColor="rgba(240, 240, 240, 0.6)"
-                    nodeStrokeColor="#000"
-                    nodeBorderRadius={2}
-                    pannable
-                    zoomable
-                    className="bg-white shadow-md border border-gray-300 rounded-md"
-                />
-                        <Background variant={BackgroundVariant.Dots} gap={24} size={2} />
-                        <NodeResizer />
-                        
-                    </ReactFlow>
-                </div>
-            </ResizablePanel>
-            <ResizableHandle withHandle  className=''/>
-            <ResizablePanel defaultSize={25}  className='h-full'>
-                <Chat setWorkflow={setWorkflow}/>
-            </ResizablePanel>
-        </ResizablePanelGroup>
-    )
-}
+  return (
+    <ResizablePanelGroup
+      direction="horizontal"
+      className=""
+      style={{ height: "calc(-3.59rem + 100vh)" }}
+    >
+      <LoadingSpinner visible={isLoading} />
+      <ResizablePanel defaultSize={50}>
+        <div className="h-full flex flex-col">
+          <AppHeader
+            setIsLoading={setIsLoading}
+            setProcessModel={setProcessModel}
+            downloadProcessModel={downloadProcessModel}
+            getLayoutedElements={getLayoutedElements}
+            saveProcessModel={() =>
+              saveProcessModel({ folderId: params?.workflow })
+            }
+          />
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            onDragOver={(event) => {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = "move";
+            }}
+            onDrop={onDrop}
+            colorMode={theme}
+            className="flex-1"
+          >
+            <Controls />
+            <MiniMap
+              nodeColor={(node) => String(node.style?.background) || "#ccc"}
+              maskColor="rgba(240, 240, 240, 0.6)"
+              nodeStrokeColor="#000"
+              nodeBorderRadius={2}
+              pannable
+              zoomable
+              className="bg-white shadow-md border border-gray-300 rounded-md"
+            />
+            <Background variant={BackgroundVariant.Dots} gap={24} size={2} />
+            <NodeResizer />
+          </ReactFlow>
+        </div>
+      </ResizablePanel>
+      <ResizableHandle withHandle className="" />
+      <ResizablePanel defaultSize={25} className="h-full">
+        <Chat setWorkflow={setWorkflow} />
+      </ResizablePanel>
+    </ResizablePanelGroup>
+  );
+};
 
 export default AppCanvas;

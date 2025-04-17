@@ -86,6 +86,7 @@ debugger
     const onSubmit = (value: any) => {
         debugger;
         console.log(value)
+        value.assignment = nodeAdditionalInfo?.assignment
         onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.nodeName}); 
         setShowModal(false);
     }
