@@ -351,10 +351,11 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
       "nodeInfoDefaultValues"
     ].nodeAdditionalInfo.assignment = result.assignment;
     console.log("Form submitted:", result);
+    debugger
     onSubmitCallback({
       nodeAdditionalInfo:
         nodeInfoDefaultValues["nodeInfoDefaultValues"].nodeAdditionalInfo,
-      label: nodeInfoDefaultValues.nodeName,
+      label: nodeInfoDefaultValues["nodeInfoDefaultValues"].nodeName,
     });
   };
 
