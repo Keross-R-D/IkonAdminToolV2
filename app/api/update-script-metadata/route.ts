@@ -13,10 +13,10 @@ interface FolderNode {
 }
 
 interface ScriptMetadata {
-  id: string;
-  fileName: string;
-  type: string;
-  langType: string;
+  scriptId: string;
+  scriptName: string;
+  scriptType: string;
+  scriptLanguage: string;
 }
 
 function findFolderById(node: FolderNode, id: string): FolderNode | null {
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     const scriptsPath = path.join(targetFolder.path, "scripts");
     const metadataPath = path.join(scriptsPath, "metadata.json");
-    const newScriptPath = path.join(scriptsPath, fileName+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "scala"));
+    const newScriptPath = path.join(scriptsPath, fileName+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
 
     // Ensure scripts folder exists
     if (!fs.existsSync(scriptsPath)) {
@@ -79,26 +79,26 @@ export async function POST(req: NextRequest) {
     if (fs.existsSync(metadataPath)) {
       metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8")) as ScriptMetadata[];
 
-      const existingIndex = metadata.findIndex((item) => item.id === fileId);
+      const existingIndex = metadata.findIndex((item) => item.scriptId === fileId);
       if (existingIndex !== -1) {
-        previousFileName = metadata[existingIndex].fileName;
+        previousFileName = metadata[existingIndex].scriptName;
 
         if (previousFileName !== fileName) {
-          const previousPath = path.join(scriptsPath, previousFileName);
+          const previousPath = path.join(scriptsPath, previousFileName+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
 
           if (fs.existsSync(previousPath)) {
             fs.renameSync(previousPath, newScriptPath); // rename file
           }
         }
 
-        metadata[existingIndex].fileName = fileName;
-        metadata[existingIndex].type = type;
-        metadata[existingIndex].langType = langType;
+        metadata[existingIndex].scriptName = fileName;
+        metadata[existingIndex].scriptType = type;
+        metadata[existingIndex].scriptLanguage = langType;
       } else {
-        metadata.push({ id: fileId, fileName, type , langType });
+        metadata.push({ scriptId: fileId, scriptName: fileName, scriptType: type ,scriptLanguage: langType });
       }
     } else {
-      metadata.push({ id: fileId, fileName, type , langType });
+      metadata.push({ scriptId: fileId, scriptName: fileName, scriptType: type ,scriptLanguage: langType });
     }
 
     // Ensure file exists (create if doesn't)

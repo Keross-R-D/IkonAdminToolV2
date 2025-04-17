@@ -59,18 +59,19 @@ import { toast } from "sonner";
 import { useAppCanvas } from "./appcanvasContext";
 
 interface Node {
-  id: string;
-  type: string;
-  data: {
-    id: string;
-    label: string;
-    nodeAdditionalInfo: any;
-    deleteNode: any;
-  };
-  position: {
-    x: number;
-    y: number;
-  };
+    id: string,
+    type: string,
+    data: {
+        nodeId: string,
+        nodeName: string,
+        nodeAdditionalInfo: any,
+        deleteNode: any,
+        nodeType: string,
+    },
+    position: {
+        x: number,
+        y: number
+    }
 }
 
 interface Edge {
@@ -104,17 +105,16 @@ function getEdgeTransitionCategory(sourceType: string) {
 }
 
 const AppCanvas = () => {
-  const nodeTypes = {
-    task: (props: any) => (
-      <TaskNode {...props} updateNodeLabel={updateNodeLabel} />
-    ),
-    start: StartNode,
-    xor: XORNode,
-    join: JoinNode,
-    fork: ForkNode,
-    wait: WaitNode,
-    end: EndNode,
-  };
+
+    const nodeTypes = {
+        Task: (props: any) => <TaskNode {...props} updateNodeLabel={updateNodeLabel} />,
+        Start: StartNode,
+        XOR: XORNode,
+        Join: JoinNode,
+        Fork: ForkNode,
+        Wait: WaitNode,
+        End: EndNode,
+    }
 
   const edgeTypes = {
     selfConnecting: SelfConnecting,
@@ -199,16 +199,14 @@ const AppCanvas = () => {
     fetchProcessModel();
   }, [params?.id]);
 
-  const updateNodeLabel = (nodeId: string, newLabel: string) => {
-    debugger;
-    setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, label: newLabel } }
-          : node
-      )
-    );
-  };
+    const updateNodeLabel = (nodeId: string, newLabel: string) => {
+        debugger;
+        setNodes((prevNodes) =>
+            prevNodes.map((node) =>
+                node.id === nodeId ? { ...node, data: { ...node.data, nodeName: newLabel } } : node
+            )
+        );
+    };
 
   const onConnect = useCallback(
     (params: any) =>
@@ -285,25 +283,27 @@ const AppCanvas = () => {
     return modifyEdgeInfo;
   };
 
-  const getNodeSpecificModifyCallback = (nodeId: string) => {
-    const modifyNodeInfo = (nodeInfo: { [key: string]: any }) => {
-      setNodes((eds) => {
-        const modifiedNode = eds.map((e) => {
-          if (e.data.id === nodeId) {
-            e.data.label = nodeInfo.label;
+    const getNodeSpecificModifyCallback = (nodeId: string) => {
+        const modifyNodeInfo = (nodeInfo: { [key:string]: any }) => {
+            setNodes((eds) => {
+                
+                const modifiedNode = eds.map(e => {
+                    if ((e.data.nodeType +"_" + e.data.nodeId) === nodeId){
+                        e.data.nodeName = nodeInfo.label
 
-            e.data.nodeAdditionalInfo = nodeInfo.nodeAdditionalInfo;
-          }
+                        e.data.nodeAdditionalInfo = nodeInfo.nodeAdditionalInfo
+                    }
 
-          return e;
-        });
-
-        return modifiedNode;
-      });
-    };
-    debugger;
-    return modifyNodeInfo;
-  };
+                    return e;
+                })
+console.log(modifiedNode);
+                return modifiedNode
+            })
+        }
+debugger
+        return modifyNodeInfo;
+    }
+    
 
   const onDrop = (event: DropEvent) => {
     event.preventDefault();
@@ -313,38 +313,43 @@ const AppCanvas = () => {
       return;
     }
 
-    const newNodeId: string = `${type}_${uuidv4()}`;
+        const newNodeId: string = `${type}_${uuidv4()}`;
+        
+        const position = screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        })
+debugger
+        console.log(nodes);
+        let newNode = {
+                id: newNodeId,
+                type,
+                position,
+                data: {
+                    'nodeId': newNodeId.split('_')[1],
+                    'nodeType': type,   
+                    'deleteNode': deleteNode,
+                    'nodeName': 'New Node',
+                    'nodeAdditionalInfo' : {},
+                    modifyNodeInfo: getNodeSpecificModifyCallback(newNodeId),
+                },
+                edges: type === "task" ? edges : undefined,
+            }
+        
+        setNodes((nodes) => [
+            ...nodes,
+            newNode
+            ,
+        ]);
+    } 
 
-    const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-    debugger;
-    console.log(nodes);
-    let newNode = {
-      id: newNodeId,
-      type,
-      position,
-      data: {
-        id: newNodeId,
-        deleteNode: deleteNode,
-        label: "New Node",
-        nodeAdditionalInfo: {},
-        modifyNodeInfo: getNodeSpecificModifyCallback(newNodeId),
-      },
-      edges: type === "task" ? edges : undefined,
-    };
-
-    setNodes((nodes) => [...nodes, newNode]);
-  };
-
-  const deleteNode = (nodeId: string) => {
-    setNodes((nodes) => {
-      debugger;
-      const newNodesList = nodes.filter((e) => e.id !== nodeId);
-      return newNodesList;
-    });
-  };
+    const deleteNode = (nodeId:string) => {
+        setNodes((nodes) => {
+            debugger;
+            const newNodesList = nodes.filter(e => e.data.nodeId !== nodeId)
+            return newNodesList;
+        })
+    }
 
   const deleteEdge = (edgeId: string) => {
     setEdges((edges) => {

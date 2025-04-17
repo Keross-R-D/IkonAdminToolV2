@@ -148,7 +148,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   onSubmitCallback,
   edgeTransitionCategory,
 }) => {
-  
+  debugger
   const [open, setOpen] = useState(false);
   const zSchemaObj = getZschema(edgeTransitionCategory);
   const formSchema = z.object(zSchemaObj);
@@ -189,6 +189,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    debugger
     onSubmitCallback(values);
     setOpen(false);
     console.log(values);
@@ -262,10 +263,10 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               </SelectTrigger>
                               <SelectContent>
                                 {scripts
-                                        .filter((script) => script.type === "Action Validation") // ✅ filter only post-processing scripts
+                                        .filter((script) => script.scriptType === "Action Validation") // ✅ filter only post-processing scripts
                                         .map((script) => (
-                                            <SelectItem key={script.id} value={script.id}>
-                                            {script.fileName}
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
                                             </SelectItem>
                                         ))}
                               </SelectContent>
@@ -294,10 +295,10 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               </SelectTrigger>
                               <SelectContent>
                                 {scripts
-                                        .filter((script) => script.type === "Transition Action - After Transaction" || script.type === "Transition Action - Befor Transaction") // ✅ filter only post-processing scripts
+                                        .filter((script) => script.scriptType === "Transition Action - After Transaction" || script.scriptType === "Transition Action - Before Transaction") // ✅ filter only post-processing scripts
                                         .map((script) => (
-                                            <SelectItem key={script.id} value={script.id}>
-                                            {script.fileName}
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
                                             </SelectItem>
                                         ))}
                               </SelectContent>
@@ -372,10 +373,10 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               </SelectTrigger>
                               <SelectContent>
                                 {scripts
-                                        .filter((script) => script.type === "Job Script") // ✅ filter only post-processing scripts
+                                        .filter((script) => script.scriptType === "Job Script") // ✅ filter only post-processing scripts
                                         .map((script) => (
-                                            <SelectItem key={script.id} value={script.id}>
-                                            {script.fileName}
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
                                             </SelectItem>
                                         ))}
                               </SelectContent>
@@ -591,10 +592,10 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               </SelectTrigger>
                               <SelectContent>
                                 {scripts
-                                        .filter((script) => script.type === "Process Condition") // ✅ filter only post-processing scripts
+                                        .filter((script) => script.scriptType === "Process Condition") // ✅ filter only post-processing scripts
                                         .map((script) => (
-                                            <SelectItem key={script.id} value={script.id}>
-                                            {script.fileName}
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
                                             </SelectItem>
                                         ))}
                               </SelectContent>

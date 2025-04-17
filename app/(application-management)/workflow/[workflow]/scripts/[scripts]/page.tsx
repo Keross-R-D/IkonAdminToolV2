@@ -11,10 +11,11 @@ import { Tooltip } from "@/ikon/components/tooltip";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { set } from "zod";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function ScriptPage() {
-  const [scripts, setScripts] = useState<{ id: string; fileName: string; type: string; langType : string}[]>([]);
+  const [scripts, setScripts] = useState<{ scriptId: string; scriptName: string; scriptType: string; scriptLanguage : string}[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newScriptName, setNewScriptName] = useState("");
   const [scriptType, setScriptType] = useState("");
@@ -59,9 +60,9 @@ debugger;
   };
 
   const handleEditScript = (index: number) => {
-    setNewScriptName(scripts[index].fileName);
-    setScriptType(scripts[index].type);
-    setScriptLangType(scripts[index].langType);
+    setNewScriptName(scripts[index].scriptName);
+    setScriptType(scripts[index].scriptType);
+    setScriptLangType(scripts[index].scriptLanguage);
     setEditingIndex(index);
     setIsDialogOpen(true);
   };
@@ -75,7 +76,7 @@ debugger;
       setIsLoading(true);
       if (editingIndex !== null) {
         const updatedScripts = [...scripts];
-        updatedScripts[editingIndex] = { fileName: newScriptName, type: scriptType , id: scripts[editingIndex]?.id, langType: scriptLangType};
+        updatedScripts[editingIndex] = { scriptName: newScriptName, scriptType: scriptType , scriptId: scripts[editingIndex]?.scriptId, scriptLanguage: scriptLangType};
         debugger
         try {
           const response = await fetch("/api/update-script-metadata", {
@@ -83,7 +84,7 @@ debugger;
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               folderId : params?.workflow,
-              fileId : scripts[editingIndex]?.id,
+              fileId : scripts[editingIndex]?.scriptId,
               fileName: newScriptName,
               type: scriptType,
               langType: scriptLangType
@@ -109,9 +110,8 @@ debugger;
         setScripts(updatedScripts);
       } else {
         // Create new script
-        const newScriptId = Date.now().toString(); // or use randomUUID() if you prefer
+        const newScriptId = uuidv4(); // or use randomUUID() if you prefer
         try {
-          debugger
           
           const response = await fetch("/api/update-script-metadata", {
             method: "POST",
@@ -141,7 +141,7 @@ debugger;
           setIsDialogOpen(true);
           return;
         }
-        setScripts([...scripts, { fileName: newScriptName, type: scriptType, id: newScriptId, langType: scriptLangType }]);
+        setScripts([...scripts, { scriptName: newScriptName, scriptType: scriptType, scriptId: newScriptId, scriptLanguage: scriptLangType }]);
       }
       setScriptType("");
       setScriptLangType("");
@@ -160,7 +160,7 @@ debugger;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           folderId : params?.workflow,
-          scriptId : updatedScripts[index]?.id,
+          scriptId : updatedScripts[index]?.scriptId,
         }),
       });
 
@@ -202,8 +202,8 @@ debugger;
             <div className="flex items-center gap-2">
               <FileCode2 />
               <div className="text-sm text-gray-800 dark:text-white font-medium">
-                <div className="flex "> {script.fileName}</div>
-                <div className="text-xs text-gray-500">{script.langType} · {script.type}</div>
+                <div className="flex "> {script.scriptName}</div>
+                <div className="text-xs text-gray-500">{script.scriptLanguage} · {script.scriptType}</div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -273,7 +273,7 @@ debugger;
                 <SelectContent>
                   <SelectItem value="JavaScript">JavaScript</SelectItem> 
                   <SelectItem value="Python">Python</SelectItem> 
-                  <SelectItem value="Scala">Scala</SelectItem>
+                  <SelectItem value="Modular JavaScript">Modular JavaScript</SelectItem>
                   
                 </SelectContent>
               </Select>
@@ -285,25 +285,21 @@ debugger;
                   <SelectValue placeholder="Select script type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Process Condition">Process Condition</SelectItem> 
-                  <SelectItem value="Action Validation">Action Validation</SelectItem> 
+                  <SelectItem value="Message Variable">Message Variable</SelectItem> 
+                  <SelectItem value="Instance Delete Hook">Instance Delete Hook</SelectItem> 
                   <SelectItem value="Common Action Validation">Common Action Validation</SelectItem>
+                  <SelectItem value="Process Delete Hook">Process Delete Hook</SelectItem>
+                  <SelectItem value="Instance Backup - Id Processing Script">Instance Backup - Id Processing Script</SelectItem>
+                  <SelectItem value="Data Processor">Data Processor</SelectItem>
+                  <SelectItem value="Error Handler">Error Handler</SelectItem>
+                  <SelectItem value="Multipart Data Processor">Multipart Data Processor</SelectItem>
+                  <SelectItem value="Process Condition">Process Condition</SelectItem>
                   <SelectItem value="Transition Action - Before Transaction">Transition Action - Before Transaction</SelectItem>
                   <SelectItem value="Transition Action - After Transaction">Transition Action - After Transaction</SelectItem>
                   <SelectItem value="Form Data Post Processing">Form Data Post Processing</SelectItem>
                   <SelectItem value="Task Action">Task Action</SelectItem>
                   <SelectItem value="Assignee Definition">Assignee Definition</SelectItem>
-                  <SelectItem value="Message Variable">Message Variable</SelectItem>
                   <SelectItem value="Job Script">Job Script</SelectItem>
-                  <SelectItem value="Process Delete Hook">Process Delete Hook</SelectItem>
-                  <SelectItem value="Instance Delete Hook">Instance Delete Hook</SelectItem>
-                  <SelectItem value="Data Processor">Data Processor</SelectItem>
-                  <SelectItem value="Multipart Data Processor">Multipart Data Processor</SelectItem>
-                  <SelectItem value="Error Handler">Error Handler</SelectItem>
-                  <SelectItem value="Instance Backup - Id Processing Script">Instance Backup - Id Processing Script</SelectItem>
-                  <SelectItem value="Messaging Subscription Hook">Messaging Subscription Hook</SelectItem>
-                  <SelectItem value="Messaging Unsubscription Hook">Messaging Unsubscription Hook</SelectItem>
-                  <SelectItem value="Messaging Hook">Messaging Hook</SelectItem>
                 </SelectContent>
               </Select>
             
