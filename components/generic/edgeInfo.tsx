@@ -51,7 +51,7 @@ interface EdgeInfoDefaultValues {
     scheduleType: "once" | "simple" | "cron" | undefined,
     repeatCount: number | 0 ,
     interval: number | 0,
-    intervalUnit: "hour" | "minute" | undefined
+    intervalUnit: "Hour" | "Minute" | undefined
     cronExpression: string | null
   }
  
@@ -86,7 +86,7 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
     isJobActive: z.boolean(),
     jobScript: z.string().optional(),
     jobStartDelay: z.preprocess((val) => Number(val), z.number().min(0).optional()),
-    jobStartDelayUnit: z.enum(["hour", "minute"]).optional(),
+    jobStartDelayUnit: z.enum(["Hour", "Minute"]).optional(),
     jobFreqency: z.enum(["once","simple","cron"]).default("once").optional(),
     jobcron: z.string().optional(),
     jobRepeatationCount: z.preprocess(
@@ -97,7 +97,7 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
       (val) => Number(val),
       z.number().min(0).optional(),
     ),
-    jobRepeatationUnit: z.enum(["hour", "minute"]).optional(),
+    jobRepeatationUnit: z.enum(["Hour", "Minute"]).optional(),
   };
 
   if (edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE) {
@@ -121,12 +121,12 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
     isJobActive: currentValues.isJobActive ? currentValues.isJobActive : false,
     jobScript: currentValues.processJob.jobScriptId ? currentValues.processJob.jobScriptId : "",
     jobStartDelay: currentValues.processJob.jobDelay ? currentValues.processJob.jobDelay : 0,
-    jobStartDelayUnit: currentValues.processJob.jobDelayUnit? currentValues.processJob.jobDelayUnit : "minute",
+    jobStartDelayUnit: currentValues.processJob.jobDelayUnit? currentValues.processJob.jobDelayUnit : "Minute",
     jobFreqency: currentValues.processJob.scheduleType? currentValues.processJob.scheduleType : "once",
     jobcron: currentValues.processJob.cronExpression? currentValues.processJob.cronExpression : "",
     jobRepeatationCount: currentValues.processJob.repeatCount? currentValues.processJob.repeatCount : 1,
     jobRepeatationDelay: currentValues.processJob.interval? currentValues.processJob.interval : 1,
-    jobRepeatationUnit: currentValues.processJob.intervalUnit? currentValues.processJob.intervalUnit : "minute",
+    jobRepeatationUnit: currentValues.processJob.intervalUnit? currentValues.processJob.intervalUnit : "Minute",
   }
 
   // action
@@ -454,8 +454,8 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>Job delay unit</SelectLabel>
-                                    <SelectItem value="minute">Minute(s)</SelectItem>
-                                    <SelectItem value="hour">Hour(s)</SelectItem>
+                                    <SelectItem value="Minute">Minute(s)</SelectItem>
+                                    <SelectItem value="Hour">Hour(s)</SelectItem>
                                   </SelectGroup>
                                 </SelectContent>
                               </SelectTrigger>
@@ -507,7 +507,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                     )}
                   />
 
-                  {internalJobFrequencyType === "repeating" && (
+                  {internalJobFrequencyType === "simple" && (
                     <>
                       <FormField
                         control={form.control}
@@ -567,8 +567,8 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                                   <SelectContent>
                                     <SelectGroup>
                                       <SelectLabel>Job repeatation unit</SelectLabel>
-                                      <SelectItem value="minute"> Minute(s) </SelectItem>
-                                      <SelectItem value="hours"> Hour(s) </SelectItem>
+                                      <SelectItem value="Minute"> Minute(s) </SelectItem>
+                                      <SelectItem value="Hours"> Hour(s) </SelectItem>
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>

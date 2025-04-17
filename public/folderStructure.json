@@ -18,6 +18,8 @@
     "type": "folder",
     "children": [
       {
+<<<<<<< HEAD
+=======
         "id": "1744781451680",
         "name": "A1",
         "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680",
@@ -70,6 +72,7 @@
         ]
       },
       {
+>>>>>>> f77de4a5b135fc80dd306b4ce5c5cab4797a6b16
         "id": "1744628640593",
         "name": "Build Checking",
         "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\Build Checking_1744628640593",
@@ -214,6 +217,16 @@
             ]
           }
         ]
+<<<<<<< HEAD
+      },
+      {
+        "id": "1744888392143",
+        "name": "Test 1",
+        "path": "C:\\Users\\KER-LPTP-48\\Desktop\\bpmn\\src\\Test 1_1744888392143",
+        "type": "folder",
+        "children": []
+=======
+>>>>>>> f77de4a5b135fc80dd306b4ce5c5cab4797a6b16
       }
     ]
   }
