@@ -11,19 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, z } from "zod";
@@ -52,10 +40,6 @@ type Group = {
   groupType?: string;
 };
 
-// type CheckedEdges = {
-//   [key: number]: boolean;
-// };
-
 type CheckedEdges = Record<number, boolean>;
 
 type MetaDataItem = {
@@ -73,13 +57,18 @@ const AssignmentSchema = z.object({
 });
 
 const AssignmentModal = (nodeInfoDefaultValues: any) => {
+  debugger;
   const params = useParams();
   const [scripts, setScripts] = useState<ScriptOption[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const { edgesAppCanvas, nodesAppCanvas } = useAppCanvas();
-
-  console.log("nodeInfoDefaultValues ", edgesAppCanvas);
+  console.log("nodeInfoDefaultValues ", nodeInfoDefaultValues);
+  console.log("edgesAppCanvas ", edgesAppCanvas);
+  const onSubmitCallback =
+    nodeInfoDefaultValues.nodeInfoDefaultValues?.modifyNodeInfo;
+  const nodeAdditionalInfo =
+    nodeInfoDefaultValues.nodeInfoDefaultValues?.assignment;
   const [edges, setEdges] = useState(edgesAppCanvas);
   const [checkedEdges, setCheckedEdges] = useState<CheckedEdges>({});
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
@@ -92,6 +81,28 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
       [index]: !prev[index],
     }));
   };
+
+  useEffect(() => {
+    const existingParticipants =
+      nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+        ?.assignment?.participants || [];
+    if (existingParticipants.length > 0) {
+      const newCheckedEdges: CheckedEdges = {};
+      edges.forEach((edge, index) => {
+        if (existingParticipants.includes(edge.id)) {
+          newCheckedEdges[index] = true;
+        }
+      });
+      setCheckedEdges(newCheckedEdges);
+    }
+  }, [edges, nodeInfoDefaultValues]);
+
+  useEffect(() => {
+    const existingGroups =
+      nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+        ?.assignment?.staticGroups || [];
+    setSelectedGroups(existingGroups);
+  }, [nodeInfoDefaultValues]);
 
   useEffect(() => {
     const fetchMetaData = async () => {
@@ -193,15 +204,26 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   const form = useForm<z.infer<typeof AssignmentSchema>>({
     resolver: zodResolver(AssignmentSchema),
     defaultValues: {
-      participants: [],
-      staticGroups: [],
-      userAssignmentScript: "",
-      groupAssignmentScript: "",
-      appGroupAssignmentScript: "",
-      inviterAccountGroupAssignmentScript: "",
+      participants:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.participants || [],
+      staticGroups:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.staticGroups || [],
+      userAssignmentScript:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.userAssignmentScript || "",
+      groupAssignmentScript:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.groupAssignmentScript || "",
+      appGroupAssignmentScript:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.appGroupAssignmentScript || "",
+      inviterAccountGroupAssignmentScript:
+        nodeInfoDefaultValues.nodeInfoDefaultValues?.nodeAdditionalInfo
+          ?.assignment?.inviterAccountGroupAssignmentScript || "",
     },
   });
-
   const tabArray: TabArray[] = [
     {
       tabName: "Participant",
@@ -325,8 +347,15 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
             : null,
       },
     };
-
+    nodeInfoDefaultValues[
+      "nodeInfoDefaultValues"
+    ].nodeAdditionalInfo.assignment = result.assignment;
     console.log("Form submitted:", result);
+    onSubmitCallback({
+      nodeAdditionalInfo:
+        nodeInfoDefaultValues["nodeInfoDefaultValues"].nodeAdditionalInfo,
+      label: nodeInfoDefaultValues.nodeName,
+    });
   };
 
   return (

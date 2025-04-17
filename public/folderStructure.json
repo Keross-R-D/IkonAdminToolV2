@@ -12,7 +12,7 @@
     "children": []
   },
   {
-    "id": "1744869936031",
+    "id": "1744886988653",
     "name": "src",
     "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src",
     "type": "folder",
@@ -40,7 +40,32 @@
             "name": "scripts",
             "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts",
             "type": "folder",
-            "children": []
+            "children": [
+              {
+                "name": "A script.js",
+                "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts\\A script.js",
+                "type": "file",
+                "children": []
+              },
+              {
+                "name": "metadata.json",
+                "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts\\metadata.json",
+                "type": "file",
+                "children": []
+              },
+              {
+                "name": "Processing Script 1.js",
+                "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts\\Processing Script 1.js",
+                "type": "file",
+                "children": []
+              },
+              {
+                "name": "Task action Script 1.js",
+                "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts\\Task action Script 1.js",
+                "type": "file",
+                "children": []
+              }
+            ]
           }
         ]
       },

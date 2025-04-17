@@ -22,6 +22,7 @@ interface taskNodeProps {
         nodeName: string;
         deleteNode: (id: string) => void;
         nodeId: string;
+        nodeType: string;
         modifyNodeInfo: (nodeId: string) => void,
         nodeAdditionalInfo: any,
     };
