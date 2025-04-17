@@ -21,18 +21,32 @@ interface StructureItem {
 }
 const structurePath = path.join(process.cwd(), "public/folderStructure.json");
 
-// const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'groups.json');
 let DATA_FILE_PATH: string = "";
 
 export async function GET() {
   try {
     const structure: any = JSON.parse(await fs.readFile(structurePath, "utf8"));
+    let DATA_FILE_PATH = "";
+
     for (const i of structure) {
       if (i.name === "project.json") {
         DATA_FILE_PATH = i.path;
+        break;
       }
     }
+
+    if (!DATA_FILE_PATH) {
+      throw new Error("project.json path not found in structure");
+    }
+
     console.log("data file path ", DATA_FILE_PATH);
+
+    try {
+      await fs.access(DATA_FILE_PATH);
+    } catch (err) {
+      throw new Error(`File not found at path: ${DATA_FILE_PATH}`);
+    }
+
     const finalData = JSON.parse(await fs.readFile(DATA_FILE_PATH, "utf8"));
     const groups = finalData.groups;
 
@@ -40,7 +54,9 @@ export async function GET() {
   } catch (error) {
     console.error("Error reading groups file:", error);
     return NextResponse.json(
-      { error: "Failed to load groups" },
+      {
+        error: error instanceof Error ? error.message : "Failed to load groups",
+      },
       { status: 500 }
     );
   }
@@ -52,13 +68,17 @@ export async function POST(request: Request): Promise<NextResponse> {
     let fileData: FileData = { groups: [] };
 
     try {
-      const structure: StructureItem[] = JSON.parse(await fs.readFile(structurePath, "utf8"));
-      const projectFile = structure.find((item: StructureItem) => item.name === "project.json");
-      
+      const structure: StructureItem[] = JSON.parse(
+        await fs.readFile(structurePath, "utf8")
+      );
+      const projectFile = structure.find(
+        (item: StructureItem) => item.name === "project.json"
+      );
+
       if (!projectFile) {
         throw new Error("project.json not found in folder structure");
       }
-      
+
       DATA_FILE_PATH = projectFile.path;
       console.log("Data file path:", DATA_FILE_PATH);
 
@@ -90,17 +110,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     fileData.groups = groups;
     await fs.writeFile(DATA_FILE_PATH, JSON.stringify(fileData, null, 2));
 
-    return NextResponse.json({ 
-      success: true, 
-      data: updatedGroup 
+    return NextResponse.json({
+      success: true,
+      data: updatedGroup,
     });
   } catch (error: unknown) {
     console.error("Error in POST /api/groups:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(
-      { 
-        error: "Failed to save group data", 
-        details: errorMessage 
+      {
+        error: "Failed to save group data",
+        details: errorMessage,
       },
       { status: 500 }
     );
