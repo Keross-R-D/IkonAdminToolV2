@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { boolean, z } from "zod";
 
 import { TabArray } from "@/ikon/components/tabs/type";
 import Tabs from "@/ikon/components/tabs";
@@ -58,16 +58,18 @@ type Group = {
 
 type CheckedEdges = Record<number, boolean>;
 
-// Zod schema for form validation
+type MetaDataItem = {
+  id: string;
+  name: string;
+};
+
 const AssignmentSchema = z.object({
-  assignment: z.object({
-    participants: z.array(z.string()).optional(),
-    staticGroups: z.array(z.string()).optional(),
-    userAssignmentScript: z.string().optional(),
-    groupAssignmentScript: z.string().optional(),
-    appGroupAssignmentScript: z.string().optional(),
-    inviterAccountGroupAssignmentScript: z.string().optional(),
-  }),
+  participants: z.array(z.string()).optional(),
+  staticGroups: z.array(z.string()).optional(),
+  userAssignmentScript: z.string().optional(),
+  groupAssignmentScript: z.string().optional(),
+  appGroupAssignmentScript: z.string().optional(),
+  inviterAccountGroupAssignmentScript: z.string().optional(),
 });
 
 const AssignmentModal = (nodeInfoDefaultValues: any) => {
@@ -81,6 +83,8 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   const [edges, setEdges] = useState(edgesAppCanvas);
   const [checkedEdges, setCheckedEdges] = useState<CheckedEdges>({});
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [metaData, setMetaData] = useState<MetaDataItem[]>([]);
+  const [shared, setShared] = useState(boolean);
 
   const handleCheckboxChange = (index: number) => {
     setCheckedEdges((prev) => ({
@@ -88,6 +92,34 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
       [index]: !prev[index],
     }));
   };
+
+  useEffect(() => {
+    const fetchMetaData = async () => {
+      try {
+        const response = await fetch("/api/process-meta-data", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch process metadata");
+        }
+
+        const data = await response.json();
+        console.log(
+          "process meta data shared ",
+          data?.content?.isSharedProcess
+        );
+        setShared(data?.content?.isSharedProcess);
+        setMetaData(data);
+      } catch (error) {
+        console.error("Error fetching process metadata:", error);
+      }
+    };
+
+    fetchMetaData();
+  }, []);
+
   useEffect(() => {
     const createScriptFile = async () => {
       const response = await fetch("/api/read-script-metadata", {
@@ -161,14 +193,12 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   const form = useForm<z.infer<typeof AssignmentSchema>>({
     resolver: zodResolver(AssignmentSchema),
     defaultValues: {
-      assignment: {
-        participants: [],
-        staticGroups: [],
-        userAssignmentScript: "",
-        groupAssignmentScript: "",
-        appGroupAssignmentScript: "",
-        inviterAccountGroupAssignmentScript: "",
-      },
+      participants: [],
+      staticGroups: [],
+      userAssignmentScript: "",
+      groupAssignmentScript: "",
+      appGroupAssignmentScript: "",
+      inviterAccountGroupAssignmentScript: "",
     },
   });
 
@@ -239,25 +269,64 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
             label={"Select User Assignment Script"}
           />
 
-          <FormComboboxInput
-            name={"groupAssignmentScript"}
-            items={scripts}
-            formControl={undefined}
-            label={"Select Group Assignment Script"}
-          />
-          <FormComboboxInput
-            name={"inviterAccountGroupAssignmentScript"}
-            items={scripts}
-            formControl={undefined}
-            label={"Select Inviter Account Group Assignment Script"}
-          />
+          {shared ? (
+            <>
+              <FormComboboxInput
+                name={"appGroupAssignmentScript"}
+                items={scripts}
+                formControl={form.control}
+                label={"Select App Level Group Assignment Script"}
+              />
+            </>
+          ) : (
+            <>
+              <FormComboboxInput
+                name={"groupAssignmentScript"}
+                items={scripts}
+                formControl={form.control}
+                label={"Select Group Assignment Script"}
+              />
+              <FormComboboxInput
+                name={"inviterAccountGroupAssignmentScript"}
+                items={scripts}
+                formControl={form.control}
+                label={"Select Inviter Account Group Assignment Script"}
+              />
+            </>
+          )}
         </div>
       ),
     },
   ];
 
   const onSubmit = (data: z.infer<typeof AssignmentSchema>) => {
-    console.log("Form submitted:", data);
+    const selectedParticipants = edges
+      .filter((_, index) => checkedEdges[index])
+      .map((edge) => edge.id);
+
+    const selectedStaticGroups = selectedGroups;
+
+    const result = {
+      assignment: {
+        participants: selectedParticipants.length ? selectedParticipants : [],
+        staticGroups: selectedStaticGroups.length ? selectedStaticGroups : [],
+        userAssignmentScript: data.userAssignmentScript
+          ? data.userAssignmentScript
+          : null,
+        groupAssignmentScript: data.groupAssignmentScript
+          ? data.groupAssignmentScript
+          : null,
+        appGroupAssignmentScript: data.appGroupAssignmentScript
+          ? data.appGroupAssignmentScript
+          : null,
+        inviterAccountGroupAssignmentScript:
+          data.inviterAccountGroupAssignmentScript
+            ? data.inviterAccountGroupAssignmentScript
+            : null,
+      },
+    };
+
+    console.log("Form submitted:", result);
   };
 
   return (

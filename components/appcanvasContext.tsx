@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the type for a breadcrumb item
 export interface AppCanvasItemProps {
+  id: any;
   label: ReactNode;
 }
 

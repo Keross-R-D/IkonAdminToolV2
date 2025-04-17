@@ -12,7 +12,7 @@
     "children": []
   },
   {
-    "id": "1744869172341",
+    "id": "1744869936031",
     "name": "src",
     "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src",
     "type": "folder",
@@ -34,6 +34,12 @@
             "name": "process",
             "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\process_model.json",
             "type": "file",
+            "children": []
+          },
+          {
+            "name": "scripts",
+            "path": "C:\\Users\\KEROSSLPTP-54\\Downloads\\bpmn-20250416T064223Z-001\\bpmn\\src\\A1_1744781451680\\scripts",
+            "type": "folder",
             "children": []
           }
         ]
