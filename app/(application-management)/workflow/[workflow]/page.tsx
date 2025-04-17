@@ -9,37 +9,37 @@ import { ReactFlowProvider } from "@xyflow/react";
 
 const nodeTypes = [
   {
-    type: "start",
+    type: "Start",
     displayName: "Start",
     displayIcon: <Circle />,
   },
   {
-    type: "task",
+    type: "Task",
     displayName: "Task",
     displayIcon: <Square />,
   },
   {
-    type: "wait",
+    type: "Wait",
     displayName: "Wait",
     displayIcon: <Pause />,
   },
   {
-    type: "xor",
+    type: "XOR",
     displayName: "XOR",
     displayIcon: <XSquare />,
   },
   {
-    type: "fork",
+    type: "Fork",
     displayName: "Fork",
     displayIcon: <Split />,
   },
   {
-    type: "join",
+    type: "Join",
     displayName: "Join",
     displayIcon: <Merge />,
   },
   {
-    type: "end",
+    type: "End",
     displayName: "End",
     displayIcon: <CircleDot />,
   },

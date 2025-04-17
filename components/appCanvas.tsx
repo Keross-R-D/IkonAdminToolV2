@@ -53,10 +53,11 @@ interface Node {
     id: string,
     type: string,
     data: {
-        id: string,
-        label: string,
+        nodeId: string,
+        nodeName: string,
         nodeAdditionalInfo: any,
         deleteNode: any,
+        nodeType: string,
     },
     position: {
         x: number,
@@ -100,13 +101,13 @@ function getEdgeTransitionCategory(sourceType:string) {
 const AppCanvas = () => {
 
     const nodeTypes = {
-        task: (props: any) => <TaskNode {...props} updateNodeLabel={updateNodeLabel} />,
-        start: StartNode,
-        xor: XORNode,
-        join: JoinNode,
-        fork: ForkNode,
-        wait: WaitNode,
-        end: EndNode,
+        Task: (props: any) => <TaskNode {...props} updateNodeLabel={updateNodeLabel} />,
+        Start: StartNode,
+        XOR: XORNode,
+        Join: JoinNode,
+        Fork: ForkNode,
+        Wait: WaitNode,
+        End: EndNode,
     }
 
     const edgeTypes = {
@@ -185,7 +186,7 @@ debugger
         debugger;
         setNodes((prevNodes) =>
             prevNodes.map((node) =>
-                node.id === nodeId ? { ...node, data: { ...node.data, label: newLabel } } : node
+                node.id === nodeId ? { ...node, data: { ...node.data, nodeName: newLabel } } : node
             )
         );
     };
@@ -262,15 +263,15 @@ debugger
             setNodes((eds) => {
                 
                 const modifiedNode = eds.map(e => {
-                    if (e.data.id === nodeId){
-                        e.data.label = nodeInfo.label
+                    if ((e.data.nodeType +"_" + e.data.nodeId) === nodeId){
+                        e.data.nodeName = nodeInfo.label
 
                         e.data.nodeAdditionalInfo = nodeInfo.nodeAdditionalInfo
                     }
 
                     return e;
                 })
-
+console.log(modifiedNode);
                 return modifiedNode
             })
         }
@@ -300,9 +301,10 @@ debugger
                 type,
                 position,
                 data: {
-                    'id': newNodeId,
+                    'nodeId': newNodeId.split('_')[1],
+                    'nodeType': type,   
                     'deleteNode': deleteNode,
-                    'label': 'New Node',
+                    'nodeName': 'New Node',
                     'nodeAdditionalInfo' : {},
                     modifyNodeInfo: getNodeSpecificModifyCallback(newNodeId),
                 },
@@ -319,7 +321,7 @@ debugger
     const deleteNode = (nodeId:string) => {
         setNodes((nodes) => {
             debugger;
-            const newNodesList = nodes.filter(e => e.id !== nodeId)
+            const newNodesList = nodes.filter(e => e.data.nodeId !== nodeId)
             return newNodesList;
         })
     }

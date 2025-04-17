@@ -19,9 +19,9 @@ import ScriptsModal from '@/components/generic/scriptsModal';
 
 interface taskNodeProps {
     data: {
-        label: string;
+        nodeName: string;
         deleteNode: (id: string) => void;
-        id: string;
+        nodeId: string;
         modifyNodeInfo: (nodeId: string) => void,
         nodeAdditionalInfo: any,
     };
@@ -32,24 +32,23 @@ interface taskNodeProps {
 
 const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
 
-
     let cardClassNames = "w-128";
     if (selected){
         cardClassNames += "ring-2 ring-primary"
     }
 
-    const [taskName, setTaskName] = useState((data.label)? data.label : "");
+    const [taskName, setTaskName] = useState((data.nodeName)? data.nodeName : "");
 
      // Sync local state when external data changes
     useEffect(() => {
-        setTaskName(data.label);
-    }, [data.label]);
+        setTaskName(data.nodeName);
+    }, [data.nodeName]);
 
     // Debounce effect: Runs `updateNodeLabel` 500ms after the user stops typing
     useEffect(() => {
         const timeout = setTimeout(() => {
-            if (taskName !== data.label) {
-                updateNodeLabel(data.id, taskName);
+            if (taskName !== data.nodeName) {
+                updateNodeLabel(data.nodeType +"_"+data.nodeId, taskName);
             }
         }, 1000); // ✅ 500ms delay before updating
 
@@ -61,7 +60,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
         <NodeToolbar position={Position.Top} className='flex gap-2'>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

@@ -43,13 +43,12 @@ interface nodeInfoModalProps {
 
 const ScriptsModal = (prop: nodeInfoModalProps) => {
     const params = useParams();
-    const [ppScript, setPpScript] = useState("");
     const [scripts, setScripts] = useState<any[]>([]);
     const [showModal, setShowModal] = useState(false);
     debugger
     const onSubmitCallback = prop.nodeInfoDefaultValues.modifyNodeInfo;
     const nodeAdditionalInfo = prop.nodeInfoDefaultValues.nodeAdditionalInfo;
-
+debugger
     useEffect(() => {
         const createScriptFile = async () => {
           const response = await fetch("/api/read-script-metadata", {
@@ -71,23 +70,23 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
       }, []);
     
     const formSchema = z.object({
-        postProcessingScript: z.string().optional(),
-        taskActionScript: z.string().optional()
+        postProcessingScriptId: z.string().optional(),
+        taskActionScriptId: z.string().optional()
     })
     
     
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: nodeAdditionalInfo? nodeAdditionalInfo :{
-            postProcessingScript: "",
-            taskActionScript: ""
+            postProcessingScriptId: "",
+            taskActionScriptId: ""
         }
     })
     
     const onSubmit = (value: any) => {
         debugger;
         console.log(value)
-        onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.label}); 
+        onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.nodeName}); 
         setShowModal(false);
     }
 
@@ -104,12 +103,12 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
                     
                     
                         <DialogHeader className="pb-4">
-                            <DialogTitle>Script Assocition</DialogTitle>
+                            <DialogTitle>Script Association</DialogTitle>
                         </DialogHeader>
                         
                         <FormField
                             control={form.control}
-                            name="postProcessingScript"
+                            name="postProcessingScriptId"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Post Processing Script</FormLabel>
@@ -123,10 +122,10 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {scripts
-                                        .filter((script) => script.type === "Form Data Post Processing") // ✅ filter only post-processing scripts
+                                        .filter((script) => script.scriptType === "Form Data Post Processing") // ✅ filter only post-processing scripts
                                         .map((script) => (
-                                            <SelectItem key={script.id} value={script.id}>
-                                            {script.fileName}
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -141,7 +140,7 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
 
                         <FormField
                             control={form.control}
-                            name="taskActionScript"
+                            name="taskActionScriptId"
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel> Task Action script</FormLabel>
@@ -155,10 +154,10 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {scripts
-                                            .filter((script) => script.type === "Task Action") // ✅ filter only post-processing scripts
+                                            .filter((script) => script.scriptType === "Task Action") // ✅ filter only post-processing scripts
                                             .map((script) => (
-                                                <SelectItem key={script.id} value={script.id}>
-                                                {script.fileName}
+                                                <SelectItem key={script.scriptId} value={script.scriptId}>
+                                                {script.scriptName}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

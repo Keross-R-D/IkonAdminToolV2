@@ -11,6 +11,7 @@ import {
 import { Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 const AssignmentModal = (nodeInfoDefaultValues: any) => {
     const params = useParams();
