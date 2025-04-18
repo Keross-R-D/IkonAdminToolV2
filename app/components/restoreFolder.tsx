@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import JSZip from "jszip";
 import { toast } from "sonner";
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface FolderNode {
     id: string;
     name: string;
@@ -28,7 +30,7 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose , setFS ,
 
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    debugger;
+    
     if (!event.target.files) return;
 
     const files = Array.from(event.target.files);
@@ -47,12 +49,12 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose , setFS ,
       if (!processedFolder) return; // Handle null case
       rootFolder = processedFolder;
     }
-debugger
+
     setFolderStructure(rootFolder.children ? rootFolder.children[0] : null); // Set folder structure
   };
 
   const processFolderUpload = async (files: File[]) => {
-    debugger
+    
     const rootFolderName = files[0]?.webkitRelativePath.split("/")[0]; // Get top-level folder name
     if (!rootFolderName) return null;
   
@@ -112,11 +114,11 @@ debugger
   };
 
   const extractZipFile = async (zipFile: File): Promise<FolderNode> => {
-    debugger
+    
     const zip = await JSZip.loadAsync(zipFile);
   
     const rootFolder: FolderNode = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       name: (zipFile.name.replace(".zip", "")).split("_")[0],
       type: "folder",
       children: [],
@@ -141,7 +143,7 @@ debugger
           // It's a file
           const content = await zipEntry.async("text");
           parent.children?.push({
-            id: Date.now().toString(),
+            id: uuidv4(),
             name: partName,
             type: "file",
             content,
@@ -150,7 +152,7 @@ debugger
           // It's a folder
           if (!fileMap.has(currentPath)) {
             const newFolder: FolderNode = {
-              id: Date.now().toString(),
+              id: uuidv4(),
               name: partName.split("_")[0],
               type: "folder",
               children: [],

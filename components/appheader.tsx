@@ -16,7 +16,7 @@ const AppHeader = ({ setProcessModel, downloadProcessModel, getLayoutedElements,
 
     const openScripts = () => {
         setIsLoading(true);
-        debugger
+        
         if (params?.workflow) {
             router.push(`/workflow/${params.workflow}/scripts/${params.workflow}`);
             

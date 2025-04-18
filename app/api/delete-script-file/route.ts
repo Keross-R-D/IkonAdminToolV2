@@ -13,10 +13,10 @@ interface FolderNode {
 }
 
 interface ScriptMetadata {
-  id: string;
-  fileName: string;
-  type: string;
-  langType: string;
+  scriptId: string;
+  scriptName: string;
+  scriptType: string;
+  scriptLanguage: string;
 }
 
 function findFolderById(node: FolderNode, id: string): FolderNode | null {
@@ -62,17 +62,16 @@ export async function DELETE(req: NextRequest) {
     const metadataPath = path.join(scriptsPath, "metadata.json");
 
     if (!fs.existsSync(metadataPath)) {
-      return NextResponse.json({ error: "metadata.json not found" }, { status: 404 });
+      return NextResponse.json({ error: "metadata.json not found"}, { status: 404 });
     }
 
     let metadata = JSON.parse(fs.readFileSync(metadataPath, "utf-8")) as ScriptMetadata[];
-    const scriptToDelete = metadata.find((item) => item.id === scriptId);
-
+    const scriptToDelete = metadata.find((item) => item.scriptId === scriptId);
     if (!scriptToDelete) {
-      return NextResponse.json({ error: "Script metadata not found" }, { status: 404 });
+      return NextResponse.json({ error: "Script metadata not found" , data : metadata, scriptId }, { status: 404 });
     }
 
-    const scriptFilePath = path.join(scriptsPath, scriptToDelete.fileName);
+    const scriptFilePath = path.join(scriptsPath, scriptToDelete.scriptName+"_"+scriptToDelete.scriptId+"."+(scriptToDelete.scriptLanguage === "JavaScript" ? "js" : scriptToDelete.scriptLanguage == "Python" ? "py": "mjs"));
 
     // Delete actual script file if it exists
     if (fs.existsSync(scriptFilePath)) {
@@ -80,14 +79,14 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Remove from metadata
-    const updatedMetadata = metadata.filter((item) => item.id !== scriptId);
+    const updatedMetadata = metadata.filter((item) => item.scriptId !== scriptId);
     fs.writeFileSync(metadataPath, JSON.stringify(updatedMetadata, null, 2));
 
     return NextResponse.json({
       success: true,
       message: "Script and metadata removed",
       deletedScriptId: scriptId,
-      deletedFileName: scriptToDelete.fileName,
+      deletedFileName: scriptToDelete.scriptName,
       fs : updatedMetadata
     });
   } catch (error) {

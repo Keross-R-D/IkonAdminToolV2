@@ -15,7 +15,7 @@ import { Merge, Trash } from 'lucide-react';
 
 interface joinNodeProps {
     data: {
-        id: string,
+        nodeId: string,
         deleteNode:any
     },
     selected: boolean
@@ -33,7 +33,7 @@ const JoinNode = ({data,selected}: joinNodeProps) => {
         <NodeToolbar position={Position.Top}>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

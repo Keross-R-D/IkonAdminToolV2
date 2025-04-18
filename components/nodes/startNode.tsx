@@ -18,7 +18,7 @@ import ScriptsModal from '@/components/generic/scriptsModal';
 
 interface startNodeProps {
     data: {
-        id: string,
+        nodeId: string,
         deleteNode:any,
         label: string,
         modifyNodeInfo: (nodeId: string) => void,
@@ -28,7 +28,7 @@ interface startNodeProps {
 }
 
 const StartNode = ({data,selected}: startNodeProps) => {
-debugger;
+
     let cardClassNames = "w-64";
     if (selected){
         cardClassNames += " ring-2 ring-primary"
@@ -39,7 +39,7 @@ debugger;
         <NodeToolbar position={Position.Top} className='flex gap-2'>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

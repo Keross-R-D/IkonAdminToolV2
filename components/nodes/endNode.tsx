@@ -13,7 +13,7 @@ import { Button } from '../ui/button';
 
 interface endNodeProps {
     data: {
-        id: string,
+        nodeId: string,
         deleteNode:any
     },
     selected: boolean
@@ -32,7 +32,7 @@ const EndNode = ({data,selected}: endNodeProps) => {
         <NodeToolbar position={Position.Top}>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

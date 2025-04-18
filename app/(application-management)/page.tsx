@@ -11,6 +11,8 @@ import { Tooltip } from "@/ikon/components/tooltip"
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { toast } from "sonner";
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface FolderNode {
   id: string;
   name: string;
@@ -40,15 +42,13 @@ export default function Home() {
   const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
-    debugger
     fetch("/folderStructure.json")
       .then((res) => res.json())
-      .then((data) => {debugger;setShowSpinner(false); setFolderStructure(filterFolders(data))})
+      .then((data) => {setShowSpinner(false); setFolderStructure(filterFolders(data))})
       .catch((err) => console.error("Error fetching folder structure:", err));
 
   }, []);
 
-  debugger
   
 
 
@@ -78,7 +78,7 @@ export default function Home() {
 
       // ✅ Send request to backend (proper handling)
       try {
-        debugger
+        
         const response = await fetch("/api/edit-folder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,7 +95,7 @@ export default function Home() {
         }
         else{
           setShowSpinner(false);
-          debugger
+          
           toast.success(`Process Edited: ${name}`);
           const data = await response.json();
           if(data){
@@ -130,7 +130,7 @@ export default function Home() {
       }
 
       const newFolder: FolderNode = {
-        id: Date.now().toString(),
+        id:uuidv4(),
         name,
         type: "folder",
         children: [],
@@ -181,7 +181,7 @@ export default function Home() {
 
     console.log("Editing Folder:", folder);
     console.log("Parent Folder:", parentFolder);
-    debugger
+    
     folder.parentId = parentFolder?.id;
     
 
@@ -285,7 +285,7 @@ function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }:
 }) {
   const [folderName, setFolderName] = useState("");
   const [selectedFolder, setSelectedFolder] = useState(""); // Default to "-1" (no parent)
-  debugger
+  
   useEffect(() => {
     if (editingFolder) {
       setFolderName(editingFolder.name);
@@ -346,7 +346,7 @@ function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }:
 
 
 const handleRestoreFolder =  (folderStructure: FolderNode, setFolderStructure: any, setShowSpinner: any  ) => {
-  debugger
+  
   setShowSpinner(true);
   fetch("/api/restore-folder", {
     method: "POST",
@@ -358,7 +358,7 @@ const handleRestoreFolder =  (folderStructure: FolderNode, setFolderStructure: a
         
         setShowSpinner(false);
         const data = await response.json();
-        debugger
+        
         toast.success("Folder restored successfully!");
         if(data){
           setFolderStructure(filterFolders(data?.fs));// Update the folder structure in the parent component

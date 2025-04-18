@@ -45,10 +45,10 @@ const ScriptsModal = (prop: nodeInfoModalProps) => {
     const params = useParams();
     const [scripts, setScripts] = useState<any[]>([]);
     const [showModal, setShowModal] = useState(false);
-    debugger
+    
     const onSubmitCallback = prop.nodeInfoDefaultValues.modifyNodeInfo;
     const nodeAdditionalInfo = prop.nodeInfoDefaultValues.nodeAdditionalInfo;
-debugger
+
     useEffect(() => {
         const createScriptFile = async () => {
           const response = await fetch("/api/read-script-metadata", {
@@ -84,7 +84,7 @@ debugger
     })
     
     const onSubmit = (value: any) => {
-        debugger;
+        
         console.log(value)
         value.assignment = nodeAdditionalInfo?.assignment
         onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.nodeName}); 

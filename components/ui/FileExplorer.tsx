@@ -55,9 +55,9 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   }
 
   function openModal(id: string) {// Navigate to Modal Page
-    debugger
+    
   setIsLoading(true);
-  debugger
+  
     console.log("Start Process: ", id); 
     router.push(`/workflow/${encodeURIComponent(id)}`);
   }
@@ -67,7 +67,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   }
   const handleDownloadFolder = async (node: FileNode) => {
     try {
-      debugger
+      
       setIsLoading(true); // Start loading spinner
       // ✅ Send request to backend to download folder
       const folderId = node.id; // Assuming node has an id property
@@ -105,7 +105,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
 
   const handleFolderDeletion = async (node: FileNode) => {
     const folderId = node.id; // Assuming node has an id property
-    debugger
+    
     setIsLoading(true); // Start loading spinner
     // ✅ Send request to backend
     const response = await fetch("/api/create-folder", {

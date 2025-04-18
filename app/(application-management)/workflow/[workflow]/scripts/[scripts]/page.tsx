@@ -34,7 +34,6 @@ export default function ScriptPage() {
           folderId: params?.workflow,
         }),
       });
-debugger;
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to Create script file");
@@ -68,7 +67,7 @@ debugger;
   };
 
   const handleSaveScript = async () => {
-    debugger
+    
     
     if (newScriptName.trim() && scriptType.trim() && scriptLangType.trim()) {
       
@@ -77,7 +76,7 @@ debugger;
       if (editingIndex !== null) {
         const updatedScripts = [...scripts];
         updatedScripts[editingIndex] = { scriptName: newScriptName, scriptType: scriptType , scriptId: scripts[editingIndex]?.scriptId, scriptLanguage: scriptLangType};
-        debugger
+        
         try {
           const response = await fetch("/api/update-script-metadata", {
             method: "POST",
@@ -150,11 +149,11 @@ debugger;
     }
   };
   const handleScriptDeletion = async (index: number) => {
-    debugger
+    
     const updatedScripts = [...scripts];
     setIsLoading(true);
     try {
-      debugger
+      
       const response = await fetch("/api/delete-script-file", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -166,6 +165,8 @@ debugger;
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Error deleting script file:", errorData);
+        setIsLoading(false);
         throw new Error(errorData.error || "Failed to Delete script file");
       }
       else {
@@ -300,6 +301,7 @@ debugger;
                   <SelectItem value="Task Action">Task Action</SelectItem>
                   <SelectItem value="Assignee Definition">Assignee Definition</SelectItem>
                   <SelectItem value="Job Script">Job Script</SelectItem>
+                  <SelectItem value="Action Validation">Action Validation</SelectItem>
                 </SelectContent>
               </Select>
             

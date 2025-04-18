@@ -32,7 +32,6 @@ export default function FormMultiComboboxInput({
   onSelect,
   defaultValue
 }: FormComboboxInputProps) {
-  debugger
   const [selectedItems, setSelectedItems] = useState<string[]>(defaultValue ? defaultValue : []);
   const onItemSelect = (
     value: string,

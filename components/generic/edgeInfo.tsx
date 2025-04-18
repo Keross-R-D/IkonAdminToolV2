@@ -44,16 +44,7 @@ interface EdgeInfoDefaultValues {
 
   //job
   isJobActive: boolean | undefined,
-  processJob:{
-    jobScriptId: string | null,
-    jobDelay: number | 0,
-    jobDelayUnit: "Hour" | "Minute" | undefined,
-    scheduleType: "once" | "simple" | "cron" | undefined,
-    repeatCount: number | 0 ,
-    interval: number | 0,
-    intervalUnit: "Hour" | "Minute" | undefined
-    cronExpression: string | null
-  }
+  processJob:any,
  
 
   // action
@@ -86,7 +77,7 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
     isJobActive: z.boolean(),
     jobScript: z.string().optional(),
     jobStartDelay: z.preprocess((val) => Number(val), z.number().min(0).optional()),
-    jobStartDelayUnit: z.enum(["Hour", "Minute"]).optional(),
+    jobStartDelayUnit: z.string().optional(),
     jobFreqency: z.enum(["once","simple","cron"]).default("once").optional(),
     jobcron: z.string().optional(),
     jobRepeatationCount: z.preprocess(
@@ -155,7 +146,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   onSubmitCallback,
   edgeTransitionCategory,
 }) => {
-  debugger
+  
   const [open, setOpen] = useState(false);
   const zSchemaObj = getZschema(edgeTransitionCategory);
   const formSchema = z.object(zSchemaObj);
@@ -196,7 +187,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    debugger
+    
     let returnValues = edgeInfoDefaultValues;
     returnValues.edgeLabel = values.edgeLabel;
     returnValues.isJobActive = values.isJobActive;
@@ -206,10 +197,17 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
         jobDelay: values.jobStartDelay,
         jobDelayUnit: values.jobStartDelayUnit,
         scheduleType: values.jobFreqency,
-        repeatCount: values.jobRepeatationCount, 
-        interval: values.jobRepeatationDelay,
-        intervalUnit: values.jobRepeatationUnit,
-        cronExpression: values.jobcron,
+        
+        
+      }
+    
+      if(values.jobFreqency === "simple"){
+        returnValues.processJob.repeatCount= values.jobRepeatationCount
+        returnValues.processJob.interval= values.jobRepeatationDelay
+        returnValues.processJob.intervalUnit= values.jobRepeatationUnit
+      }
+      if(values.jobFreqency === "cron"){
+        returnValues.processJob.cronExpression= values.jobcron
       }
     }
     returnValues.actionDefinition = {
@@ -448,17 +446,17 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                       render={({ field }) => (
                         <FormItem className="my-2">
                           <FormControl>
-                            <Select {...field}>
+                            <Select value={field.value} onValueChange={field.onChange}>
                               <SelectTrigger>
-                                <SelectValue placeholder="job delay unit"/>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>Job delay unit</SelectLabel>
-                                    <SelectItem value="Minute">Minute(s)</SelectItem>
-                                    <SelectItem value="Hour">Hour(s)</SelectItem>
-                                  </SelectGroup>
-                                </SelectContent>
+                                <SelectValue placeholder="Job delay unit" />
                               </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Job delay unit</SelectLabel>
+                                  <SelectItem value="Minute">Minute(s)</SelectItem>
+                                  <SelectItem value="Hour">Hour(s)</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
                             </Select>
                           </FormControl>
                           <FormDescription>
@@ -558,9 +556,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                           render={({ field }) => (
                             <FormItem className="my-2">
                               <FormControl>
-                                <Select
-                                  {...field}
-                                >
+                                <Select value={field.value} onValueChange={field.onChange}>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Job repeatation unit" />
                                   </SelectTrigger>

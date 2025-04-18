@@ -57,7 +57,7 @@ const AssignmentSchema = z.object({
 });
 
 const AssignmentModal = (nodeInfoDefaultValues: any) => {
-  debugger;
+  
   const params = useParams();
   const [scripts, setScripts] = useState<ScriptOption[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -351,7 +351,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
       "nodeInfoDefaultValues"
     ].nodeAdditionalInfo.assignment = result.assignment;
     console.log("Form submitted:", result);
-    debugger
+    
     onSubmitCallback({
       nodeAdditionalInfo:
         nodeInfoDefaultValues["nodeInfoDefaultValues"].nodeAdditionalInfo,

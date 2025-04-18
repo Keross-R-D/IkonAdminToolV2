@@ -57,6 +57,7 @@ import { useParams } from "next/navigation";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { toast } from "sonner";
 import { useAppCanvas } from "./appcanvasContext";
+import { set } from "zod";
 
 interface Node {
     id: string,
@@ -122,7 +123,7 @@ const AppCanvas = () => {
 
     const initialNodes: Node[] = [];
     const initialEdges: Edge[] = [];
-    debugger;
+    
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const {
@@ -183,7 +184,7 @@ const AppCanvas = () => {
                     ? await readProcessModel(params.workflow)
                     : null;
             setIsLoading(false);
-            debugger;
+            
             if (data) {
                 data.nodes?.forEach((node: any) => {
                     if (node?.data) {
@@ -197,8 +198,9 @@ const AppCanvas = () => {
                         edge.data.modifyEdgeInfo = getEdgeSpecificModifyCallback(edge.id);
                     }
                 });
-                setNodes(data.nodes === undefined ? [] : data.nodes);
-                setEdges(data.edges === undefined ? [] : data.edges);
+                setEdges(data.edges ?  data.edges : []);
+                setNodes(data.nodes ? data.nodes : []);
+                
             }
         };
 
@@ -206,7 +208,7 @@ const AppCanvas = () => {
     }, [params?.id]);
 
     const updateNodeLabel = (nodeId: string, newLabel: string) => {
-        debugger;
+        
         setNodes((prevNodes) =>
             prevNodes.map((node) =>
                 node.id === nodeId ? { ...node, data: { ...node.data, nodeName: newLabel } } : node
@@ -298,7 +300,7 @@ const AppCanvas = () => {
                 return modifiedEdges;
             });
         };
-        debugger;
+        
         return modifyEdgeInfo;
     };
 
@@ -319,7 +321,7 @@ const AppCanvas = () => {
                 return modifiedNode
             })
         }
-        debugger
+        
         return modifyNodeInfo;
     }
 
@@ -338,7 +340,7 @@ const AppCanvas = () => {
             x: event.clientX,
             y: event.clientY,
         })
-        debugger
+        
         console.log(nodes);
         let newNode = {
             id: newNodeId,
@@ -364,8 +366,17 @@ const AppCanvas = () => {
 
     const deleteNode = (nodeId: string) => {
         setNodes((nodes) => {
-            debugger;
+            
+            setEdges((edges) => {
+                const newEdgesList = edges.filter(e => e.source.split('_')[1] !== nodeId && e.target.split('_')[1] !== nodeId)  
+                return newEdgesList;
+            })
             const newNodesList = nodes.filter(e => e.data.nodeId !== nodeId)
+            // for(let i = 0; i < edges.length; i++) {
+            //     if(edges[i].source.split('_')[1] === nodeId || edges[i].target.split('_')[1] === nodeId) {
+            //         deleteEdge(edges[i].id)
+            //     };   
+            // }
             return newNodesList;
         })
     }
@@ -425,7 +436,7 @@ const AppCanvas = () => {
     };
 
     const saveProcessModel = async ({ folderId }: { folderId: any }) => {
-        debugger;
+        
         setIsLoading(true);
         const saveData = {
             nodes: nodes,
@@ -457,7 +468,7 @@ const AppCanvas = () => {
 
     const setWorkflow = ({ nodes, edges }: { nodes: any[], edges: any[] }) => {
         console.log({ nodes, edges });
-        debugger
+        
         nodes.forEach((node: any) => node.data.deleteNode = deleteNode);
         edges.forEach((edge: any) => {
 

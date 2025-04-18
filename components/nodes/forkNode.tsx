@@ -15,7 +15,7 @@ import { PlusSquare, Trash } from 'lucide-react';
 
 interface forkNodeProps {
     data: {
-        id: string,
+        nodeId: string,
         deleteNode:any
     },
     selected: boolean
@@ -33,7 +33,7 @@ const ForkNode = ({data,selected}: forkNodeProps) => {
         <NodeToolbar position={Position.Top}>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

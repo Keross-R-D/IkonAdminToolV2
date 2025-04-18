@@ -59,7 +59,7 @@ const SelfConnecting = (props: CustomEdgeProps) => {
     // if (props.source !== props.target) {
     //     return <SmoothStepEdge {...props} />;
     // }
-    debugger
+    
     const { sourceX, sourceY, targetX, targetY, id, markerEnd, label } = props;
     //const height = 150 + Math.floor(Math.random() * 100);
     

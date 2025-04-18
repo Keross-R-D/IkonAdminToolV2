@@ -15,7 +15,7 @@ import { Trash, XSquare } from 'lucide-react';
 
 interface xorNodeProps {
     data: {
-        id: string,
+        nodeId: string,
         deleteNode:any
     },
     selected: boolean
@@ -34,7 +34,7 @@ const XORNode = ({data,selected}: xorNodeProps) => {
         <NodeToolbar position={Position.Top}>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>

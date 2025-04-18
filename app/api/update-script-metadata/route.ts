@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     const scriptsPath = path.join(targetFolder.path, "scripts");
     const metadataPath = path.join(scriptsPath, "metadata.json");
-    const newScriptPath = path.join(scriptsPath, fileName+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
+    const newScriptPath = path.join(scriptsPath, fileName+"_"+fileId+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
 
     // Ensure scripts folder exists
     if (!fs.existsSync(scriptsPath)) {
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         previousFileName = metadata[existingIndex].scriptName;
 
         if (previousFileName !== fileName) {
-          const previousPath = path.join(scriptsPath, previousFileName+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
+          const previousPath = path.join(scriptsPath, previousFileName+"_"+fileId+"."+(langType === "JavaScript" ? "js" : langType == "Python" ? "py": "mjs"));
 
           if (fs.existsSync(previousPath)) {
             fs.renameSync(previousPath, newScriptPath); // rename file

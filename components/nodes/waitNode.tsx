@@ -16,9 +16,9 @@ import { useState } from 'react';
 
 interface waitNodeProps {
     data: {
-        label: string,
+        nodeName: string,
         deleteNode: any,
-        id: string
+        nodeId: string
     },
     selected: boolean
 }
@@ -32,14 +32,14 @@ const WaitNode = ({data,selected}: waitNodeProps) => {
         cardClassNames += " ring-2 ring-primary"
     }
 
-    const [taskName, setTaskName] = useState((data.label)? data.label : "");
+    const [taskName, setTaskName] = useState((data.nodeName)? data.nodeName : "");
 
     return (
         <>
         <NodeToolbar position={Position.Top}>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>
