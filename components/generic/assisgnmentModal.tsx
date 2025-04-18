@@ -9,9 +9,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { boolean, z } from "zod";
@@ -62,6 +60,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   const [scripts, setScripts] = useState<ScriptOption[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [noGroupData, setNoGroupData] = useState(false);
   const { edgesAppCanvas, nodesAppCanvas } = useAppCanvas();
   console.log("nodeInfoDefaultValues ", nodeInfoDefaultValues);
   console.log("edgesAppCanvas ", edgesAppCanvas);
@@ -256,7 +255,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
             <div className="flex justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-          ) : (
+          ) : groups.length > 0 ? (
             groups.map((group) => (
               <div key={group.id} className="flex items-center space-x-2">
                 <Checkbox
@@ -273,6 +272,10 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
                 <Label htmlFor={group.id}>{group.name}</Label>
               </div>
             ))
+          ) : (
+            <div className="flex justify-center py-8 text-muted-foreground">
+              No groups available
+            </div>
           )}
         </div>
       ),
