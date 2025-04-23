@@ -6,7 +6,6 @@ interface GroupData {
   id?: string;
   name: string;
   description?: string;
-  softwareId: string;
   active: boolean;
 }
 

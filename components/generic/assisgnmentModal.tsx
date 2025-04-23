@@ -59,7 +59,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   const params = useParams();
   const [scripts, setScripts] = useState<ScriptOption[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [noGroupData, setNoGroupData] = useState(false);
   const { edgesAppCanvas, nodesAppCanvas } = useAppCanvas();
   console.log("nodeInfoDefaultValues ", nodeInfoDefaultValues);
@@ -170,6 +170,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
+        setLoading(true);
         const header = new Headers();
         const host =
           (header.get("x-forwarded-proto") || "http") +
@@ -188,9 +189,11 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
 
         const data = await response.json();
         console.log("groups ", data);
-        if (data.length > 0) {
+        // if (data.length > 0) {
+        //   setLoading(false);
+        // }else{
           setLoading(false);
-        }
+      //  }
         setGroups(data);
       } catch (error) {
         console.error("Error fetching groups:", error);

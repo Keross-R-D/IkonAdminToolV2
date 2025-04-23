@@ -21,15 +21,12 @@ interface GroupProps {
   active: any;
   id: string;
   name: string;
-  description?: string;
-  softwareId: string;
+  description?: string
 }
 
 function GroupTable({
-  softwareId,
   groups,
 }: {
-  softwareId: string;
   groups: any;
 }) {
   const [open, setOpen] = useState(false);
@@ -139,7 +136,6 @@ function GroupTable({
         <GroupForm
           open={open}
           setOpen={setOpen}
-          softwareId={softwareId}
           groupData={selectedGroup}
         />
       )}

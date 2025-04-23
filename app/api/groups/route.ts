@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Group {
   id: string;
   name: string;
   description?: string;
-  softwareId: string;
   active: boolean;
   groupType: string;
 }
@@ -89,13 +89,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const groups: Group[] = fileData.groups || [];
-    const groupId = newGroup.id || Date.now().toString();
+    const groupId = newGroup.id || uuidv4();
 
     const updatedGroup: Group = {
       id: groupId,
       name: newGroup.name || "",
       description: newGroup.description,
-      softwareId: newGroup.softwareId || "",
       active: true,
       groupType: "static",
     };

@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { set } from "zod";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
+import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
 
 
 export default function ScriptPage() {
@@ -23,6 +24,7 @@ export default function ScriptPage() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
+  const { openDialog } = useDialog();
 
    useEffect(() => {
     const createScriptFile = async () => {
@@ -151,38 +153,45 @@ export default function ScriptPage() {
   const handleScriptDeletion = async (index: number) => {
     
     const updatedScripts = [...scripts];
-    setIsLoading(true);
-    try {
-      
-      const response = await fetch("/api/delete-script-file", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          folderId : params?.workflow,
-          scriptId : updatedScripts[index]?.scriptId,
-        }),
-      });
+    openDialog({
+      title:"Confirmation",
+      description:`Are you sure you want to delete folder ${updatedScripts[index]?.scriptName}?`,
+      cancelText:"Cancel",
+      confirmText:"Delete",
+      onConfirm: async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch("/api/update-script-metadata", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              folderId : params?.workflow,
+              scriptId : updatedScripts[index]?.scriptId,
+            }),
+          });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error deleting script file:", errorData);
-        setIsLoading(false);
-        throw new Error(errorData.error || "Failed to Delete script file");
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error deleting script file:", errorData);
+            setIsLoading(false);
+            throw new Error(errorData.error || "Failed to Delete script file");
+          }
+          else {
+            setIsLoading(false);
+            toast.success("Script file deleted successfully!");
+            const data = await response.json();
+            if(data.fs){
+              setScripts(data.fs); // Assuming the response contains an array of scripts
+            }
+          }
+          //window.location.reload();
+        } catch (err) {
+          console.error("❌  Delete script file error :", err);
+          alert("Failed to Delete script file. Please try again.");
+          return;
+        } 
       }
-      else {
-        setIsLoading(false);
-        toast.success("Script file deleted successfully!");
-        const data = await response.json();
-        if(data.fs){
-          setScripts(data.fs); // Assuming the response contains an array of scripts
-        }
-      }
-      //window.location.reload();
-    } catch (err) {
-      console.error("❌  Delete script file error :", err);
-      alert("Failed to Delete script file. Please try again.");
-      return;
-    } 
+    });
   }
   const showscripts = () => {
     // if(scripts.length === 0) {

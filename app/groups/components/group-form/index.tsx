@@ -20,13 +20,11 @@ interface GroupData {
   id?: string;
   name: string;
   description?: string;
-  softwareId: string;
 }
 
 interface GroupFormProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  softwareId: string;
   groupData: GroupData | null;
 }
 
@@ -36,10 +34,9 @@ const schema = z.object({
     .min(1, "Group name is required")
     .max(63, "Group name must be at most 63 characters long"),
   description: z.string().optional(),
-  softwareId: z.string().min(1, "Software selection is required"),
 });
 
-function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
+function GroupForm({ open, setOpen,  groupData }: GroupFormProps) {
   const isEditMode = !!groupData?.id;
 
   const form = useForm<z.infer<typeof schema>>({
@@ -47,7 +44,6 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
     defaultValues: {
       name: "",
       description: "",
-      softwareId: softwareId || "",
     },
   });
 
@@ -56,16 +52,14 @@ function GroupForm({ open, setOpen, softwareId, groupData }: GroupFormProps) {
       form.reset({
         name: groupData.name,
         description: groupData.description || "",
-        softwareId: groupData.softwareId || "",
       });
     } else {
       form.reset({
         name: "",
         description: "",
-        softwareId: softwareId || "",
       });
     }
-  }, [groupData, open, softwareId, isEditMode, form]);
+  }, [groupData, open,  isEditMode, form]);
 
   const handleSubmit = async (data: z.infer<typeof schema>) => {
     try {

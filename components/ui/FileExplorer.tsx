@@ -8,6 +8,7 @@ import { Tooltip } from "@/ikon/components/tooltip"
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { set } from "zod";
 import { toast } from "sonner";
+import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
 
 
 interface FileNode {
@@ -39,9 +40,8 @@ const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
 
 export default function FileExplorer({ node,openEditFolderModal, setFolderStructure, setIsLoading }: { node: FileNode , openEditFolderModal: any, setFolderStructure: any, setIsLoading: any}) {
   const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>({});
-  //const [isLoading, setIsLoading] = useState(false); // Loading state for spinner
   const router = useRouter();
-  // const { selectedApp,setSelectedApp } = useNavbar();
+  const { openDialog } = useDialog();
 
   const toggleFolder = (id: string) => {
     setOpenFolders((prev) => ({
@@ -105,31 +105,41 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
 
   const handleFolderDeletion = async (node: FileNode) => {
     const folderId = node.id; // Assuming node has an id property
+    const folderName = node.name; // Assuming node has a name property
+    openDialog({
+      title:"Confirmation",
+      description:`Are you sure you want to delete folder ${folderName}?`,
+      cancelText:"Cancel",
+      confirmText:"Delete",
+      onConfirm: async () => {
+        setIsLoading(true); // Start loading spinner
+        // ✅ Send request to backend
+        const response = await fetch("/api/create-folder", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ folderId }),
+        });
     
-    setIsLoading(true); // Start loading spinner
-    // ✅ Send request to backend
-    const response = await fetch("/api/create-folder", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ folderId }),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to Delete folder");
-      const errorData = await response.json();
-      toast.error("Failed to delete folder: " + errorData.error);
-      setIsLoading(false);
-      return;
-    }
-    else{
-      setIsLoading(false); // Stop loading spinner
-      toast.success(`${node.name} deleted  successfully!`);
-      const data = await response.json();
-      if(data){
-        setFolderStructure(filterFolders(data?.fs));
-      }
-      
-    }
+        if (!response.ok) {
+          console.error("Failed to Delete folder");
+          const errorData = await response.json();
+          toast.error("Failed to delete folder: " + errorData.error);
+          setIsLoading(false);
+          return;
+        }
+        else{
+          setIsLoading(false); // Stop loading spinner
+          toast.success(`${node.name} deleted  successfully!`);
+          const data = await response.json();
+          if(data){
+            setFolderStructure(filterFolders(data?.fs));
+          }
+          
+        }
+      },
+    })
+    
+    
     
   }
 
@@ -178,7 +188,8 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                       <Tooltip tooltipContent="Delete"  side={"top"}>
                         <Button className="text-sm px-2 py-1 h-fit " variant="destructive" size={"sm"} onClick={() => handleFolderDeletion(node)}>
                           <Trash2Icon />Delete
-                        </Button>  
+                        </Button> 
+                        
                       </Tooltip>
                       <Tooltip tooltipContent="Start Process" side={"top"}>
                             <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => startProcess(node.id)}>
@@ -192,6 +203,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                             </Button>
                             
                       </Tooltip>
+                      
           </div>
         )}
       </div>

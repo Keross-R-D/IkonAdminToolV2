@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
+import {promises as fs} from "fs";
 import path from "path";
 
 // Ensure Next.js runs this in a Node.js environment
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const { folderId, newData } = await req.json();
 
     // Read the existing folder structure
-    const fileData = fs.readFileSync(structurePath, "utf-8");
+    const fileData = await  fs.readFile(structurePath, "utf-8");
     const structure = JSON.parse(fileData);
 
     if (!folderId || !newData) {
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const processModelPath = path.join(targetFolderPath, "process_model.json");
 
     // ✅ Write data to process_model.json
-    fs.writeFileSync(processModelPath, JSON.stringify(newData, null, 2));
+    await fs.writeFile(processModelPath, JSON.stringify(newData, null, 2));
 
     return NextResponse.json({ success: true, message: "process_model.json updated!" });
   } catch (error) {

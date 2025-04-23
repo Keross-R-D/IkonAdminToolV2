@@ -17,7 +17,7 @@ async function page() {
   const groups = await response.json();
   return (
     <div className="p-2">
-      <GroupTable softwareId={uuidv4()} groups={groups} />
+      <GroupTable  groups={groups} />
     </div>
   );
 }
