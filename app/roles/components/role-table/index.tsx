@@ -23,6 +23,8 @@ import { updateRoleStatus } from "../update-role-status";
 import { ManageGroupsForm } from "../manage-group-form";
 import { updateGroupStatusInRole } from "../manage-group-form/update-group-in-role";
 import { Tooltip } from "@/ikon/components/tooltip";
+import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
+import { toast } from "sonner";
 
 interface RoleProps {
   groups: never[];
@@ -47,6 +49,7 @@ function RoleTable({
   const [openUsersForm, setOpenUsersForm] = useState(false);
   const [openGroupForm, setOpenGroupForm] = useState(false);
   const [selectedRole, setSelectedRole] = useState<RoleProps | null>(null);
+  const { closeDialog, openDialog } = useDialog();
 
   console.log("group details ", groups);
 
@@ -118,8 +121,21 @@ function RoleTable({
           label: "Deactivate",
           icon: Ban,
           onClick: (row) => {
-            setSelectedRole(row);
-            handleToggleActive(row);
+            openDialog({
+              title: "Deactivate Role",
+              description: "Are you sure you want to deactivate this role?",
+              confirmText: "Deactivate",
+              cancelText: "Cancel",
+              onConfirm: async () => {
+                try {
+                  setSelectedRole(row);
+                  handleToggleActive(row);
+                  toast.success("Role deactivated successfully");
+                } catch (error) {
+                  toast.error("Failed to deactivate role");
+                }
+              },
+            });
           },
           visibility: (row) => {
             return row?.active;
@@ -129,8 +145,21 @@ function RoleTable({
           label: "Activate",
           icon: Ban,
           onClick: (row) => {
-            setSelectedRole(row);
-            handleToggleActive(row);
+            openDialog({
+              title: "Activate Role",
+              description: "Are you sure you want to activate this role?",
+              confirmText: "Activate",
+              cancelText: "Cancel",
+              onConfirm: async () => {
+                try {
+                  setSelectedRole(row);
+                  handleToggleActive(row);
+                  toast.success("Role activated successfully");
+                } catch (error) {
+                  toast.error("Failed to activate role");
+                }
+              },
+            });
           },
           visibility: (row) => {
             return !row?.active;
