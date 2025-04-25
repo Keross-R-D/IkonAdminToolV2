@@ -181,7 +181,7 @@ const AppCanvas = () => {
         const fetchProcessModel = async () => {
             const data =
                 typeof params?.workflow === "string"
-                    ? await readProcessModel(params.workflow)
+                    ? await readProcessModel(decodeURIComponent(params.workflow).split("/")[0])
                     : null;
             setIsLoading(false);
             

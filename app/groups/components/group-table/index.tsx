@@ -16,6 +16,7 @@ import React, { useState } from "react";
 import GroupForm from "../group-form";
 import { ManageUsersForm } from "../manage-users-form";
 import { updateGroupStatus } from "../update-group-status";
+import { Tooltip } from "@/ikon/components/tooltip";
 
 interface GroupProps {
   active: any;
@@ -117,6 +118,7 @@ function GroupTable({
       ],
     },
     extraTools: [
+      <Tooltip tooltipContent="Add Group" side={"top"} >
       <IconTextButton
         onClick={() => {
           setSelectedGroup(null);
@@ -124,8 +126,9 @@ function GroupTable({
         }}
       >
         <Plus />
-        Group
-      </IconTextButton>,
+        
+      </IconTextButton>
+      </Tooltip>,
     ],
   };
 

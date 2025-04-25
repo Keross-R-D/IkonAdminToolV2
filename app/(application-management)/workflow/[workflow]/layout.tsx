@@ -11,7 +11,7 @@ export default async function Layout({
     const paramsData = await params
     return (
         <>
-            <RenderAppBreadcrumb breadcrumb={{ level: 1, title: "Workflow", href: `/workflow/${paramsData?.workflow}` }} />
+            <RenderAppBreadcrumb breadcrumb={{ level: 1, title: `Workflow - ${decodeURIComponent(paramsData?.workflow).split('/')[1]}`, href: `/workflow/${paramsData?.workflow}` }} />
             {children}
         </>
     )

@@ -33,16 +33,18 @@ export default function ScriptPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          folderId: params?.workflow,
+          folderId: decodeURIComponent(params?.workflow).split("/")[0],
         }),
       });
       if (!response.ok) {
         const errorData = await response.json();
+        setIsLoading(false);
+
         throw new Error(errorData.error || "Failed to Create script file");
       } 
       const data = await response.json();
       setIsLoading(false);
-      setScripts(data.metadata); // Assuming the response contains an array of scripts
+      setScripts(data?.metadata); // Assuming the response contains an array of scripts
     };
 
     createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
@@ -84,7 +86,7 @@ export default function ScriptPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : params?.workflow,
+              folderId : decodeURIComponent(params?.workflow).split("/")[0],
               fileId : scripts[editingIndex]?.scriptId,
               fileName: newScriptName,
               type: scriptType,
@@ -118,7 +120,7 @@ export default function ScriptPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : params?.workflow,
+              folderId : decodeURIComponent(params?.workflow).split("/")[0],
               fileId : newScriptId,
               fileName: newScriptName,
               type: scriptType,
@@ -165,7 +167,7 @@ export default function ScriptPage() {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : params?.workflow,
+              folderId : decodeURIComponent(params?.workflow).split("/")[0],
               scriptId : updatedScripts[index]?.scriptId,
             }),
           });
@@ -204,7 +206,7 @@ export default function ScriptPage() {
         <div className={"flex flex-col gap-2 p-2 grow  overflow-y-auto "}>
         
           
-        {scripts.map((script, index) => (
+        {scripts.length > 0 ? scripts.map((script, index) => (
           <div
             key={index}
             className="flex items-center justify-between border rounded-xl shadow-sm px-4 py-3  w-full max-w-full"
@@ -229,7 +231,7 @@ export default function ScriptPage() {
               </Tooltip>
             </div>
           </div>
-        ))}
+        )) : <div className="p-4">No scripts found.</div>}
       </div>
       </>
       );

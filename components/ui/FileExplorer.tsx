@@ -54,12 +54,12 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
     console.log("Start Process: ", id); 
   }
 
-  function openModal(id: string) {// Navigate to Modal Page
+  function openModal(node: FileNode) {// Navigate to Modal Page
     
   setIsLoading(true);
   
-    console.log("Start Process: ", id); 
-    router.push(`/workflow/${encodeURIComponent(id)}`);
+    console.log("Start Process: ", node.id); 
+    router.push(`/workflow/${encodeURIComponent(node.id+"/"+node.name)}`); // Navigate to the modal page
   }
 
   function openTasks(id: string) {
@@ -175,7 +175,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                             
                     </Tooltip>
                     <Tooltip tooltipContent="Modal" side={"top"}>
-                            <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openModal(node.id)}>
+                            <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openModal(node)}>
                               <Waypoints />Modal
                             </Button>
                       </Tooltip>

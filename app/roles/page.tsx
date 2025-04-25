@@ -60,23 +60,34 @@ async function Page() {
     }
 
     return (
-      <div className="p-2">
-        <RoleTable 
-          softwareId={softwareId} 
-          roles={safeRoles} 
-          groups={safeGroups} 
-        />
+      <div className="p-4 h-full">
+
+        <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
+          <div className="p-2">
+            <RoleTable
+              softwareId={softwareId}
+              roles={safeRoles}
+              groups={safeGroups}
+            />
+          </div>
+        </div>
       </div>
+
     );
   } catch (error) {
     console.error("Unexpected error:", error);
     return (
-      <div className="p-2">
-        <RoleTable 
-          softwareId={softwareId} 
-          roles={[]} 
-          groups={[]} 
-        />
+      <div className="p-4 h-full">
+
+        <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
+          <div className="p-2">
+            <RoleTable
+              softwareId={softwareId}
+              roles={[]}
+              groups={[]}
+            />
+          </div>
+        </div>
       </div>
     );
   }

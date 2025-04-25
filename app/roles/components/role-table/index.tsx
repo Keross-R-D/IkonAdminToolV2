@@ -22,6 +22,7 @@ import { ManageUsersForm } from "../manage-users-form";
 import { updateRoleStatus } from "../update-role-status";
 import { ManageGroupsForm } from "../manage-group-form";
 import { updateGroupStatusInRole } from "../manage-group-form/update-group-in-role";
+import { Tooltip } from "@/ikon/components/tooltip";
 
 interface RoleProps {
   groups: never[];
@@ -138,15 +139,16 @@ function RoleTable({
       ],
     },
     extraTools: [
-      <IconTextButton
-        onClick={() => {
-          setSelectedRole(null);
-          setOpen(true);
-        }}
-      >
-        <Plus />
-        Role
-      </IconTextButton>,
+      <Tooltip tooltipContent="Add Role" side={"top"} >
+        <IconTextButton
+          onClick={() => {
+            setSelectedRole(null);
+            setOpen(true);
+          }}
+        >
+          <Plus />
+        </IconTextButton>
+      </Tooltip>,
     ],
   };
 

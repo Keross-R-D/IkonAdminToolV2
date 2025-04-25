@@ -8,7 +8,6 @@ interface Group {
   name: string;
   description?: string;
   active: boolean;
-  groupType: string;
 }
 
 interface FileData {
@@ -96,7 +95,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       name: newGroup.name || "",
       description: newGroup.description,
       active: true,
-      groupType: "static",
     };
 
     const existingIndex = groups.findIndex((g) => g.id === groupId);
