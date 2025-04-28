@@ -205,7 +205,7 @@ const AppCanvas = () => {
         };
 
         fetchProcessModel();
-    }, [params?.id]);
+    }, [params?.workflow]);
 
     const updateNodeLabel = (nodeId: string, newLabel: string) => {
         
@@ -519,7 +519,7 @@ const AppCanvas = () => {
                         downloadProcessModel={downloadProcessModel}
                         getLayoutedElements={getLayoutedElements}
                         saveProcessModel={() =>
-                            saveProcessModel({ folderId: params?.workflow })
+                            saveProcessModel({ folderId: decodeURIComponent(params?.workflow).split("/")[0] })
                         }
                     />
                     <ReactFlow

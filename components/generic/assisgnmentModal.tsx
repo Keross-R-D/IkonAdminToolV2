@@ -136,7 +136,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          folderId: params?.workflow,
+          folderId: decodeURIComponent(params?.workflow).split("/")[0],
         }),
       });
       if (!response.ok) {
