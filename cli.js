@@ -16,6 +16,7 @@ function readDirectory(dir, base = dir) {
   for (const file of files) {
     const fullPath = path.join(dir, file);
     const stats = fs.statSync(fullPath);
+    if(file === "lib") continue; // Skip these folders
 
     const node = {
       id: file === "src"? Date.now().toString() : file.split("_")[1],

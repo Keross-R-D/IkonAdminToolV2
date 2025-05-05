@@ -40,7 +40,7 @@ export default function ScriptPage() {
         const errorData = await response.json();
         setIsLoading(false);
 
-        throw new Error(errorData.error || "Failed to Create script file");
+        console.error(errorData.error || "Failed to Create script file");
       } 
       const data = await response.json();
       setIsLoading(false);

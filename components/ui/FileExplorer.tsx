@@ -62,8 +62,9 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
     router.push(`/workflow/${encodeURIComponent(node.id+"/"+node.name)}`); // Navigate to the modal page
   }
 
-  function openTasks(id: string) {
-    console.log("Open Tasks: ", id);
+  function openTasks(node: FileNode) {
+    console.log("Open Tasks: ", node.id);
+    router.push(`/myTask/${encodeURIComponent(node.id+"/"+node.name)}`); // Navigate to the modal page
   }
   const handleDownloadFolder = async (node: FileNode) => {
     try {
@@ -198,7 +199,7 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                             
                       </Tooltip>
                       <Tooltip tooltipContent="My Task" side={"top"}>
-                            <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node.id)}>
+                            <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node)}>
                               <LayoutList/> My Task
                             </Button>
                             
