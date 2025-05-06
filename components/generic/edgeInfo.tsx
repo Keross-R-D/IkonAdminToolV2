@@ -169,18 +169,18 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                folderId: decodeURIComponent(params?.workflow).split("/")[0],
+                folderId: decodeURIComponent(params?.workflow),
               }),
             });
             if (!response.ok) {
               const errorData = await response.json();
-              console.error(errorData.error || "Failed to Create script file");
+              console.log(errorData.error || "Failed to Create script file");
             } 
             const data = await response.json();
             setScripts(data.metadata); // Update state with the fetched scripts
           };
       
-          createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
+          createScriptFile().catch((err) => console.log("❌ Error in useEffect:", err));
         }, []);
 
 

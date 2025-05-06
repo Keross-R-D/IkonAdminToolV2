@@ -2,6 +2,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import RoleTable from "./components/role-table";
 import { headers } from "next/headers";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 
 interface Role {
   id: string;
@@ -27,34 +28,34 @@ async function Page() {
   try {
     let safeRoles: Role[] = [];
     try {
-      const rolesResponse = await fetch(`${host}/api/roles`, {
+      const rolesResponse = await apiReaquest("/api/roles",{
         next: { tags: ["roles"] },
         cache: 'no-store'
       });
 
-      if (rolesResponse.ok) {
-        const rolesData = await rolesResponse.json();
+      // if (rolesResponse.ok) {
+        const rolesData =  rolesResponse;
         safeRoles = Array.isArray(rolesData) ? rolesData : [];
-      } else if (rolesResponse.status !== 404) {
-        console.error(`Roles API error: ${rolesResponse.status} ${rolesResponse.statusText}`);
-      }
+      // } else if (rolesResponse.status !== 404) {
+      //   console.error(`Roles API error: ${rolesResponse.status} ${rolesResponse.statusText}`);
+      // }
     } catch (error) {
       console.error("Roles fetch error:", error);
     }
 
     let safeGroups: Group[] = [];
     try {
-      const groupsResponse = await fetch(`${host}/api/groups`, {
+      const groupsResponse = await apiReaquest("/api/groups",{
         next: { tags: ["groups"] },
         cache: 'no-store'
       });
 
-      if (groupsResponse.ok) {
-        const groupsData = await groupsResponse.json();
+      // if (groupsResponse.ok) {
+        const groupsData =  groupsResponse;
         safeGroups = Array.isArray(groupsData) ? groupsData : [];
-      } else if (groupsResponse.status !== 404) {
-        console.error(`Groups API error: ${groupsResponse.status} ${groupsResponse.statusText}`);
-      }
+      // } else if (groupsResponse.status !== 404) {
+      //   console.error(`Groups API error: ${groupsResponse.status} ${groupsResponse.statusText}`);
+      // }
     } catch (error) {
       console.error("Groups fetch error:", error);
     }

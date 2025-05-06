@@ -1,5 +1,5 @@
 import { RenderAppBreadcrumb } from '@/ikon/components/app-breadcrumb';
-import { headers } from 'next/headers';
+import { apiReaquest } from '@/ikon/utils/apiRequest';
 import React from 'react'
 
 
@@ -8,13 +8,7 @@ export default async function Layout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const header = await headers();
-    const host =
-        (header.get("x-forwarded-proto") || "http") +
-        "://" +
-        (header.get("host") || "localhost:3000");
-    const response = await fetch(`${host}/api/get_projectData`);
-    const projectData = await response.json();
+    const projectData = await apiReaquest("/api/get_projectData");
     return (
         <>
             <RenderAppBreadcrumb breadcrumb={{ level: 0, title: `${projectData.projectName} - Group Management`, href: "/" }} />

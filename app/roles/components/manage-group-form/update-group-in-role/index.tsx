@@ -1,6 +1,6 @@
 "use server";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 import { revalidateTag } from "next/cache";
-import { headers } from "next/headers";
 
 interface RoleData {
   id?: string;
@@ -14,12 +14,8 @@ export const updateGroupStatusInRole = async (
   selectedGroupIds: string[]
 ): Promise<RoleData> => {
   try {
-    const header = await headers();
-  const host =
-    (header.get("x-forwarded-proto") || "http") +
-    "://" +
-    (header.get("host") || "localhost:3000");
-    const response = await fetch(`${host}/api/roles/update-groups`, {
+    
+    const response = await apiReaquest(`/api/roles/update-groups`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -30,11 +26,9 @@ export const updateGroupStatusInRole = async (
       }),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to save groups to role");
-    }
+   
 
-    const updatedRole = await response.json();
+    const updatedRole = response;
     revalidateTag("roles");
 
     console.log(`Successfully saved ${selectedGroupIds.length} groups to role`);

@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 import { Download, Workflow, Save, Settings } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Tooltip } from "@/ikon/components/tooltip"
 import { useState } from "react";
 
@@ -12,13 +12,14 @@ const AppHeader = ({ setProcessModel, downloadProcessModel, getLayoutedElements,
 
     const router = useRouter();
     const params =  useParams();
+    const searchParams = useSearchParams();
 
 
     const openScripts = () => {
         setIsLoading(true);
         
         if (params?.workflow) {
-            router.push(`/workflow/${params.workflow}/scripts/${params.workflow}`);
+            router.push(`/workflow/${params.workflow}/scripts/${params.workflow}?name=${searchParams.get('name')}`);
             
         }
 

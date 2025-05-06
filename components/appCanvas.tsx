@@ -181,7 +181,7 @@ const AppCanvas = () => {
         const fetchProcessModel = async () => {
             const data =
                 typeof params?.workflow === "string"
-                    ? await readProcessModel(decodeURIComponent(params.workflow).split("/")[0])
+                    ? await readProcessModel(decodeURIComponent(params.workflow))
                     : null;
             setIsLoading(false);
             
@@ -519,7 +519,7 @@ const AppCanvas = () => {
                         downloadProcessModel={downloadProcessModel}
                         getLayoutedElements={getLayoutedElements}
                         saveProcessModel={() =>
-                            saveProcessModel({ folderId: decodeURIComponent(params?.workflow).split("/")[0] })
+                            saveProcessModel({ folderId: decodeURIComponent(params?.workflow) })
                         }
                     />
                     <ReactFlow

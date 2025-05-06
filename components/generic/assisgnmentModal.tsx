@@ -23,6 +23,7 @@ import { useParams } from "next/navigation";
 import { Checkbox } from "@/shadcn/ui/checkbox";
 import { Label } from "@/shadcn/ui/label";
 import { useAppCanvas } from "../appcanvasContext";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 
 type ScriptOption = {
   value: string;
@@ -112,7 +113,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch process metadata");
+          console.log("Failed to fetch process metadata");
         }
 
         const data = await response.json();
@@ -123,7 +124,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
         setShared(data?.content?.isSharedProcess);
         setMetaData(data);
       } catch (error) {
-        console.error("Error fetching process metadata:", error);
+        console.log("Error fetching process metadata:", error);
       }
     };
 
@@ -136,7 +137,7 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          folderId: decodeURIComponent(params?.workflow).split("/")[0],
+          folderId: decodeURIComponent(params?.workflow),
         }),
       });
       if (!response.ok) {
@@ -177,17 +178,15 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
           "://" +
           (header.get("host") || "localhost:3000");
 
-        const response = await fetch(`${host}/api/groups`, {
+        const response = await apiReaquest(`/api/groups`, {
           next: {
             tags: ["groups"],
           },
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch groups");
-        }
+        
 
-        const data = await response.json();
+        const data = response;
         console.log("groups ", data);
         // if (data.length > 0) {
         //   setLoading(false);

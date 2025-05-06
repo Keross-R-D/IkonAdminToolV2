@@ -9,6 +9,8 @@ import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { set } from "zod";
 import { toast } from "sonner";
 import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
+import Link from "next/link";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 
 
 interface FileNode {
@@ -50,8 +52,10 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
     }));
   };
 
-  function startProcess(id: string) {
+  async function startProcess(id: string) {
     console.log("Start Process: ", id); 
+    const projectData = await apiReaquest("/api/get_projectData")
+    const responce = await apiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`)
   }
 
   function openModal(node: FileNode) {// Navigate to Modal Page
@@ -59,12 +63,13 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   setIsLoading(true);
   
     console.log("Start Process: ", node.id); 
-    router.push(`/workflow/${encodeURIComponent(node.id+"/"+node.name)}`); // Navigate to the modal page
+    router.push(`/workflow/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
   }
 
   function openTasks(node: FileNode) {
     console.log("Open Tasks: ", node.id);
-    router.push(`/myTask/${encodeURIComponent(node.id+"/"+node.name)}`); // Navigate to the modal page
+
+    router.push(`/myTask/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
   }
   const handleDownloadFolder = async (node: FileNode) => {
     try {
@@ -196,12 +201,13 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                             <Button className="text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => startProcess(node.id)}>
                               <Play />Start
                             </Button>
-                            
                       </Tooltip>
                       <Tooltip tooltipContent="My Task" side={"top"}>
+                       
                             <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node)}>
                               <LayoutList/> My Task
                             </Button>
+                            
                             
                       </Tooltip>
                       

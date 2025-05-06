@@ -1,6 +1,6 @@
 "use server";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 import { revalidateTag } from "next/cache";
-import { headers } from "next/headers";
 interface RoleData {
   id?: string;
   name: string;
@@ -13,12 +13,8 @@ export const updateRoleStatus = async (
   updatedRow: RoleData
 ): Promise<RoleData> => {
   try {
-    const header = await headers();
-    const host =
-      (header.get("x-forwarded-proto") || "http") +
-      "://" +
-      (header.get("host") || "localhost:3000");
-    const response = await fetch(`${host}/api/update-role-status`, {
+    
+    const response = await apiReaquest(`/api/update-role-status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -29,13 +25,10 @@ export const updateRoleStatus = async (
       }),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to update role status");
-    }
+    
 
-    const result = await response.json();
     revalidateTag("roles");
-    return result.data;
+    return response;
   } catch (error) {
     console.error("Error saving role:", error);
     throw error;

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Delete, Edit, FileCode2, Save, Trash, Trash2 } from "lucide-react";
 import { RenderAppBreadcrumb } from "@/ikon/components/app-breadcrumb";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Tooltip } from "@/ikon/components/tooltip";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { set } from "zod";
@@ -25,6 +25,7 @@ export default function ScriptPage() {
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const { openDialog } = useDialog();
+  const searchParams = useSearchParams();
 
    useEffect(() => {
     const createScriptFile = async () => {
@@ -33,21 +34,21 @@ export default function ScriptPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          folderId: decodeURIComponent(params?.workflow).split("/")[0],
+          folderId: decodeURIComponent(params?.workflow),
         }),
       });
       if (!response.ok) {
         const errorData = await response.json();
         setIsLoading(false);
 
-        console.error(errorData.error || "Failed to Create script file");
+        console.log(errorData.error || "Failed to Create script file");
       } 
       const data = await response.json();
       setIsLoading(false);
       setScripts(data?.metadata); // Assuming the response contains an array of scripts
     };
 
-    createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
+    createScriptFile().catch((err) => console.log("❌ Error in useEffect:", err));
   }, []);
 
   const handleSaveAll = () => {
@@ -86,7 +87,7 @@ export default function ScriptPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : decodeURIComponent(params?.workflow).split("/")[0],
+              folderId : decodeURIComponent(params?.workflow),
               fileId : scripts[editingIndex]?.scriptId,
               fileName: newScriptName,
               type: scriptType,
@@ -120,7 +121,7 @@ export default function ScriptPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : decodeURIComponent(params?.workflow).split("/")[0],
+              folderId : decodeURIComponent(params?.workflow),
               fileId : newScriptId,
               fileName: newScriptName,
               type: scriptType,
@@ -167,7 +168,7 @@ export default function ScriptPage() {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              folderId : decodeURIComponent(params?.workflow).split("/")[0],
+              folderId : decodeURIComponent(params?.workflow),
               scriptId : updatedScripts[index]?.scriptId,
             }),
           });
@@ -242,7 +243,7 @@ export default function ScriptPage() {
 
     <div className="p-4 h-full">
       <LoadingSpinner visible={isLoading} />
-      <RenderAppBreadcrumb breadcrumb={{ level: 2, title: "Scripts", href: `/workflow/${params.workflow}/scripts/${params.workflow}` }} />
+      <RenderAppBreadcrumb breadcrumb={{ level: 2, title: "Scripts", href: `/workflow/${params.workflow}?name=${searchParams.get('name')}/scripts/${params.workflow}?name=${searchParams.get('name')}` }} />
       <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full flex flex-col">
         <div className="flex gap-2 mb-2 justify-between items-center p-3 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">Scripts</h1>
