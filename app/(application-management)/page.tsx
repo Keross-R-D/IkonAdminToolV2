@@ -205,7 +205,7 @@ export default function Home() {
         {/* Header Section */}
         <div className="flex items-center justify-between p-3">
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-            Process
+            Process 1
           </h1>
           <div className="flex gap-2">
             <Tooltip tooltipContent="Restore Process" side={"top"} >
