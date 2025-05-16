@@ -64,22 +64,24 @@ if (command === "dev") {
 
 } else if (command === "update") {
   (async () => {
+    // Update dependencies
+    console.log("📦 Updating dependencies...");
     try {
-      console.log("📥 Pulling latest changes from master...");
-      execSync("git checkout master && git pull origin master", {
-        cwd: appFolder,
-        stdio: "inherit",
-      });
+      execSync("git pull origin master", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Dependencies updated successfully!");
 
-      console.log("🔧 Installing globally from local folder...");
-      execSync("npm i -g .", { cwd: appFolder, stdio: "inherit" });
+      execSync("npm install", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Dependencies updated successfully!");
 
-      console.log("🔨 Rebuilding Next.js app...");
-      execSync("npm run build", { cwd: appFolder, stdio: "inherit" });
+      execSync("npm run build", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Dependencies updated successfully!");
 
-      console.log("✅ Update complete!");
-    } catch (err) {
-      console.error("❌ Update failed:", err.message);
+      execSync("npm install -g .", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Dependencies updated successfully!");
+
+
+    } catch (error) {
+      console.error("❌ Error updating dependencies:", error);
       process.exit(1);
     }
   })();
@@ -94,11 +96,16 @@ if (command === "dev") {
       fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
       console.log(`✅ Folder structure saved!`);
 
-      const nextFolderPath = path.join(appFolder, ".next");
+      const nextFolderPath = path.join(appFolder, ".next", "BUILD_ID");
       if (!fs.existsSync(nextFolderPath)) {
-        console.log("🔨 .next folder not found, building...");
-        execSync("npm run build", { cwd: appFolder, stdio: "inherit" });
-        console.log("✅ Build completed!");
+        console.log("🔨 Production build not found. Running build...");
+        try {
+          execSync("npm run build", { cwd: appFolder, stdio: "inherit" });
+          console.log("✅ Build completed!");
+        } catch (err) {
+          console.error("❌ Build failed:", err.message);
+          process.exit(1);
+        }
       }
 
       const port = await findFreePort(3000);
