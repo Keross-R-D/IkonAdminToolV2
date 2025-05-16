@@ -68,16 +68,20 @@ if (command === "dev") {
     console.log("📦 Updating dependencies...");
     try {
       execSync("git pull origin master", { cwd: appFolder, stdio: 'inherit' });
-      console.log("✅ Dependencies updated successfully!");
+      console.log("✅ Downloaded latest code");
 
       execSync("npm install", { cwd: appFolder, stdio: 'inherit' });
       console.log("✅ Dependencies updated successfully!");
 
+      execSync("rm -rf .next", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Removed old build");
+
       execSync("npm run build", { cwd: appFolder, stdio: 'inherit' });
-      console.log("✅ Dependencies updated successfully!");
+      console.log("✅ Production build complete");
 
       execSync("npm install -g .", { cwd: appFolder, stdio: 'inherit' });
-      console.log("✅ Dependencies updated successfully!");
+      execSync("npm link", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Update successful");
 
 
     } catch (error) {
