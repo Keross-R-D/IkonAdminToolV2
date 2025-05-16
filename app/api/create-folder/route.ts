@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import archiver from "archiver";
+import { folder } from "jszip";
 
 
 export const runtime = "nodejs";
@@ -181,12 +182,15 @@ export async function POST(req: Request) {
         if (file === "metadata.json") {
           metadata = {
             processName: folderName,
+            processId: folderId,
+            processVersion: 1,
             parentProcess: {
               parent: parentName,
               path: srcNode ? newFolderPath.replace(srcNode.path, "") : parentFolderPath,
             },
             isLockRequired: true,
             isSharedProcess: true,
+            isInstanceLockNeeded: false,
             scripts: [],
             processVariableFields: [],
           };

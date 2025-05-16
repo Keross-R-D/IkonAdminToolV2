@@ -1,84 +1,46 @@
 [
   {
     "name": ".gitignore",
-    "path": "/workbench/testp1/bpmn/.gitignore",
+    "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\.gitignore",
     "type": "file",
     "children": []
   },
   {
     "name": "package-lock.json",
-    "path": "/workbench/testp1/bpmn/package-lock.json",
+    "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\package-lock.json",
     "type": "file",
     "children": []
   },
   {
     "name": "package.json",
-    "path": "/workbench/testp1/bpmn/package.json",
+    "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\package.json",
     "type": "file",
     "children": []
   },
   {
     "name": "project.json",
-    "path": "/workbench/testp1/bpmn/project.json",
+    "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\project.json",
     "type": "file",
     "children": []
   },
   {
-    "id": "1e7961c4-64e8-44ef-9f25-8e7af5fe93c1",
+    "id": "150b1887-1217-4f7d-90f9-4df3d596ff44",
     "name": "src",
-    "path": "/workbench/testp1/bpmn/src_1e7961c4-64e8-44ef-9f25-8e7af5fe93c1",
+    "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\src_150b1887-1217-4f7d-90f9-4df3d596ff44",
     "type": "folder",
     "children": [
       {
         "name": "readme.md",
-        "path": "/workbench/testp1/bpmn/src_1e7961c4-64e8-44ef-9f25-8e7af5fe93c1/readme.md",
+        "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\src_150b1887-1217-4f7d-90f9-4df3d596ff44\\readme.md",
         "type": "file",
         "children": []
       },
       {
-        "id": "4564edf3-e2d1-4d16-9dbf-d6c9683aee3a",
+        "id": "9fd2aa70-5fa3-45b0-b11a-368c41927a4e",
         "name": "F1",
+        "path": "C:\\Users\\KER-LPTP-48\\Desktop\\Next Project\\test_gitea\\test-app-atkins\\bpmn\\src_150b1887-1217-4f7d-90f9-4df3d596ff44\\F1_9fd2aa70-5fa3-45b0-b11a-368c41927a4e",
         "type": "folder",
-        "children": [
-          {
-            "id": "c480a18b-a600-4053-9ce0-49441dfbcc19",
-            "name": "children",
-            "type": "folder",
-            "children": []
-          },
-          {
-            "id": "0e27416f-740a-49c7-b63d-61f5dad3fe7c",
-            "name": "instances",
-            "type": "folder",
-            "children": []
-          },
-          {
-            "id": "96b4ff4a-0120-4ab9-aaec-50c1d77a9edc",
-            "name": "process_model.json",
-            "type": "file",
-            "content": "{\n  \"nodes\": [\n    {\n      \"id\": \"Start_fb768297-8c12-42b2-82ea-866ca34727aa\",\n      \"type\": \"Start\",\n      \"position\": {\n        \"x\": 247,\n        \"y\": 229\n      },\n      \"data\": {\n        \"nodeId\": \"fb768297-8c12-42b2-82ea-866ca34727aa\",\n        \"nodeType\": \"Start\",\n        \"nodeName\": \"New Node\",\n        \"nodeAdditionalInfo\": {}\n      },\n      \"measured\": {\n        \"width\": 256,\n        \"height\": 170\n      }\n    },\n    {\n      \"id\": \"Task_ffb7f47c-0588-4bb9-a6ee-95c3c19d684f\",\n      \"type\": \"Task\",\n      \"position\": {\n        \"x\": 816,\n        \"y\": 306\n      },\n      \"data\": {\n        \"nodeId\": \"ffb7f47c-0588-4bb9-a6ee-95c3c19d684f\",\n        \"nodeType\": \"Task\",\n        \"nodeName\": \"New Node  2\",\n        \"nodeAdditionalInfo\": {}\n      },\n      \"measured\": {\n        \"width\": 512,\n        \"height\": 170\n      },\n      \"selected\": false\n    }\n  ],\n  \"edges\": [\n    {\n      \"source\": \"Start_fb768297-8c12-42b2-82ea-866ca34727aa\",\n      \"sourceHandle\": null,\n      \"target\": \"Task_ffb7f47c-0588-4bb9-a6ee-95c3c19d684f\",\n      \"targetHandle\": null,\n      \"type\": \"selfConnecting\",\n      \"label\": \"Transition\",\n      \"animated\": true,\n      \"markerEnd\": {\n        \"type\": \"arrowclosed\"\n      },\n      \"deleteAble\": true,\n      \"data\": {\n        \"height\": 160,\n        \"edgeColor\": \"351\",\n        \"edgeTransitionCategory\": 2,\n        \"edgeAdditionalInfo\": {\n          \"sourceNodeId\": \"fb768297-8c12-42b2-82ea-866ca34727aa\",\n          \"targetNodeId\": \"ffb7f47c-0588-4bb9-a6ee-95c3c19d684f\",\n          \"linkName\": \"Transition\",\n          \"linkId\": \"a85db6fb-bf9d-44ff-a614-157dc7c6d254\",\n          \"actionDefinition\": {\n            \"actionValidationScriptId\": \"\",\n            \"messageBinding\": \"\",\n            \"transitionActionScriptId\": \"eceb4842-83fa-4082-9db6-d16165f38b6d\"\n          },\n          \"processJob\": {},\n          \"isJobActive\": false\n        }\n      },\n      \"id\": \"a85db6fb-bf9d-44ff-a614-157dc7c6d254\",\n      \"selected\": true\n    }\n  ]\n}"
-          },
-          {
-            "id": "2ec34552-bc89-4345-8667-9e8cd20c418a",
-            "name": "scripts",
-            "type": "folder",
-            "children": [
-              {
-                "id": "cf80fdbd-dab7-4675-af83-226874c65890",
-                "name": "metadata.json",
-                "type": "file",
-                "content": "[]"
-              }
-            ]
-          },
-          {
-            "id": "11b3a5ce-af92-49b2-a7ed-e9bb6a3a54ea",
-            "name": "metadata.json",
-            "type": "file",
-            "content": "{\n  \"processName\": \"F1\",\n  \"parentProcess\": {\n    \"parent\": \"src\",\n    \"path\": \"/F1_6d489c0e-9077-4d11-acf0-708ad968f24e\"\n  },\n  \"isLockRequired\": true,\n  \"isSharedProcess\": true,\n  \"scripts\": [],\n  \"processVariableFields\": []\n}"
-          }
-        ],
-        "path": "/workbench/testp1/bpmn/src_1e7961c4-64e8-44ef-9f25-8e7af5fe93c1/F1_4564edf3-e2d1-4d16-9dbf-d6c9683aee3a"
+        "children": []
       }
     ]
   }

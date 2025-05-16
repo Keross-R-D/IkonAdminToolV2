@@ -1,9 +1,10 @@
 "use server"
 import { headers } from "next/headers";
 
-export async function apiReaquest(apiUrl: string, init?: RequestInit) {
+export async function hostApiReaquest(apiUrl: string, hostServer:string, init?: RequestInit) {
   try {
     const header = await headers();
+    
     const initHeaders = new Headers(init?.headers);
     const cookie = header.get('cookie') || '';
     initHeaders.append("Cookie", cookie);
@@ -14,10 +15,10 @@ export async function apiReaquest(apiUrl: string, init?: RequestInit) {
             headers : initHeaders
            }
 
-    const protocol = 'http';
-    const host = `${protocol}://${header.get('host')}`;
+    const protocol = 'https';
+    const host = `${protocol}://${hostServer === "Local" ? 'ikoncloud-dev.keross.com/api' : ""}`
+
     const response = await fetch(`${host}${apiUrl}`, init);
-    // console.log("response:",response)
 
     const contentType = response.headers.get("Content-Type");
     const responseData = contentType?.includes("application/json")

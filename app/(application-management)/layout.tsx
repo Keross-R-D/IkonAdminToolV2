@@ -1,7 +1,6 @@
 
 import { RenderAppBreadcrumb } from '@/ikon/components/app-breadcrumb';
 import { apiReaquest } from '@/ikon/utils/apiRequest';
-import { headers } from 'next/headers';
 import React from 'react'
 
 export default async function Layout({
@@ -21,6 +20,7 @@ export default async function Layout({
     //   });
     // const projectData = await response.json();
     const projectData = await apiReaquest("/api/get_projectData")
+    console.log("projectData", projectData)
     
     return (
         <>

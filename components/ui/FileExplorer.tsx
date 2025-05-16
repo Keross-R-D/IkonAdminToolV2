@@ -11,6 +11,9 @@ import { toast } from "sonner";
 import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
 import Link from "next/link";
 import { apiReaquest } from "@/ikon/utils/apiRequest";
+import { hostApiReaquest } from "@/ikon/utils/hostApiRequest";
+import { useHostServer } from "@/ikon/components/host-server";
+import { useEnvStore } from "@/ikon/components/Add-Env";
 
 
 interface FileNode {
@@ -44,6 +47,8 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>({});
   const router = useRouter();
   const { openDialog } = useDialog();
+  const { hostServer } = useHostServer(); // Get host server from Zustand store
+  const { envs,setEnvs } = useEnvStore();
 
   const toggleFolder = (id: string) => {
     setOpenFolders((prev) => ({
@@ -52,10 +57,30 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
     }));
   };
 
+  const getHostServerLink = (server: string) => {
+    const env = envs.find((env) => env.server === server);
+    if (env) {
+      return env.link;
+    }
+    return ""; // Default value if not found  
+  }
+
   async function startProcess(id: string) {
     console.log("Start Process: ", id); 
+    const hostLink = getHostServerLink(hostServer);
+    if(hostLink === ""){
+      toast.error(`Please fill ${hostServer} host link.`);
+      return;
+    }
+    // const token = 
     const projectData = await apiReaquest("/api/get_projectData")
-    const responce = await apiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`)
+    const responce = await hostApiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`,hostServer,{
+      method: 'POST', // or 'POST', etc.
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${token}`, // 👈 include your token here
+      }})
+    console.log("Start Process Response: ", responce);
   }
 
   function openModal(node: FileNode) {// Navigate to Modal Page
@@ -68,6 +93,11 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
 
   function openTasks(node: FileNode) {
     console.log("Open Tasks: ", node.id);
+    const hostLink = getHostServerLink(hostServer);
+    if(hostLink === ""){
+      toast.error(`Please fill ${hostServer} host link.`);
+      return;
+    }
 
     router.push(`/myTask/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
   }
