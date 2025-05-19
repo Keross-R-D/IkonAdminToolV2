@@ -16,6 +16,7 @@ import { Label } from '@/shadcn/ui/label'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { create } from 'zustand'
 import AddEnv, { useEnvStore } from '../Add-Env'
+import { setCookieSession } from '@/ikon/utils/cookieSession'
 
 type HostServerStore = {
   hostServer: string
@@ -45,16 +46,51 @@ export default function HostServer() {
     }
   }, [open, envs, setEnvs])
 
-  const handleLogin = (server: string) => {
-    if (username === 'admin' && password === 'admin') {
+  const handleLogin = async (server: string) => {
+    let host = "";
+    debugger
+    if (server === 'local') {
       setHostServer(server)
       setOpen(false)
       setLoginError('')
       setUsername('')
       setPassword('')
     } else {
-      setLoginError('Invalid username or password')
+      host = "https://ikoncloud-dev.keross.com/ikon-api"
     }
+      const loginDetails = {
+        password: password,
+        userlogin: username,
+        credentialType: "PASSWORD",
+      };
+  
+      const url = `${host}/platform/auth/login`;
+  console.log(url)
+  console.log(loginDetails)
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginDetails),
+      });
+  
+      const data = await response.json()
+      console.log(data)
+  debugger
+      const { accessToken, refreshToken, expiresIn, refreshExpiresIn } = data;
+     await setCookieSession("accessToken", accessToken, { maxAge: expiresIn });
+     await setCookieSession("refreshToken", refreshToken, { maxAge: refreshExpiresIn });
+      if (response.ok) {
+        setHostServer(server)
+        setOpen(false)
+        setLoginError('')
+        setUsername('')
+        setPassword('')
+      } else {
+        setLoginError(data.error || 'Login failed')
+      }
+    
   }
 
   const changeEnv = (value: string) => {
