@@ -17,6 +17,8 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { create } from 'zustand'
 import AddEnv, { useEnvStore } from '../Add-Env'
 import { setCookieSession } from '@/ikon/utils/cookieSession'
+import { toast } from 'sonner'
+import { apiReaquest } from '@/ikon/utils/apiRequest'
 
 type HostServerStore = {
   hostServer: string
@@ -47,7 +49,18 @@ export default function HostServer() {
   }, [open, envs, setEnvs])
 
   const handleLogin = async (server: string) => {
-    let host = "";
+    setLoginError("")
+    let host = "https://ikoncloud-dev.keross.com/ikon-api";
+    for (let i = 0; i < envs.length; i++) {
+      if (envs[i].server === server) {
+        host = envs[i].link
+        break
+      }
+    }
+    if (host === "") {
+      toast.error('Please add the server link in the envs')
+      return
+    }
     debugger
     if (server === 'local') {
       setHostServer(server)
@@ -56,41 +69,57 @@ export default function HostServer() {
       setUsername('')
       setPassword('')
     } else {
-      host = "https://ikoncloud-dev.keross.com/ikon-api"
-    }
+
+
       const loginDetails = {
         password: password,
         userlogin: username,
-        credentialType: "PASSWORD",
+        host: host,
       };
-  
-      const url = `${host}/platform/auth/login`;
-  console.log(url)
-  console.log(loginDetails)
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginDetails),
-      });
-  
-      const data = await response.json()
-      console.log(data)
-  debugger
-      const { accessToken, refreshToken, expiresIn, refreshExpiresIn } = data;
-     await setCookieSession("accessToken", accessToken, { maxAge: expiresIn });
-     await setCookieSession("refreshToken", refreshToken, { maxAge: refreshExpiresIn });
-      if (response.ok) {
-        setHostServer(server)
-        setOpen(false)
-        setLoginError('')
-        setUsername('')
-        setPassword('')
-      } else {
-        setLoginError(data.error || 'Login failed')
+
+      // const url = `https://ikoncloud-dev.keross.com/ikon-api/platform/auth/login`;
+      // console.log(url)
+      // console.log(loginDetails)
+      try {
+        //   const response = await fetch(url, {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify(loginDetails),
+        //   });
+        const data = await apiReaquest("/api/auth/login", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(loginDetails),
+        })
+
+        //const data = await response.json()
+        console.log(data)
+        debugger
+
+        if (data.success) {
+          setHostServer(server)
+          setOpen(false)
+          setLoginError('')
+          setUsername('')
+          setPassword('')
+          toast.success(`Login successful in ${server}`)
+        } else {
+          if(data.error === "Login failed")
+            setLoginError( 'username or password is incorrect')
+          else
+            toast.error(data.error)
+        }
+      } catch (error) {
+        console.error('Error during login:', error)
+        toast.error('Login failed please contact support')
+        // setLoginError('Login failed')
       }
-    
+    }
+
   }
 
   const changeEnv = (value: string) => {
@@ -109,15 +138,15 @@ export default function HostServer() {
 
   return (
     <DropdownMenu
-    open={open}
-    onOpenChange={(val) => {
-      // only allow closing when it's local or user is already logged in
-      if (hostServer === 'local' || val === true) {
-        setOpen(val)
-      }
-    }}
-  >
-  
+      open={open}
+      onOpenChange={(val) => {
+        // only allow closing when it's local or user is already logged in
+        if (hostServer === 'local' || val === true) {
+          setOpen(val)
+        }
+      }}
+    >
+
       <DropdownMenuTrigger asChild>
         <Button variant="outline" >
           Env: {hostServer}
@@ -150,7 +179,7 @@ export default function HostServer() {
               </DropdownMenuRadioItem>
 
               {hostServer === env.server && hostServer !== 'local' && (
-                <div className="pt-2 border-t mt-2 space-y-4">
+                <div className="pt-2 border-t mt-2 space-y-4 px-3">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input
@@ -182,6 +211,9 @@ export default function HostServer() {
                   >
                     Login
                   </Button>
+                  {index < (envs.length - 1) && (
+                    <DropdownMenuSeparator />
+                  )}
                 </div>
               )}
             </div>

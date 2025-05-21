@@ -80,11 +80,11 @@ function AddEnv() {
                             <tr className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200">
                                 <th className="border w-45 p-1">Server</th>
                                 <th className="border w-45 p-1">Link</th>
-                                <th className="border w-5 p-1">
+                                {/* <th className="border w-5 p-1">
                                     <Button variant="outline" size="icon" onClick={handleAddRow}>
                                         <PlusIcon />
                                     </Button>
-                                </th>
+                                </th> */}
                             </tr>
                         </thead>
                     </table>
@@ -98,7 +98,7 @@ function AddEnv() {
                                             <Input
                                                 value={row.server}
                                                 onChange={(e) => handleChange(index, 'server', e.target.value)}
-                                                placeholder="Enter server"
+                                                placeholder="Enter server" disabled={true}
                                             />
                                         </td>
                                         <td className="border w-45 p-2">
@@ -108,13 +108,13 @@ function AddEnv() {
                                                 placeholder="Enter link"
                                             />
                                         </td>
-                                        <td className="border w-5 p-1 text-center">
+                                        {/* <td className="border w-5 p-1 text-center">
                                             {index !== 0 && (
                                                 <Button variant="ghost" size="icon" onClick={() => handleDeleteRow(index)}>
                                                     <TrashIcon className="w-4 h-4 text-red-500" />
                                                 </Button>
                                             )}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>
