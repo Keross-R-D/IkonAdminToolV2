@@ -14,6 +14,7 @@ import { apiReaquest } from "@/ikon/utils/apiRequest";
 import { hostApiReaquest } from "@/ikon/utils/hostApiRequest";
 import { useHostServer } from "@/ikon/components/host-server";
 import { useEnvStore } from "@/ikon/components/Add-Env";
+import { getValidAccessToken } from "@/ikon/utils/accessToken";
 
 
 interface FileNode {
@@ -72,13 +73,13 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
       toast.error(`Please fill ${hostServer} host link.`);
       return;
     }
-    // const token = 
+    const token = await getValidAccessToken()
     const projectData = await apiReaquest("/api/get_projectData")
     const responce = await hostApiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`,hostServer,{
       method: 'POST', // or 'POST', etc.
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`, // 👈 include your token here
+        'Authorization': `Bearer ${token}`, // 👈 include your token here
       }})
     console.log("Start Process Response: ", responce);
   }

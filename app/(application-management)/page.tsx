@@ -204,6 +204,7 @@ export default function Home() {
         <LoadingSpinner visible={showSpinner} />
         {/* Header Section */}
         <div className="flex items-center justify-between p-3">
+        
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             Process
           </h1>
