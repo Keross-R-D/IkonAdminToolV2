@@ -1,11 +1,11 @@
 "use server";
-import { redirect } from "next/navigation";
 import {
   clearAllCookieSession,
   getCookieSession,
   setCookieSession,
 } from "@/ikon/utils/cookieSession";
 import { decode } from "jsonwebtoken";
+import { redirect } from "next/navigation";
 interface AccessTokenOptionsProps {
   isNotLogOutWhenExpire?: boolean;
   isSetToken?: boolean;
@@ -36,9 +36,9 @@ export async function getValidAccessToken(
       return newAccessToken; // Return the new access token
     }
   }
-  if (!options?.isNotLogOutWhenExpire) {
-    await logOut();
-  }
+  // if (!options?.isNotLogOutWhenExpire) {
+  //   await logOut();
+  // }
   // If both tokens are invalid, return null
   return null;
 }
@@ -49,8 +49,9 @@ async function refreshAccessToken(
 ): Promise<string | null> {
   try {
     // Replace this with your actual API call to refresh the token
+    const hostUrl = await getCookieSession("hostUrl")
     const response = await fetch(
-      `${process.env.IKON_API_URL}/platform/auth/refresh-token`,
+      `${hostUrl}/platform/auth/refresh-token`,
       {
         method: "POST",
         headers: {

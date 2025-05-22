@@ -57,10 +57,28 @@ const args = process.argv.slice(2);
 const command = args[0];
 
 if (command === "dev") {
-  console.log("🚀 Starting Next.js in development mode...");
-  const devProcess = exec("npm run dev", { cwd: appFolder });
-  devProcess.stdout.on("data", (data) => console.log(data));
-  devProcess.stderr.on("data", (data) => console.error(data));
+//   console.log("🚀 Starting Next.js in development mode...");
+
+  const targetFolder = process.cwd();
+// const nextFolderPath = path.join(appFolder, ".next", "BUILD_ID");
+//   const devProcess = exec("npm run dev", { cwd: appFolder });
+//   devProcess.stdout.on("data", (data) => console.log(data));
+//   devProcess.stderr.on("data", (data) => console.error(data));
+
+  const structure = readDirectory(targetFolder);
+  const outputPath = path.join(appFolder, "public/folderStructure.json");
+//   fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+//   console.log(`✅ Folder structure saved!`);
+  // STEP 3: Write structure to public/folderStructure.json
+    fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+    console.log("✅ Folder structure saved at:", outputPath);
+
+    // STEP 4: Start Next.js dev server
+    console.log("🚀 Starting Next.js in development mode...");
+    const devProcess = exec("npm run dev", { cwd: appFolder });
+
+    devProcess.stdout.on("data", (data) => process.stdout.write(data));
+    devProcess.stderr.on("data", (data) => process.stderr.write(data));
 
 } else if (command === "update") {
   (async () => {

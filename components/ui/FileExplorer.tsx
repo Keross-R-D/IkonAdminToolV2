@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Folder, FileText, Play, LayoutList, Waypoints, Edit, ChevronRight, ChevronDown, FolderOpen, Download, Trash2Icon,  } from "lucide-react";
 import { Button } from "./button";
 import { useRouter } from "next/navigation"; // Next.js router
@@ -51,6 +51,9 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   const { hostServer } = useHostServer(); // Get host server from Zustand store
   const { envs,setEnvs } = useEnvStore();
 
+
+
+
   const toggleFolder = (id: string) => {
     setOpenFolders((prev) => ({
       ...prev,
@@ -73,14 +76,13 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
       toast.error(`Please fill ${hostServer} host link.`);
       return;
     }
-    const token = await getValidAccessToken()
+    
     const projectData = await apiReaquest("/api/get_projectData")
-    const responce = await hostApiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`,hostServer,{
+    const responce = await hostApiReaquest(`/${projectData.projectName}/processengine/runtime/process/${id}/start-instance`,hostLink,{
       method: 'POST', // or 'POST', etc.
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // 👈 include your token here
-      }})
+      }},true)
     console.log("Start Process Response: ", responce);
   }
 
