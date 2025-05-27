@@ -12,10 +12,14 @@ export async function GET(req: NextRequest) {
         const processId = searchParams.get('processId');
 
         
+        return NextResponse.json(
+            {instances: processId}
+        )
+
         const authToken = await getCookieSession("accessToken");
         // const host = await getCookieSession("hostURL");
         const host = "http://localhost:8081"
-        const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=false`;
+        const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=true`;
 
         const response = await fetch(
             completeUrl,

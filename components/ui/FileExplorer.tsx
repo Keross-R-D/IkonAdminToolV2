@@ -92,15 +92,18 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
     router.push(`/workflow/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
   }
 
-  function openTasks(node: FileNode) {
+  function openTasks(node: FileNode, showAllTasks: boolean) {
     console.log("Open Tasks: ", node.id);
     const hostLink = getHostServerLink(hostServer);
     if(hostLink === ""){
       toast.error(`Please fill ${hostServer} host link.`);
       return;
     }
-
-    router.push(`/myTask/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
+    let taskRoute = "myTask";
+    if(showAllTasks){
+      taskRoute = "allTask"
+    }
+    router.push(`/${taskRoute}/${encodeURIComponent(node.id)}?name=${encodeURIComponent(node.name)}`); // Navigate to the modal page
   }
   const handleDownloadFolder = async (node: FileNode) => {
     try {
@@ -233,13 +236,15 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
                               <Play />Start
                             </Button>
                       </Tooltip>
-                      <Tooltip tooltipContent="My Task" side={"top"}>
-                       
-                            <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node)}>
-                              <LayoutList/> My Task
+                      <Tooltip tooltipContent="My Tasks" side={"top"}>
+                            <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node,false)}>
+                              <LayoutList/> My Tasks
                             </Button>
-                            
-                            
+                      </Tooltip>
+                      <Tooltip tooltipContent="All Tasks" side={"top"}>
+                            <Button className="text-sm text-sm px-2 py-1 h-fit" variant="outline" size={"sm"} onClick={() => openTasks(node,true)}>
+                              <LayoutList/> All Tasks
+                            </Button>
                       </Tooltip>
                       
           </div>

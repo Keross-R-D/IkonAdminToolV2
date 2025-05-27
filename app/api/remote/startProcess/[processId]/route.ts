@@ -1,38 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiReaquest } from "@/ikon/utils/apiRequest";
 import { getCookieSession } from "@/ikon/utils/cookieSession";
-import { read } from "fs";
-import { useSearchParams } from 'next/navigation'
-import { request } from "http";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
 
         const searchParams = req.nextUrl.searchParams;
         const processId = searchParams.get('processId');
 
-        
+        const body =  await req.json();
+
         const authToken = await getCookieSession("accessToken");
-        // const host = await getCookieSession("hostURL");
         const host = "http://localhost:8081"
         const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=false`;
+
+        const reqBody = JSON.stringify({
+            "processInstanceIdentifierFields": body.processInstanceIdentifierFields,
+            "data": body.processData
+        })
 
         const response = await fetch(
             completeUrl,
             {
-                method: "GET",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${authToken}`
                 },
+                body: JSON.stringify(reqBody),
             }
         )
 
-        const data = await response.json();
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            console.error("Login failed:", errorResponse);
+            return NextResponse.json(
+                { error: "Login failed", details: errorResponse },
+                { status: 401 }
+            );
+        }
 
-        return NextResponse.json(
-            {instances: data}
-        )
+        return NextResponse.json({ success: true, message: "start process successful!" });
+
 
     } catch (error) {
         console.error("Server error: ", error);
