@@ -52,8 +52,6 @@ export default function FileExplorer({ node,openEditFolderModal, setFolderStruct
   const { envs,setEnvs } = useEnvStore();
 
 
-
-
   const toggleFolder = (id: string) => {
     setOpenFolders((prev) => ({
       ...prev,

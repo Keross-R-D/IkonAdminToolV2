@@ -53,10 +53,6 @@ export default function Home() {
 
 
 
-
-
-
-
   const handleFolderOperation = async (parentId: string | null, folderId: string | null, name: string) => {
     if (!folderStructure) return;
     setShowSpinner(true);
@@ -192,9 +188,6 @@ export default function Home() {
     setEditingFolder(folder);
     setShowFolderCreationForm(true);
   };
-
-
-
 
 
   return (

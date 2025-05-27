@@ -7,6 +7,13 @@ import { string } from 'zod';
 import MyTaskModal from './components/MyTaskModal';
 
 
+interface InstanceDataInterface {
+  user: string,
+  action: string,
+  description: string,
+  date: string,
+}
+
 const mockData = [
   {
     user: 'Baishakhi Negel',
@@ -155,13 +162,28 @@ const mockData = [
   // Add more rows as needed...
 ];
 
+const processId = '87d6775a-2992-442d-bd76-eb50c9e66227'
+const getMyTasksRequestUrl = `/api/remote/mytask/${processId}`
+
+const response = await fetch(getMyTasksRequestUrl, {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
+const data = await response.json()
+// const instanceData = data.instances;
+const instanceData:InstanceDataInterface[] = [];
+
+
 export default function page() {
   const paramsData = useParams() as { myTask: string };
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modalName, setModalName] = useState<string>('');
 
-  const filteredData = mockData.filter((item) =>
+  const filteredData = instanceData.filter((item) =>
     item.user.toLowerCase().includes(search.toLowerCase())
     || item.action.toLowerCase().includes(search.toLowerCase())
     || item.description.toLowerCase().includes(search.toLowerCase())
@@ -268,7 +290,7 @@ export default function page() {
           
         </div>
         <div className="  flex  p-2  h-10 items-center justify-center border-t ">
-           <div className='flex text-sm text-gray-500 dark:text-gray-400'> Showing {filteredData.length} of {mockData.length} entries</div> 
+           <div className='flex text-sm text-gray-500 dark:text-gray-400'> Showing {filteredData.length} of {instanceData.length} entries</div> 
            <div></div>
           </div>
       </div>

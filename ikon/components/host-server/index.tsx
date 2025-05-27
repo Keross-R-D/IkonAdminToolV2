@@ -42,6 +42,7 @@ export default function HostServer() {
     if (open && envs.length === 0) {
       setEnvs([
         { server: 'local', link: '' },
+        { server: 'local-server', link: '' },
         { server: 'dev', link: '' },
         { server: 'prod', link: '' },
       ])
@@ -88,7 +89,14 @@ export default function HostServer() {
         //     },
         //     body: JSON.stringify(loginDetails),
         //   });
-        const data = await apiReaquest("/api/auth/login", {
+        // const data = await apiReaquest("/api/auth/login", {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify(loginDetails),
+        // })
+        const response = await fetch("/api/auth/login", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,7 +104,7 @@ export default function HostServer() {
           body: JSON.stringify(loginDetails),
         })
 
-        //const data = await response.json()
+        const data = await response.json()
         console.log(data)
         debugger
 
