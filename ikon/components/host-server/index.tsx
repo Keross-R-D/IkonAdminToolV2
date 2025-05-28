@@ -42,7 +42,7 @@ export default function HostServer() {
     if (open && envs.length === 0) {
       setEnvs([
         { server: 'local', link: '' },
-        { server: 'local-server', link: '' },
+        { server: 'local-auth', link: '' },
         { server: 'dev', link: '' },
         { server: 'prod', link: '' },
       ])
@@ -114,6 +114,14 @@ export default function HostServer() {
           setLoginError('')
           setUsername('')
           setPassword('')
+
+          await setCookieSession('currentloggedInServer', server);
+
+          if(server === 'local-auth'){
+            const localServerUrl = envs.filter(env => env.server === 'local')[0].link;
+            await setCookieSession('localHostURL', localServerUrl);
+          }
+
           toast.success(`Login successful in ${server}`)
         } else {
           if(data.error === "Login failed")
@@ -132,6 +140,7 @@ export default function HostServer() {
 
   const changeEnv = (value: string) => {
     setHostServer(value)
+    
     if (value === 'local') {
       setOpen(false)
       setUsername('')
@@ -180,7 +189,7 @@ export default function HostServer() {
           onValueChange={setHostServer}
           className="space-y-2"
         >
-          {envs.map((env, index) => (
+          {envs.filter((env)=>env.server !== "local").map((env, index) => (
             <div key={index}>
               <DropdownMenuRadioItem value={env.server}>
                 {env.server}

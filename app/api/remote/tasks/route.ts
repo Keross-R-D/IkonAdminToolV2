@@ -14,8 +14,13 @@ export async function GET(req: NextRequest) {
 
 
         const authToken = await getCookieSession("accessToken");
-        // const host = await getCookieSession("hostURL");
-        const host = "http://localhost:8081"
+        let host = await getCookieSession("hostURL");
+        const currentloggedInServer = await getCookieSession("currentloggedInServer");
+
+        if(currentloggedInServer === "local-auth") {
+            host = await getCookieSession("localHostURL");
+        }
+        // const host = "http://localhost:8081"
         const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=${getAllInstances}`;
 
 
