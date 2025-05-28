@@ -4,6 +4,7 @@ import { getCookieSession } from "@/ikon/utils/cookieSession";
 import { read } from "fs";
 import { useSearchParams } from 'next/navigation'
 import { request } from "http";
+import { getValidAccessToken } from "@/ikon/utils/accessToken";
 
 export async function GET(req: NextRequest) {
     try {
@@ -13,7 +14,9 @@ export async function GET(req: NextRequest) {
         const getAllInstances = searchParams.get('getAllInstances');
 
 
-        const authToken = await getCookieSession("accessToken");
+        const authToken = await getValidAccessToken();
+
+
         let host = await getCookieSession("hostURL");
         const currentloggedInServer = await getCookieSession("currentloggedInServer");
 
@@ -22,8 +25,6 @@ export async function GET(req: NextRequest) {
         }
         // const host = "http://localhost:8081"
         const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=${getAllInstances}`;
-
-
 
         const response = await fetch(
             completeUrl,

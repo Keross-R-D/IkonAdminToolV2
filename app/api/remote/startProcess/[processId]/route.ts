@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCookieSession } from "@/ikon/utils/cookieSession";
+import { getValidAccessToken } from "@/ikon/utils/accessToken";
 
 export async function POST(req: NextRequest) {
     try {
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
 
         const body =  await req.json();
 
-        const authToken = await getCookieSession("accessToken");
+        const authToken = await getValidAccessToken();
         let host = await getCookieSession("hostURL");
         const currentloggedInServer = await getCookieSession("currentloggedInServer");
 
