@@ -18,8 +18,6 @@ export async function POST(req: NextRequest) {
     // const host = "http://localhost:8081"
     const completeUrl = `${host}/subscribe`;
 
-    return NextResponse.json({completeUrl});
-
     const response = await fetch(
         completeUrl,
         {
