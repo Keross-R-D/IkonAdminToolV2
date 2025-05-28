@@ -41,8 +41,8 @@ export default function HostServer() {
   useEffect(() => {
     if (open && envs.length === 0) {
       setEnvs([
-        { server: 'local', link: '' },
-        { server: 'local-auth', link: '' },
+        { server: 'local', link: 'http://localhost:8081' },
+        { server: 'local-auth', link: 'https://ikoncloud-dev.keross.com/ikon-api' },
         { server: 'dev', link: '' },
         { server: 'prod', link: '' },
       ])
