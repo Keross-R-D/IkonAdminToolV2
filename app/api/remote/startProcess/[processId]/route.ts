@@ -10,7 +10,12 @@ export async function POST(req: NextRequest) {
         const body =  await req.json();
 
         const authToken = await getCookieSession("accessToken");
-        const host = "http://localhost:8081"
+        let host = await getCookieSession("hostURL");
+        const currentloggedInServer = await getCookieSession("currentloggedInServer");
+
+        if(currentloggedInServer === "local-auth") {
+            host = await getCookieSession("localHostURL");
+        }
         const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=false`;
 
         const reqBody = JSON.stringify({
