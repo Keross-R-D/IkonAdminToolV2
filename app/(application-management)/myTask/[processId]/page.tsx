@@ -75,7 +75,7 @@ export default function page() {
 
         if(response.ok) {
           const data = await response.json()
-          setInstanceData(data.instances);
+          setInstanceData(data?.instances || []);
         }
 
       }
