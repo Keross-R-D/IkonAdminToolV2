@@ -10,16 +10,15 @@ export async function GET(req: NextRequest) {
 
         const searchParams = req.nextUrl.searchParams;
         const processId = searchParams.get('processId');
+        const getAllInstances = searchParams.get('getAllInstances');
 
-        
-        return NextResponse.json(
-            {instances: processId}
-        )
 
         const authToken = await getCookieSession("accessToken");
         // const host = await getCookieSession("hostURL");
         const host = "http://localhost:8081"
-        const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=true`;
+        const completeUrl = `${host}/processengine/runtime/process/${processId}/instance?allInstances=${getAllInstances}`;
+
+
 
         const response = await fetch(
             completeUrl,

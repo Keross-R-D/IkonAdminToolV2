@@ -2,7 +2,7 @@
 // import DraggableDialog from '@/app/components/DraggableDialog';
 import { PersonStanding, SquareUser } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { string } from 'zod';
 import MyTaskModal from './components/MyTaskModal';
 
@@ -20,26 +20,13 @@ interface InstanceDataInterface {
   timestamp: string
 }
 
-const processId = '87d6775a-2992-442d-bd76-eb50c9e66227'
-const getMyTasksRequestUrl = `/api/remote/alltask/${processId}`
-
-const response = await fetch(getMyTasksRequestUrl, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  }
-})
-
-const data = await response.json()
-const instanceData:InstanceDataInterface[] = data.instances;
-// const instanceData:InstanceDataInterface[] = [];
-
-
 export default function page() {
   const paramsData = useParams() as { myTask: string };
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modalName, setModalName] = useState<string>('');
+  const [instanceData, setInstanceData] = useState<InstanceDataInterface[]>([]);
+  const [isLoading, setInLoading] = useState<boolean>(false);
 
   const openJobModal = () => {
     setModalName('Job')
@@ -56,12 +43,44 @@ export default function page() {
     setIsOpen(true)
   }
 
+  const params = useParams();
+  const processId = params.processId as string;
+  const getAllInstances = 'true';
+  const getMyTasksRequestUrl = `/api/remote/tasks?processId=${processId}&getAllInstances=${getAllInstances}`
 
+  useEffect(() => {
+    async function fetchInstanceData() {
+      try {
 
+        setInLoading(true);
+
+        const response = await fetch(getMyTasksRequestUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+
+        if(response.ok) {
+          const data = await response.json()
+          setInstanceData(data.instances);
+        }
+
+      }
+      catch(err) {
+
+      }
+      finally {
+        setInLoading(false);
+      }
+
+    }
+
+    fetchInstanceData();
+  },[])
 
   return (
     <div className="p-4 h-full">
-
       <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
         <div className="flex items-center justify-between p-2 px-3">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{decodeURIComponent(paramsData.myTask).split('/')[1]}</h1>
