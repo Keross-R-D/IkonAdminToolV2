@@ -117,6 +117,11 @@ export default function page() {
 
                   <div className="flex items-center gap-2 w-[20%] pe-4">
                     <div className="text-sm text-gray-800 dark:text-white font-medium">
+                      <div className="flex "> {row.taskName}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-[20%] pe-4">
+                    <div className="text-sm text-gray-800 dark:text-white font-medium">
                       <div className="flex "> {row.action}</div>
                     </div>
                   </div>
@@ -141,7 +146,7 @@ export default function page() {
 
                   <div className="flex flex-grow gap-2 items-center justify-end pe-4">
                     <Button
-                      className="bg-teal-500 text-white px-2 py-1 rounded "
+                      className="bg-teal-500 text-white px-2 py-1 rounded diabled"
                       onClick={() => {
                         openDataModal(row.data);
                       }}
@@ -150,6 +155,7 @@ export default function page() {
                     </Button>
                     <Button
                       className="bg-teal-500 text-white px-2 py-1 rounded"
+                      disabled={true}
                       onClick={() => {
                         openJobModal();
                       }}
@@ -158,6 +164,7 @@ export default function page() {
                     </Button>
                     <Button
                       className="bg-teal-500 text-white px-2 py-1 rounded"
+                      disabled={true}
                       onClick={() => {
                         openHistoryModal();
                       }}
@@ -166,22 +173,23 @@ export default function page() {
                     </Button>
                     <Button
                       className="bg-teal-500 text-white px-2 py-1 rounded"
+                      disabled={true}
                       onClick={() => {
                         openClockModal();
                       }}
                     >
                       Clock
                     </Button>
-                    <Button className="bg-yellow-400 text-white px-2 py-1 rounded">
+                    <Button className="bg-yellow-400 text-white px-2 py-1 rounded" disabled={true}>
                       Suspend
                     </Button>
-                    <Button className="bg-cyan-300 text-white px-2 py-1 rounded">
+                    <Button className="bg-cyan-300 text-white px-2 py-1 rounded" disabled={true}>
                       Activate
                     </Button>
-                    <Button className="bg-red-500 text-white px-2 py-1 rounded">
+                    <Button className="bg-red-500 text-white px-2 py-1 rounded" disabled={true}>
                       Delete
                     </Button>
-                    <Button className="bg-green-500 text-white px-2 py-1 rounded">
+                    <Button className="bg-green-500 text-white px-2 py-1 rounded" disabled={true}>
                       Backup
                     </Button>
                     {/* <Tooltip tooltipContent="Edit Script" side={"top"}>
