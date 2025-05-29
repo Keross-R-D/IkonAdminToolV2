@@ -16,9 +16,9 @@ import {
   Plus,
   User,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RoleForm from "../role-form";
-import { ManageUsersForm } from "../manage-users-form";
+import ManageUsersForm from "../manage-users-form";
 import { updateRoleStatus } from "../update-role-status";
 import { ManageGroupsForm } from "../manage-group-form";
 import { updateGroupStatusInRole } from "../manage-group-form/update-group-in-role";
@@ -101,14 +101,14 @@ function RoleTable({
             setOpen(true);
           },
         },
-        // {
-        //   label: "Manage Users",
-        //   icon: User,
-        //   onClick: (row) => {
-        //     setSelectedRole(row);
-        //     setOpenUsersForm(true);
-        //   },
-        // },
+        {
+          label: "Manage Users",
+          icon: User,
+          onClick: (row) => {
+            setSelectedRole(row);
+            setOpenUsersForm(true);
+          },
+        },
         {
           label: "Manage Groups",
           icon: Group,
@@ -168,7 +168,7 @@ function RoleTable({
       ],
     },
     extraTools: [
-      <Tooltip tooltipContent="Add Role" side={"top"} >
+      <Tooltip tooltipContent="Add Role" side={"top"}>
         <IconTextButton
           onClick={() => {
             setSelectedRole(null);

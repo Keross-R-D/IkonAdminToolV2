@@ -17,10 +17,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextButton } from "@/ikon/components/buttons";
-import dummyUserData from "@/app/users_old/data/dummy-user-data";
+import { memo, useEffect, useState } from "react";
+import { apiReaquest } from "@/ikon/utils/apiRequest";
 
 const formSchema = z.object({
-  users: z.array(z.string()).min(1, "Select at least one user"),
+  userIds: z.array(z.string()).min(1, "Select at least one user"),
 });
 
 interface ManageUsersFormProps {
@@ -31,7 +32,7 @@ interface ManageUsersFormProps {
   onSave?: (roleId: string, userIds: string[]) => void;
 }
 
-export function ManageUsersForm({
+function ManageUsersForm({
   open,
   setOpen,
   roleId,
@@ -41,23 +42,70 @@ export function ManageUsersForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      users: [],
+      userIds: [],
     },
   });
 
+  const [users, setUsers] = useState([]);
+
+  async function saveRoleUserMembership(userIds: string[]) {
+    try {
+      const responseData = await apiReaquest(`/api/role-user-membership`, {
+        method: "POST",
+        body: JSON.stringify({
+          roleId,
+          userIds: userIds,
+        }),
+      });
+    } catch (error) {
+      throw new Error("Failed to save role user membership");
+    }
+  }
+  async function fetchUsers() {
+    try {
+      const responseData = await apiReaquest(`/api/users`, {
+        method: "GET",
+        next: {
+          tags: ["getUsers"],
+        },
+      });
+
+      if (!responseData.error) {
+        setUsers(responseData || []);
+      }
+    } catch (error) {
+      throw new Error("Failed to fetch users");
+    }
+  }
+
+  async function fetchRoleUsers() {
+    try {
+      const responseData = await apiReaquest(`/api/role-user/${roleId}`, {
+        method: "GET",
+      });
+
+      if (!responseData.error) {
+        form.setValue("userIds", responseData || []);
+      }
+    } catch (error) {
+      throw new Error("Failed to fetch users");
+    }
+  }
+
+  useEffect(() => {
+    if (roleId) {
+      fetchUsers();
+      fetchRoleUsers();
+    }
+  }, [roleId]);
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     try {
-      const roleUserData = {
-        roleId,
-        userIds: data.users,
-        updatedAt: new Date().toISOString(),
-      };
+      saveRoleUserMembership(data.userIds);
 
-      console.log("Saving role-user association:", roleUserData);
-
-      if (onSave) {
-        onSave(roleId, data.users);
-      }
+      // if (onSave) {
+      //   onSave(roleId, data.users);
+      // }
 
       setOpen(false);
     } catch (error) {
@@ -66,7 +114,7 @@ export function ManageUsersForm({
     setOpen(false);
   };
 
-  const userColumns: DTColumnsProps<(typeof dummyUserData)[0]>[] = [
+  const userColumns: DTColumnsProps<any>[] = [
     {
       accessorKey: "userName",
       header: "User Name",
@@ -76,11 +124,11 @@ export function ManageUsersForm({
       header: "Select",
       cell: ({ row }) => (
         <Checkbox
-          checked={form.watch("users").includes(row.original.userId)}
+          checked={form.watch("userIds").includes(row.original.userId)}
           onCheckedChange={(checked) => {
-            const currentUsers = form.getValues("users");
+            const currentUsers = form.getValues("userIds");
             form.setValue(
-              "users",
+              "userIds",
               checked
                 ? [...currentUsers, row.original.userId]
                 : currentUsers.filter((id) => id !== row.original.userId)
@@ -108,7 +156,7 @@ export function ManageUsersForm({
           >
             <div className="flex-1 overflow-auto">
               <DataTable
-                data={dummyUserData}
+                data={users}
                 columns={userColumns}
                 extraParams={{
                   ...extraParams,
@@ -124,3 +172,5 @@ export function ManageUsersForm({
     </Dialog>
   );
 }
+
+export default memo(ManageUsersForm);
