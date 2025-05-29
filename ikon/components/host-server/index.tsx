@@ -19,6 +19,7 @@ import AddEnv, { useEnvStore } from '../Add-Env'
 import { setCookieSession } from '@/ikon/utils/cookieSession'
 import { toast } from 'sonner'
 import { apiReaquest } from '@/ikon/utils/apiRequest'
+import { SubscriptionAlartDialog } from '@/ikon/components/subscriptionAlart'
 
 type HostServerStore = {
   hostServer: string
@@ -36,7 +37,8 @@ export default function HostServer() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
-  const { envs, setEnvs } = useEnvStore()
+  const { envs, setEnvs } = useEnvStore();
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (open && envs.length === 0) {
@@ -48,6 +50,26 @@ export default function HostServer() {
       ])
     }
   }, [open, envs, setEnvs])
+
+  const checkIfSubscribedToApp = async () => {
+    const subscriptionStatusUrl = '/api/remote/subscription/status';
+    const response = await fetch(
+      subscriptionStatusUrl,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },        
+      }
+    )
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const {subscriptionStatus} = await response.json();
+    return subscriptionStatus;
+  }
 
   const handleLogin = async (server: string) => {
     setLoginError("")
@@ -123,6 +145,12 @@ export default function HostServer() {
           }
 
           toast.success(`Login successful in ${server}`)
+          const isSubscribed = await checkIfSubscribedToApp();
+
+          if(!isSubscribed) {
+            setIsSubscriptionModalOpen(true);
+          }
+
         } else {
           if(data.error === "Login failed")
             setLoginError( 'username or password is incorrect')
@@ -154,6 +182,7 @@ export default function HostServer() {
   }
 
   return (
+    <>
     <DropdownMenu
       open={open}
       onOpenChange={(val) => {
@@ -238,5 +267,7 @@ export default function HostServer() {
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+    <SubscriptionAlartDialog isOpen={isSubscriptionModalOpen} setOpen={setIsSubscriptionModalOpen}/>
+    </>
   )
 }
