@@ -191,6 +191,7 @@ export async function POST(req: Request) {
             isLockRequired: true,
             isSharedProcess: true,
             isInstanceLockNeeded: false,
+            isDeployed: false,
             scripts: [],
             processVariableFields: [],
           };

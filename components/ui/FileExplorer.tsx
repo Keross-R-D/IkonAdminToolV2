@@ -60,6 +60,26 @@ const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
     });
 };
 
+const deployProcess = async (processId:string) => {
+  const url = `/api/deploy-process/${processId}`;
+  const response = await fetch(
+    url,
+    {
+      method: "POST"
+    }
+  );
+
+  if(!response.ok) {
+    const {deployed} = await response.json();
+    if(deployed) {
+      toast.success('successfully deployed the process');
+      return;
+    }
+  }
+
+  toast.error("Failed to deploy the process");
+}
+
 export default function FileExplorer({
   node,
   openEditFolderModal,
@@ -334,6 +354,16 @@ export default function FileExplorer({
                     onClick={() => openTasks(node, true)}
                   >
                     <LayoutList /> All Tasks
+                  </Button>
+                </Tooltip>
+                <Tooltip tooltipContent="Deploy" side={"top"}>
+                  <Button
+                    className="text-sm text-sm px-2 py-1 h-fit"
+                    variant="outline"
+                    size={"sm"}
+                    onClick={() => deployProcess(node.id)}
+                  >
+                    <LayoutList /> Deploy
                   </Button>
                 </Tooltip>
               </div>
