@@ -51,11 +51,11 @@ async function refreshAccessToken(
     // Replace this with your actual API call to refresh the token
     let hostUrl = await getCookieSession("hostURL");
 
-    const currentloggedInServer = await getCookieSession("currentloggedInServer");
+    // const currentloggedInServer = await getCookieSession("currentloggedInServer");
 
-    if(currentloggedInServer === "local-auth") {
-        hostUrl = await getCookieSession("localHostURL");
-    }
+    // if(currentloggedInServer === "local-auth") {
+    //     hostUrl = await getCookieSession("localHostURL");
+    // }
 
     const response = await fetch(
       `${hostUrl}/platform/auth/refresh-token`,

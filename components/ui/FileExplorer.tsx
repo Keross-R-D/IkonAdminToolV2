@@ -118,12 +118,15 @@ export default function FileExplorer({
     return ""; // Default value if not found
   };
 
-  async function startProcess(formData) {
+  async function startProcess(formData, callback) {
     console.log("Start Process: ", startProcessId);
 
     const hostLink = getHostServerLink(hostServer);
     if (hostLink === "") {
       toast.error(`Please fill ${hostServer} host link.`);
+      if (callback) {
+        callback();
+      }
       return;
     }
 
@@ -139,6 +142,14 @@ export default function FileExplorer({
       }
     );
     console.log("Start Process Response: ", responce);
+    if (responce?.status == "Failure") {
+      toast.error(responce.message);
+    } else {
+      toast.success(`Instance Started`);
+    }
+    if (callback) {
+      callback();
+    }
   }
 
   function openModal(node: FileNode) {

@@ -12,12 +12,14 @@ import { Input } from "@/shadcn/ui/input";
 import { Textarea } from "@/shadcn/ui/textarea";
 import { Label } from "@/shadcn/ui/label";
 import { Alert, AlertDescription } from "@/shadcn/ui/alert";
+import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 
 const ProcessModal = ({ isOpen = false, setIsOpen, startProcessCallback }) => {
   const [processInstanceIdentifierFields, setProcessInstanceIdentifierFields] =
     useState("");
   const [dataText, setDataText] = useState("");
   const [parsedData, setParsedData] = useState(null);
+  const [isLoading, setLoading] = useState(false);
   const [jsonError, setJsonError] = useState("");
 
   const handleDataChange = (value) => {
@@ -43,7 +45,7 @@ const ProcessModal = ({ isOpen = false, setIsOpen, startProcessCallback }) => {
       alert("Please fix JSON errors before submitting");
       return;
     }
-
+    setLoading(true);
     const formData = {
       processInstanceIdentifierFields,
       data: parsedData,
@@ -51,13 +53,15 @@ const ProcessModal = ({ isOpen = false, setIsOpen, startProcessCallback }) => {
 
     console.log("Form submitted:", formData);
 
-    startProcessCallback(formData)
-    // Reset form
-    setProcessInstanceIdentifierFields("");
-    setDataText("");
-    setParsedData(null);
-    setJsonError("");
-    setIsOpen(false);
+    startProcessCallback(formData, () => {
+      // Reset form
+      setProcessInstanceIdentifierFields("");
+      setDataText("");
+      setParsedData(null);
+      setJsonError("");
+      setIsOpen(false);
+      setLoading(false);
+    });
   };
 
   const handleCancel = () => {
@@ -76,85 +80,90 @@ const ProcessModal = ({ isOpen = false, setIsOpen, startProcessCallback }) => {
         </Button>
       </DialogTrigger> */}
 
-      <DialogContent className="sm:max-w-[500px] bg-white">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-900">
+          <DialogTitle className="text-lg font-semibold">
             Process Configuration
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Process Instance Identifier Fields */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="identifier"
-              className="text-sm font-medium text-gray-700"
-            >
-              Process Instance Identifier Fields
-            </Label>
-            <Input
-              id="identifier"
-              value={processInstanceIdentifierFields}
-              onChange={(e) =>
-                setProcessInstanceIdentifierFields(e.target.value)
-              }
-              placeholder="Enter identifier fields"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <div className="min-h-[300px]">
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              <div className="space-y-6 py-4">
+                {/* Process Instance Identifier Fields */}
+                <div className="space-y-2">
+                  <Label htmlFor="identifier" className="text-sm font-medium">
+                    Process Instance Identifier Fields
+                  </Label>
+                  <Input
+                    id="identifier"
+                    value={processInstanceIdentifierFields}
+                    onChange={(e) =>
+                      setProcessInstanceIdentifierFields(e.target.value)
+                    }
+                    placeholder="Enter identifier fields"
+                    // className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-          {/* Data Field */}
-          <div className="space-y-2">
-            <Label htmlFor="data" className="text-sm font-medium text-gray-700">
-              Data (JSON)
-            </Label>
-            <Textarea
-              id="data"
-              value={dataText}
-              onChange={(e) => handleDataChange(e.target.value)}
-              placeholder='Enter JSON data, e.g., {"key": "value", "number": 123}'
-              className="w-full h-32 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
-            />
+                {/* Data Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="data" className="text-sm font-medium ">
+                    Data (JSON)
+                  </Label>
+                  <Textarea
+                    id="data"
+                    value={dataText}
+                    onChange={(e) => handleDataChange(e.target.value)}
+                    placeholder='Enter JSON data, e.g., {"key": "value", "number": 123}'
+                    // className="w-full h-32 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+                  />
 
-            {/* JSON Error Display */}
-            {jsonError && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700 text-sm">
-                  {jsonError}
-                </AlertDescription>
-              </Alert>
-            )}
+                  {/* JSON Error Display */}
+                  {jsonError && (
+                    <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+                      <AlertDescription className="text-red-700 dark:text-red-300 text-sm">
+                        {jsonError}
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
-            {/* Parsed JSON Preview */}
-            {parsedData && !jsonError && (
-              <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                <Label className="text-sm font-medium text-green-800">
-                  Parsed JSON:
-                </Label>
-                <pre className="text-xs text-green-700 mt-1 whitespace-pre-wrap">
-                  {JSON.stringify(parsedData, null, 2)}
-                </pre>
+                  {/* Parsed JSON Preview */}
+                  {parsedData && !jsonError && (
+                    <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-950 dark:border-green-800">
+                      <Label className="text-sm font-medium text-green-800 dark:text-green-300">
+                        Parsed JSON:
+                      </Label>
+                      <pre className="text-xs text-green-700 mt-1 whitespace-pre-wrap dark:text-green-200">
+                        {JSON.stringify(parsedData, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        <DialogFooter className="flex justify-end space-x-2">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            className="border-gray-300 text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={jsonError && dataText.trim() !== ""}
-            className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            Submit
-          </Button>
-        </DialogFooter>
+              <DialogFooter className="flex justify-end space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={handleCancel}
+                  // className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={jsonError && dataText.trim() !== ""}
+                  //className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Submit
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
