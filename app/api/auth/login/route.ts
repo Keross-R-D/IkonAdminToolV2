@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         // Set the cookie
         await setCookieSession("accessToken", accessToken, { maxAge: expiresIn });
         await setCookieSession("refreshToken", refreshToken, { maxAge: refreshExpiresIn });
-        await setCookieSession("hostURL", body.host, { maxAge: refreshExpiresIn });
+        await setCookieSession("hostURL", body.host);
 
         return NextResponse.json({ success: true, message: "Login successful!" });
     } catch (error) {
