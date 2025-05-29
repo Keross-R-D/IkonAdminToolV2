@@ -10,7 +10,7 @@ export default async function Layout({
     return (
         <>
             {/* <RenderAppBreadcrumb breadcrumb={{ level: 1, title: `My Task - ${decodeURIComponent(searchParams?.myTask).split('/')[1]}`, href: `/workflow/${searchParams?.myTask}` }} /> */}
-           <BreadcrumbComp page={"myTask"} title="My task"/>
+           <BreadcrumbComp page={"myTask"} title="My tasks"/>
             {children}
         </>
     )
