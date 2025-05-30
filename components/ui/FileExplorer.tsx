@@ -69,7 +69,7 @@ const deployProcess = async (processId:string) => {
     }
   );
 
-  if(!response.ok) {
+  if(response.ok) {
     const {deployed} = await response.json();
     if(deployed) {
       toast.success('successfully deployed the process');
