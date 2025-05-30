@@ -3,6 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import JSZip from "jszip";
+import { toast } from "sonner";
+
+import { v4 as uuidv4 } from 'uuid';
 
 interface FolderNode {
     id: string;
@@ -13,84 +16,21 @@ interface FolderNode {
   }
 
 interface RestoreFolderDialogProps {
-  onRestoreFolder: (folderStructure: FolderNode) => void;
+  onRestoreFolder: (folderStructure: FolderNode, setFS: any, setShowSpinner: any) => void;
   onClose: () => void;
+  setFS: any;
+  setShowSpinner: any ;// Pass the setShowSpinner function to the child component
+  showRestoreDialog: any;
+  setShowRestoreDialog: any
 }
 
-export default function RestoreFolderDialog({ onRestoreFolder, onClose }: RestoreFolderDialogProps) {
+export default function RestoreFolderDialog({ onRestoreFolder, onClose , setFS , setShowSpinner, showRestoreDialog, setShowRestoreDialog}: RestoreFolderDialogProps) {
   const [folderStructure, setFolderStructure] = useState<FolderNode | null>(null);
-  const [showRestoreDialog, setShowRestoreDialog] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-    // const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (!event.target.files) return;
-
-    //     const files = Array.from(event.target.files);
-    //     const rootFolderName = files[0]?.webkitRelativePath.split("/")[0]; // Get top-level folder name
-
-    //     if (!rootFolderName) return;
-
-    //     const rootFolder: FolderNode = {
-    //     id: crypto.randomUUID(),
-    //     name: rootFolderName,
-    //     type: "folder",
-    //     children: [],
-    //     };
-
-    //     const fileMap = new Map<string, FolderNode>(); // Stores folder paths
-    //     fileMap.set(rootFolderName, rootFolder);
-
-    //     // Read files and build the structure
-    //     const readFileContent = (file: File): Promise<string> => {
-    //     return new Promise((resolve) => {
-    //         const reader = new FileReader();
-    //         reader.onload = (e) => resolve(e.target?.result as string);
-    //         reader.readAsText(file); // Read file as text (modify if needed)
-    //     });
-    //     };
-
-    //     for (const file of files) {
-    //     const parts = file.webkitRelativePath.split("/");
-    //     let parent = rootFolder;
-
-    //     for (let i = 1; i < parts.length; i++) {
-    //         const partName = parts[i];
-    //         const fullPath = parts.slice(0, i + 1).join("/");
-
-    //         if (i === parts.length - 1) {
-    //         // It's a file, read its content
-    //         const content = await readFileContent(file);
-    //         parent.children?.push({
-    //             id: crypto.randomUUID(),
-    //             name: partName,
-    //             type: "file",
-    //             content: content, // Store file content
-    //         });
-    //         } else {
-    //         // It's a folder, check if it exists
-    //         if (!fileMap.has(fullPath)) {
-    //             const newFolder: FolderNode = {
-    //             id: crypto.randomUUID(),
-    //             name: partName,
-    //             type: "folder",
-    //             children: [],
-    //             };
-    //             fileMap.set(fullPath, newFolder);
-    //             parent.children?.push(newFolder);
-    //         }
-    //         parent = fileMap.get(fullPath)!;
-    //         }
-    //     }
-    //     }
-
-
-    //     setFolderStructure(rootFolder);
-
-    //     setFolderStructure(rootFolder);
-    // };
-    
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    debugger;
+    
     if (!event.target.files) return;
 
     const files = Array.from(event.target.files);
@@ -109,18 +49,18 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose }: Restor
       if (!processedFolder) return; // Handle null case
       rootFolder = processedFolder;
     }
-debugger
+
     setFolderStructure(rootFolder.children ? rootFolder.children[0] : null); // Set folder structure
   };
 
   const processFolderUpload = async (files: File[]) => {
-    debugger
+    
     const rootFolderName = files[0]?.webkitRelativePath.split("/")[0]; // Get top-level folder name
     if (!rootFolderName) return null;
   
     const rootFolder: FolderNode = {
       id: crypto.randomUUID(),
-      name: rootFolderName,
+      name: rootFolderName.split("_")[0], // Remove extension if any
       type: "folder",
       children: [],
     };
@@ -158,7 +98,7 @@ debugger
           if (!fileMap.has(fullPath)) {
             const newFolder: FolderNode = {
               id: crypto.randomUUID(),
-              name: partName,
+              name: partName.split("_")[0],
               type: "folder",
               children: [],
             };
@@ -174,12 +114,12 @@ debugger
   };
 
   const extractZipFile = async (zipFile: File): Promise<FolderNode> => {
-    debugger
+    
     const zip = await JSZip.loadAsync(zipFile);
   
     const rootFolder: FolderNode = {
-      id: crypto.randomUUID(),
-      name: zipFile.name.replace(".zip", ""),
+      id: uuidv4(),
+      name: (zipFile.name.replace(".zip", "")).split("_")[0],
       type: "folder",
       children: [],
     };
@@ -203,7 +143,7 @@ debugger
           // It's a file
           const content = await zipEntry.async("text");
           parent.children?.push({
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: partName,
             type: "file",
             content,
@@ -212,8 +152,8 @@ debugger
           // It's a folder
           if (!fileMap.has(currentPath)) {
             const newFolder: FolderNode = {
-              id: crypto.randomUUID(),
-              name: partName,
+              id: uuidv4(),
+              name: partName.split("_")[0],
               type: "folder",
               children: [],
             };
@@ -235,8 +175,11 @@ debugger
   const handleRestore = () => {
     if (folderStructure) {
         setShowRestoreDialog(false)
-        onRestoreFolder(folderStructure);
-        window.location.reload();
+        
+          onRestoreFolder(folderStructure, setFS, setShowSpinner); // Pass the folder structure to the parent component
+          
+        
+        //window.location.reload();
     }
   };
 

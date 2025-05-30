@@ -9,7 +9,7 @@ import {
   type EdgeProps 
 } from '@xyflow/react';
 import EdgeTransitionCategory from '@/enums/edgeTransitionType';
-
+import { Handle, NodeToolbar, Position } from '@xyflow/react';
 
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -25,9 +25,31 @@ interface CustomEdgeProps extends EdgeProps {
     deleteEdge: (id: string) => void;
     height: number;
     edgeColor: string;
-    modifyEdgeInfo: (values: { [key:string]: any }) => void;
+    modifyEdgeInfo: (edgeId: string) => void;
     edgeTransitionCategory: EdgeTransitionCategory,
-    edgeAdditionalInfo: any
+    edgeAdditionalInfo: {
+      sourceNodeId: string,
+      targetNodeId: string,
+      linkName: string,
+      linkId: string,
+      actionDefinition: {
+        actionValidationScriptId: string | null,
+        messageBinding: string | null,
+        transitionActionScriptId: string | null
+      },
+      jobProcess:{
+        jobScriptId: string | null,
+        jobDelay: number | 0,
+        jobDelayUnit: "hour" | "minute" | undefined,
+        scheduleType: "once" | "repeating" | "cron" | undefined,
+        repeatCount: number | 0 ,
+        interval: number | 0,
+        intervalUnit: "hour" | "minute" | undefined
+      }
+      isJobActive: boolean,
+      conditionId: string,
+    }
+      
   }
 }
 
@@ -38,7 +60,7 @@ const SelfConnecting = (props: CustomEdgeProps) => {
     //     return <SmoothStepEdge {...props} />;
     // }
     
-    const { sourceX, sourceY, targetX, targetY, id, markerEnd, label = '' } = props;
+    const { sourceX, sourceY, targetX, targetY, id, markerEnd, label } = props;
     //const height = 150 + Math.floor(Math.random() * 100);
     
     const x = sourceX;
@@ -94,14 +116,15 @@ const SelfConnecting = (props: CustomEdgeProps) => {
                   }}
                   className="button-edge__label nodrag nopan absolute"
               >
-                <Card>
-                  <CardContent className='p-2'>
-                    <Label className='mb-2'>{label}</Label>
+               
+                <Card className='!p-0'>
+                  <CardContent className='p-3'>
+                    <Label className=''>{label}</Label>
                     <div className="flex flex-col items-center gap-2">
                       {
                         (isSelected) ? 
                         (
-                          <div className='flex gap-2'>
+                          <div className='flex gap-2 pt-2'>
                             <Button variant={'outline'} style={{ pointerEvents: 'auto'}} onClick={
                               () => {
                                 if(props && props.data && props.data.deleteEdge){
@@ -116,24 +139,27 @@ const SelfConnecting = (props: CustomEdgeProps) => {
                                 
                                 //generic
                                 edgeLabel:label?.toString() || "",
+                                processJob: edgeAdditionalInfo.processJob,
+                                actionDefinition: edgeAdditionalInfo.actionDefinition,
+
 
                                 //job
-                                isJobActive: edgeAdditionalInfo.isJobActive ? edgeAdditionalInfo.isJobActive : undefined,
-                                jobScript: edgeAdditionalInfo.jobScript ? edgeAdditionalInfo.jobScript.toString() : undefined,
-                                jobStartDelay: edgeAdditionalInfo.jobStartDelay ? edgeAdditionalInfo.jobStartDelay.toString() : undefined,
-                                jobStartDelayUnit: edgeAdditionalInfo.jobStartDelayUnit ? edgeAdditionalInfo.jobStartDelayUnit.toString() : undefined,
-                                jobFreqency: edgeAdditionalInfo.jobFreqency ? edgeAdditionalInfo.jobFreqency.toString() : undefined,
-                                jobRepeatationCount: edgeAdditionalInfo.jobRepeatationCount ? edgeAdditionalInfo.jobRepeatationCount.toString() : undefined,
-                                jobRepeatationDelay: edgeAdditionalInfo.jobRepeatationDelay ? edgeAdditionalInfo.jobRepeatationDelay.toString() : undefined,
-                                jobRepeatationUnit: edgeAdditionalInfo.jobRepeatationUnit ? edgeAdditionalInfo.jobRepeatationUnit.toString() : undefined,
+                                 isJobActive: edgeAdditionalInfo.isJobActive ? edgeAdditionalInfo.isJobActive : undefined,
+                                // jobScript: edgeAdditionalInfo.processJob?.jobScriptId ? edgeAdditionalInfo.processJob?.jobScriptId.toString() : undefined,
+                                // jobStartDelay: edgeAdditionalInfo.processJob?.jobDelay ? edgeAdditionalInfo.processJob.jobDelay.toString() : undefined,
+                                // jobStartDelayUnit: edgeAdditionalInfo.processJob.jobDelayUnit ? edgeAdditionalInfo.processJob.jobDelayUnit.toString() : undefined,
+                                // jobFrequency: edgeAdditionalInfo.processJob.scheduleType ? edgeAdditionalInfo.processJob.scheduleType.toString() : undefined,
+                                // jobRepetitionCount: edgeAdditionalInfo.processJob.jobRepeatationCount ? edgeAdditionalInfo.processJob.jobRepeatationCount.toString() : undefined,
+                                // jobRepeatationDelay: edgeAdditionalInfo.processJob.interval ? edgeAdditionalInfo.processJob.interval.toString() : undefined,
+                                // jobRepeatationUnit: edgeAdditionalInfo.processJob.intervalUnit ? edgeAdditionalInfo.processJob.intervalUnit.toString() : undefined,
 
-                                // action
-                                actionValidatationScript: edgeAdditionalInfo.actionValidatationScript ? edgeAdditionalInfo.actionValidatationScript.toString() : undefined,
-                                transitionScript: edgeAdditionalInfo.transitionScript ? edgeAdditionalInfo.transitionScript.toString() : undefined,
-                                messageBinding: edgeAdditionalInfo.messageBinding ? edgeAdditionalInfo.messageBinding.toString() : undefined,
+                                // // action
+                                // actionValidatationScript: edgeAdditionalInfo.actionDefinition.actionValidatationScript ? edgeAdditionalInfo.actionDefinition.actionValidatationScript.toString() : undefined,
+                                // transitionScript: edgeAdditionalInfo.actionDefinition.transitionScript ? edgeAdditionalInfo.actionDefinition.transitionScript.toString() : undefined,
+                                // messageBinding: edgeAdditionalInfo.actionDefinition.messageBinding ? edgeAdditionalInfo.actionDefinition.messageBinding.toString() : undefined,
                               
                                 // condition
-                                edgeCondition: edgeAdditionalInfo.edgeCondition ? edgeAdditionalInfo.edgeCondition.toString() : undefined
+                                conditionId: edgeAdditionalInfo.conditionId ? edgeAdditionalInfo.conditionId.toString() : undefined,
                               }} 
                               onSubmitCallback={props.data.modifyEdgeInfo} 
                               edgeTransitionCategory={props.data.edgeTransitionCategory}

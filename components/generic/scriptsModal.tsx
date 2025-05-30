@@ -31,66 +31,138 @@ import {
 import {z} from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NodeProps } from "@xyflow/react";
+
+interface nodeInfoModalProps {
+    nodeInfoDefaultValues: any;
+  }
 
 
-const ScriptsModal = () => {
+const ScriptsModal = (prop: nodeInfoModalProps) => {
+    const params = useParams();
+    const [scripts, setScripts] = useState<any[]>([]);
+    const [showModal, setShowModal] = useState(false);
+    
+    const onSubmitCallback = prop.nodeInfoDefaultValues.modifyNodeInfo;
+    const nodeAdditionalInfo = prop.nodeInfoDefaultValues.nodeAdditionalInfo;
+
+    useEffect(() => {
+        const createScriptFile = async () => {
+          const response = await fetch("/api/read-script-metadata", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              folderId: decodeURIComponent(params?.workflow).split("/")[0],
+            }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to Create script file");
+          } 
+          const data = await response.json();
+          setScripts(data.metadata); // Update state with the fetched scripts
+        };
+    
+        createScriptFile().catch((err) => console.error("❌ Error in useEffect:", err));
+      }, []);
     
     const formSchema = z.object({
-        postProcessingScript: z.string().optional(),
-        taskActionScript: z.string().optional()
+        postProcessingScriptId: z.string().optional(),
+        taskActionScriptId: z.string().optional()
     })
     
     
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            postProcessingScript: "",
-            taskActionScript: ""
+        defaultValues: nodeAdditionalInfo? nodeAdditionalInfo :{
+            postProcessingScriptId: "",
+            taskActionScriptId: ""
         }
     })
     
     const onSubmit = (value: any) => {
+        
         console.log(value)
+        value.assignment = nodeAdditionalInfo?.assignment
+        onSubmitCallback({nodeAdditionalInfo : value,label :prop.nodeInfoDefaultValues.nodeName}); 
+        setShowModal(false);
     }
 
     return (
-        <Dialog>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <DialogTrigger asChild>
-                        <Button variant={"outline"}>
-                            <Braces/>
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Script Assocition</DialogTitle>
+        <Dialog open={showModal} onOpenChange={setShowModal}>
+            <DialogTrigger asChild>
+                <Button variant={"outline"}>
+                    <Braces/>
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    
+                    
+                        <DialogHeader className="pb-4">
+                            <DialogTitle>Script Association</DialogTitle>
                         </DialogHeader>
                         
                         <FormField
                             control={form.control}
-                            name="postProcessingScript"
-                            render={({field}) => (
+                            name="postProcessingScriptId"
+                            render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel> Post processing script</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Post processing script" {...field}/>
-                                    </FormControl>
-                                    <FormDescription>
-                                        This script can be dynamically executed for this task for a specific instance
-                                    </FormDescription>
+                                <FormLabel>Post Processing Script</FormLabel>
+                                <FormControl>
+                                    <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select script" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {scripts
+                                        .filter((script) => script.scriptType === "Form Data Post Processing") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormDescription>
+                                    This script can be dynamically executed for this task for a specific instance.
+                                </FormDescription>
                                 </FormItem>
                             )}
                         />
 
                         <FormField
                             control={form.control}
-                            name="taskActionScript"
+                            name="taskActionScriptId"
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel> Task Action script</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Task Action script" {...field}/>
+                                        <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select script" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {scripts
+                                            .filter((script) => script.scriptType === "Task Action") // ✅ filter only post-processing scripts
+                                            .map((script) => (
+                                                <SelectItem key={script.scriptId} value={script.scriptId}>
+                                                {script.scriptName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormDescription>
                                         Description to be done
@@ -102,9 +174,10 @@ const ScriptsModal = () => {
                         <DialogFooter>
                             <Button type="submit">Submit</Button>
                         </DialogFooter>
-                    </DialogContent>
-                </form>
-            </Form>
+                    
+                    </form>
+                </Form>
+            </DialogContent>
         </Dialog>
     )
 }

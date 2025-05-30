@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import EdgeTransitionCategory from "@/enums/edgeTransitionType";
+import { useParams } from "next/navigation";
 
 interface EdgeInfoDefaultValues {
   //edge label
@@ -43,26 +44,24 @@ interface EdgeInfoDefaultValues {
 
   //job
   isJobActive: boolean | undefined,
-  jobScript: string | undefined,
-  jobStartDelay: number | undefined,
-  jobStartDelayUnit: "hour" | "minute" | undefined,
-  jobFreqency: "once" | "repeating" | "cron" | undefined,
-  jobRepeatationCount: number,
-  jobRepeatationDelay: number,
-  jobRepeatationUnit: "hour" | "minute" | undefined
+  processJob:any,
+ 
 
   // action
-  actionValidatationScript: string | undefined,
-  messageBinding: string | undefined,
-  transitionScript: string | undefined
+  actionDefinition: {
+    actionValidationScriptId: string | null,
+    messageBinding: string | null,
+    transitionActionScriptId: string | null
+  },
+  
 
   // condition
-  edgeCondition: string | undefined
+  conditionId: string | null
 }
 
 interface edgeInfoModalProps {
   edgeInfoDefaultValues: EdgeInfoDefaultValues;
-  onSubmitCallback: (values: { [key:string]: string }) => void;
+  onSubmitCallback: (values: { [key: string]: string }) => void;
   edgeTransitionCategory: EdgeTransitionCategory;
 }
 
@@ -78,8 +77,8 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
     isJobActive: z.boolean(),
     jobScript: z.string().optional(),
     jobStartDelay: z.preprocess((val) => Number(val), z.number().min(0).optional()),
-    jobStartDelayUnit: z.enum(["hour", "minute"]).optional(),
-    jobFreqency: z.enum(["once","repeating","cron"]).default("once").optional(),
+    jobStartDelayUnit: z.string().optional(),
+    jobFreqency: z.enum(["once","simple","cron"]).default("once").optional(),
     jobcron: z.string().optional(),
     jobRepeatationCount: z.preprocess(
       (val) => Number(val),
@@ -89,7 +88,7 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
       (val) => Number(val),
       z.number().min(0).optional(),
     ),
-    jobRepeatationUnit: z.enum(["hour", "minute"]).optional(),
+    jobRepeatationUnit: z.enum(["Hour", "Minute"]).optional(),
   };
 
   if (edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE) {
@@ -111,23 +110,23 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
 
     // job
     isJobActive: currentValues.isJobActive ? currentValues.isJobActive : false,
-    jobScript: currentValues.jobScript ? currentValues.jobScript : "",
-    jobStartDelay: currentValues.jobStartDelay ? currentValues.jobStartDelay : 0,
-    jobStartDelayUnit: currentValues.jobStartDelayUnit? currentValues.jobStartDelayUnit : "minute",
-    jobFreqency: currentValues.jobFreqency? currentValues.jobFreqency : "once",
-    jobcron: currentValues.jobcron? currentValues.jobcron : "",
-    jobRepeatationCount: currentValues.jobRepeatationCount? currentValues.jobRepeatationCount : 1,
-    jobRepeatationDelay: currentValues.jobRepeatationDelay? currentValues.jobRepeatationDelay : 1,
-    jobRepeatationUnit: currentValues.jobRepeatationUnit? currentValues.jobRepeatationUnit : "minute",
+    jobScript: currentValues.processJob.jobScriptId ? currentValues.processJob.jobScriptId : "",
+    jobStartDelay: currentValues.processJob.jobDelay ? currentValues.processJob.jobDelay : 0,
+    jobStartDelayUnit: currentValues.processJob.jobDelayUnit? currentValues.processJob.jobDelayUnit : "Minute",
+    jobFreqency: currentValues.processJob.scheduleType? currentValues.processJob.scheduleType : "once",
+    jobcron: currentValues.processJob.cronExpression? currentValues.processJob.cronExpression : "",
+    jobRepeatationCount: currentValues.processJob.repeatCount? currentValues.processJob.repeatCount : 1,
+    jobRepeatationDelay: currentValues.processJob.interval? currentValues.processJob.interval : 1,
+    jobRepeatationUnit: currentValues.processJob.intervalUnit? currentValues.processJob.intervalUnit : "Minute",
   }
 
   // action
   if(edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE){
     defaultValues = {
       ...defaultValues,
-      transitionScript: currentValues.transitionScript ? currentValues.transitionScript : '',
-      actionValidatationScript: currentValues.actionValidatationScript ? currentValues.actionValidatationScript : '',
-      messageBinding: currentValues.messageBinding ? currentValues.messageBinding : '',
+      transitionScript: currentValues.actionDefinition.transitionActionScriptId ? currentValues.actionDefinition.transitionActionScriptId : '',
+      actionValidatationScript: currentValues.actionDefinition.actionValidationScriptId ? currentValues.actionDefinition.actionValidationScriptId : '',
+      messageBinding: currentValues.actionDefinition.messageBinding ? currentValues.actionDefinition.messageBinding : '',
     }
   }
 
@@ -135,7 +134,7 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
   else if(edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE){
     defaultValues = {
       ...defaultValues,
-      edgeCondition: currentValues.edgeCondition? currentValues.edgeCondition : "",
+      edgeCondition: currentValues.conditionId? currentValues.conditionId : "",
     }
   }
 
@@ -147,9 +146,12 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   onSubmitCallback,
   edgeTransitionCategory,
 }) => {
-
+  
+  const [open, setOpen] = useState(false);
   const zSchemaObj = getZschema(edgeTransitionCategory);
   const formSchema = z.object(zSchemaObj);
+  const params = useParams();
+  const [scripts, setScripts] = useState<any[]>([]);
 
   const defaultValues = getDefaultValue(edgeTransitionCategory, edgeInfoDefaultValues)
 
@@ -161,16 +163,68 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   const internalJobFrequencyType = form.watch("jobFreqency");
 
 
+  useEffect(() => {
+          const createScriptFile = async () => {
+            const response = await fetch("/api/read-script-metadata", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                folderId: decodeURIComponent(params?.workflow),
+              }),
+            });
+            if (!response.ok) {
+              const errorData = await response.json();
+              console.log(errorData.error || "Failed to Create script file");
+            } 
+            const data = await response.json();
+            setScripts(data.metadata); // Update state with the fetched scripts
+          };
+      
+          createScriptFile().catch((err) => console.log("❌ Error in useEffect:", err));
+        }, []);
+
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    
+    let returnValues = edgeInfoDefaultValues;
+    returnValues.edgeLabel = values.edgeLabel;
+    returnValues.isJobActive = values.isJobActive;
+    if(values.isJobActive){  
+      returnValues.processJob = {
+        jobScriptId: values.jobScript,
+        jobDelay: values.jobStartDelay,
+        jobDelayUnit: values.jobStartDelayUnit,
+        scheduleType: values.jobFreqency,
+        
+        
+      }
+    
+      if(values.jobFreqency === "simple"){
+        returnValues.processJob.repeatCount= values.jobRepeatationCount
+        returnValues.processJob.interval= values.jobRepeatationDelay
+        returnValues.processJob.intervalUnit= values.jobRepeatationUnit
+      }
+      if(values.jobFreqency === "cron"){
+        returnValues.processJob.cronExpression= values.jobcron
+      }
+    }
+    returnValues.actionDefinition = {
+      actionValidationScriptId: values.actionValidatationScript,
+      messageBinding: values.messageBinding,
+      transitionActionScriptId: values.transitionScript,
+    };
+    returnValues.conditionId = values.edgeCondition;
+   
 
-    onSubmitCallback(values);
+    onSubmitCallback(returnValues);
+    setOpen(false);
     console.log(values);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"} style={{ pointerEvents: "auto" }}>
           <Cog />
@@ -227,10 +281,24 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Action Validation Script</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Action Validation Script"
-                              {...field}
-                            />
+                            
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.scriptType === "Action Validation") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This script will validate the incoming data
@@ -246,7 +314,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Transition Script</FormLabel>
                           <FormControl>
-                            <Input placeholder="Transition Script" {...field} />
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.scriptType === "Transition Action - After Transaction" || script.scriptType === "Transition Action - Before Transaction") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This script will be executed during transition
@@ -283,7 +367,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                     control={form.control}
                     name="isJobActive"
                     render={({ field }) => (
-                      <FormItem className="my-2 flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <FormItem className="my-2 flex flex-row items-center justify-between rounded-lg border p-3 shadow-xs">
                         <div className="space-y-0.5">
                           <FormLabel>Execute Job</FormLabel>
                           <FormDescription>
@@ -308,7 +392,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                       <FormItem className="my-2">
                         <FormLabel>Job Script</FormLabel>
                         <FormControl>
-                          <Input placeholder="Job script" {...field} />
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.scriptType === "Job Script") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                         </FormControl>
                         <FormDescription>
                           This script will be executed by the job.
@@ -346,17 +446,17 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                       render={({ field }) => (
                         <FormItem className="my-2">
                           <FormControl>
-                            <Select {...field}>
+                            <Select value={field.value} onValueChange={field.onChange}>
                               <SelectTrigger>
-                                <SelectValue placeholder="job delay unit"/>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>Job delay unit</SelectLabel>
-                                    <SelectItem value="minute">Minute(s)</SelectItem>
-                                    <SelectItem value="hour">Hour(s)</SelectItem>
-                                  </SelectGroup>
-                                </SelectContent>
+                                <SelectValue placeholder="Job delay unit" />
                               </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Job delay unit</SelectLabel>
+                                  <SelectItem value="Minute">Minute(s)</SelectItem>
+                                  <SelectItem value="Hour">Hour(s)</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
                             </Select>
                           </FormControl>
                           <FormDescription>
@@ -387,11 +487,11 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                               <SelectGroup>
                                 <SelectLabel>freqency</SelectLabel>
                                 <SelectItem value="once">Once only</SelectItem>
-                                <SelectItem value="repeating">
+                                <SelectItem value="simple">
                                   Repeating Schedule
                                 </SelectItem>
                                 <SelectItem value="cron">
-                                  cron Based Schedule
+                                  Cron Based Schedule
                                 </SelectItem>
                               </SelectGroup>
                             </SelectContent>
@@ -405,7 +505,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                     )}
                   />
 
-                  {internalJobFrequencyType === "repeating" && (
+                  {internalJobFrequencyType === "simple" && (
                     <>
                       <FormField
                         control={form.control}
@@ -456,17 +556,15 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                           render={({ field }) => (
                             <FormItem className="my-2">
                               <FormControl>
-                                <Select
-                                  {...field}
-                                >
+                                <Select value={field.value} onValueChange={field.onChange}>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Job repeatation unit" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
                                       <SelectLabel>Job repeatation unit</SelectLabel>
-                                      <SelectItem value="minute"> Minute(s) </SelectItem>
-                                      <SelectItem value="hours"> Hour(s) </SelectItem>
+                                      <SelectItem value="Minute"> Minute(s) </SelectItem>
+                                      <SelectItem value="Hours"> Hour(s) </SelectItem>
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>
@@ -511,11 +609,23 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                         <FormItem className="my-2">
                           <FormLabel>Edge Conditional Script</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Edge Conditional Script"
-                              {...field}
-                            />
+                            <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select script" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {scripts
+                                        .filter((script) => script.scriptType === "Process Condition") // ✅ filter only post-processing scripts
+                                        .map((script) => (
+                                            <SelectItem key={script.scriptId} value={script.scriptId}>
+                                            {script.scriptName}
+                                            </SelectItem>
+                                        ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormDescription>
                             This transition will be selected if this script is
@@ -544,3 +654,5 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
 };
 
 export default EdgeInfoModal;
+
+

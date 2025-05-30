@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
+const net = require("net");
 
 function generateId() {
   return crypto.randomBytes(8).toString("hex");
@@ -12,44 +12,134 @@ function generateId() {
 function readDirectory(dir, base = dir) {
   let results = [];
   const files = fs.readdirSync(dir);
-
   for (const file of files) {
     const fullPath = path.join(dir, file);
     const stats = fs.statSync(fullPath);
-
+    if (file === "lib") continue;
     const node = {
-      id: generateId(),
-      name: file,
-      path: fullPath, // ✅ Include absolute path
+      id: file === "src" ? Date.now().toString() : file.split("_")[1],
+      name: file.split("_")[0],
+      path: fullPath,
       type: stats.isDirectory() ? "folder" : "file",
       children: stats.isDirectory() ? readDirectory(fullPath, base) : [],
     };
-
     results.push(node);
   }
   return results;
 }
 
-// Get the folder where the command was run
-const targetFolder = process.cwd();
-const structure = readDirectory(targetFolder);
+function findFreePort(startPort = 3000, maxTries = 100) {
+  return new Promise((resolve, reject) => {
+    let port = startPort;
 
-// Save the folder structure JSON
+    const tryPort = () => {
+      const server = net.createServer();
+      server.unref();
+      server.on("error", () => {
+        port++;
+        if (port - startPort >= maxTries) reject(new Error("No free ports found"));
+        else tryPort();
+      });
+      server.listen(port, () => {
+        server.close(() => resolve(port));
+      });
+    };
+
+    tryPort();
+  });
+}
+
+// Get the app directory
 const appFolder = path.dirname(__filename);
-const outputPath = path.join(appFolder, "public/folderStructure.json");
 
-fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+// Command-line arguments
+const args = process.argv.slice(2);
+const command = args[0];
 
-console.log(`✅ Folder structure saved!`);
-//console.log(`🚀 Starting Next.js server...`);
+if (command === "dev") {
+//   console.log("🚀 Starting Next.js in development mode...");
 
-const serverProcess = exec("node server.js", { cwd: appFolder });
+  const targetFolder = process.cwd();
+// const nextFolderPath = path.join(appFolder, ".next", "BUILD_ID");
+//   const devProcess = exec("npm run dev", { cwd: appFolder });
+//   devProcess.stdout.on("data", (data) => console.log(data));
+//   devProcess.stderr.on("data", (data) => console.error(data));
 
-serverProcess.stdout.on("data", (data) => {
-  console.log(data);
+  const structure = readDirectory(targetFolder);
+  const outputPath = path.join(appFolder, "public/folderStructure.json");
+//   fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+//   console.log(`✅ Folder structure saved!`);
+  // STEP 3: Write structure to public/folderStructure.json
+    fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+    console.log("✅ Folder structure saved at:", outputPath);
 
-});
+    // STEP 4: Start Next.js dev server
+    console.log("🚀 Starting Next.js in development mode...");
+    const devProcess = exec("npm run dev", { cwd: appFolder });
 
-serverProcess.stderr.on("data", (data) => {
-  console.error(data);
-});
+    devProcess.stdout.on("data", (data) => process.stdout.write(data));
+    devProcess.stderr.on("data", (data) => process.stderr.write(data));
+
+} else if (command === "update") {
+  (async () => {
+    // Update dependencies
+    console.log("📦 Updating dependencies...");
+    try {
+      execSync("git pull origin master", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Downloaded latest code");
+
+      execSync("npm install", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Dependencies updated successfully!");
+
+      execSync("rm -rf .next", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Removed old build");
+
+      execSync("npm run build", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Production build complete");
+
+      execSync("npm install -g .", { cwd: appFolder, stdio: 'inherit' });
+      execSync("npm link", { cwd: appFolder, stdio: 'inherit' });
+      console.log("✅ Update successful");
+
+
+    } catch (error) {
+      console.error("❌ Error updating dependencies:", error);
+      process.exit(1);
+    }
+  })();
+
+} else {
+  // Default: Save folder structure & run built app
+  (async () => {
+    try {
+      const targetFolder = process.cwd();
+      const structure = readDirectory(targetFolder);
+      const outputPath = path.join(appFolder, "public/folderStructure.json");
+      fs.writeFileSync(outputPath, JSON.stringify(structure, null, 2));
+      console.log(`✅ Folder structure saved!`);
+
+      const nextFolderPath = path.join(appFolder, ".next", "BUILD_ID");
+      if (!fs.existsSync(nextFolderPath)) {
+        console.log("🔨 Production build not found. Running build...");
+        try {
+          execSync("npm run build", { cwd: appFolder, stdio: "inherit" });
+          console.log("✅ Build completed!");
+        } catch (err) {
+          console.error("❌ Build failed:", err.message);
+          process.exit(1);
+        }
+      }
+
+      const port = await findFreePort(3000);
+      console.log(`🚀 Starting built app on http://localhost:${port}`);
+      const serverProcess = exec(`npm run start -- -p ${port}`, { cwd: appFolder });
+
+      serverProcess.stdout.on("data", (data) => console.log(data));
+      serverProcess.stderr.on("data", (data) => console.error(data));
+
+    } catch (err) {
+      console.error("❌ Error during default run:", err.message);
+      process.exit(1);
+    }
+  })();
+}

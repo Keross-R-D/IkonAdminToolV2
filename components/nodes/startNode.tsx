@@ -18,8 +18,11 @@ import ScriptsModal from '@/components/generic/scriptsModal';
 
 interface startNodeProps {
     data: {
-        id: string,
-        deleteNode:any
+        nodeId: string,
+        deleteNode:any,
+        label: string,
+        modifyNodeInfo: (nodeId: string) => void,
+        nodeAdditionalInfo: any,
     },
     selected: boolean
 }
@@ -36,17 +39,17 @@ const StartNode = ({data,selected}: startNodeProps) => {
         <NodeToolbar position={Position.Top} className='flex gap-2'>
             {/* <NodeCodeDialog/> */}
             <Button variant="outline" onClick={() =>{
-                data.deleteNode(data.id);
+                data.deleteNode(data.nodeId);
             }}>
                 <Trash/>
             </Button>
-            <ScriptsModal/>
+            <ScriptsModal nodeInfoDefaultValues={data} />
         </NodeToolbar>
         <Card className={cardClassNames}>
             <CardHeader>
                 <div className="flex gap-2 items-center">
                     <Circle />
-                    <div className="flex-grow">
+                    <div className="grow">
                         <CardTitle>Start Node</CardTitle>
                         <CardDescription>Entry point for the process</CardDescription>
                     </div>
