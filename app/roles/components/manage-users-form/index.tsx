@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 
 const formSchema = z.object({
-  userIds: z.array(z.string()).min(1, "Select at least one user"),
+  userIds: z.array(z.string()).optional(),
 });
 
 interface ManageUsersFormProps {
