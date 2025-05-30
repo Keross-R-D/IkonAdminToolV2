@@ -75,9 +75,15 @@ const deployProcess = async (processId:string) => {
       toast.success('successfully deployed the process');
       return;
     }
+    else {
+      toast.error("process already deployed");
+    }
+  }else{
+    toast.error("Failed to deploy the process");
   }
 
-  toast.error("Failed to deploy the process");
+
+  
 }
 
 export default function FileExplorer({
