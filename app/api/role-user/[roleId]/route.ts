@@ -9,8 +9,8 @@ export async function GET(
   try {
     const { roleId } = await params;
     const authToken = await getValidAccessToken();
-    let host = await getCookieSession("serverURL");
-    
+    const host = await getCookieSession("serverURL");
+
     const completeUrl = `${host}/role/${roleId}/membership`;
 
     console.log(completeUrl);

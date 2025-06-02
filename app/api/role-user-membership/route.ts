@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const authToken = await getValidAccessToken();
-    let host = await getCookieSession("serverURL");
-    
+    const host = await getCookieSession("serverURL");
+
     const completeUrl = `${host}/role/${body.roleId}/membership`;
 
     const { activeAccountId } = decode(authToken || "");
