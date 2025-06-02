@@ -8,14 +8,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const authToken = await getValidAccessToken();
-    let host = await getCookieSession("hostURL");
-    const currentloggedInServer = await getCookieSession(
-      "currentloggedInServer"
-    );
-
-    if (currentloggedInServer === "local-auth") {
-      host = await getCookieSession("localHostURL");
-    }
+    let host = await getCookieSession("serverURL");
+    
     const completeUrl = `${host}/role/${body.roleId}/membership`;
 
     const { activeAccountId } = decode(authToken || "");

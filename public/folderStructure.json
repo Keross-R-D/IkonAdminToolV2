@@ -12,7 +12,7 @@
     "children": []
   },
   {
-    "id": "1748517487624",
+    "id": "1748849901614",
     "name": "src",
     "path": "/workspace/localserver/updated/bpmnprocessdemo/bpmn/src",
     "type": "folder",
@@ -83,13 +83,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "cf0e4e0b-00a6-4126-a4f2-698ebab07bda",
-        "name": "test",
-        "path": "/workspace/localserver/updated/bpmnprocessdemo/bpmn/src/test_cf0e4e0b-00a6-4126-a4f2-698ebab07bda",
-        "type": "folder",
-        "children": []
       }
     ]
   }

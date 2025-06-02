@@ -5,7 +5,7 @@ import { getValidAccessToken } from "@/ikon/utils/accessToken";
 export async function GET(req: NextRequest) {
   try {
     const authToken = await getValidAccessToken();
-    let host = await getCookieSession("hostURL");
+    let host = await getCookieSession("serverURL");
 
     const completeUrl = `${host}/platform/user/current`;
 
