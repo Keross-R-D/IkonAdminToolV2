@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Role {
   id: string;
@@ -86,7 +87,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const roles = fileData.roles || [];
-    const roleId = newRole.id || Date.now().toString();
+    const roleId = newRole.id || uuidv4();
 
     const updatedRole: Role = {
       id: roleId,
