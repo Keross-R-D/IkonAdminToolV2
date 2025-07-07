@@ -17,7 +17,7 @@ export async function apiReaquest(apiUrl: string, init?: RequestInit) {
     const protocol = 'http';
     const host = `${protocol}://${header.get('host')}`;
     const response = await fetch(`${host}${apiUrl}`, init);
-    // console.log("response:",response)
+     console.log("response:",response)
 
     const contentType = response.headers.get("Content-Type");
     const responseData = contentType?.includes("application/json")

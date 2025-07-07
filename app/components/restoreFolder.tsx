@@ -27,6 +27,7 @@ interface RestoreFolderDialogProps {
 export default function RestoreFolderDialog({ onRestoreFolder, onClose , setFS , setShowSpinner, showRestoreDialog, setShowRestoreDialog}: RestoreFolderDialogProps) {
   const [folderStructure, setFolderStructure] = useState<FolderNode | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isToggled, setIsToggled] = useState(true);
 
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +190,9 @@ export default function RestoreFolderDialog({ onRestoreFolder, onClose , setFS ,
         <DialogHeader>
           <DialogTitle>Restore a Folder</DialogTitle>
         </DialogHeader>
-
+       
+        
+       
         <div className="space-y-4">
           {/* Folder Upload Input */}
           <Input

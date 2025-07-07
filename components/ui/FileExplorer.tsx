@@ -13,12 +13,13 @@ import {
   FolderOpen,
   Download,
   Trash2Icon,
+  Copy,
 } from "lucide-react";
 import { Button } from "./button";
 import { useRouter } from "next/navigation"; // Next.js router
 import { Tooltip } from "@/ikon/components/tooltip";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
-import { set } from "zod";
+import { boolean, set } from "zod";
 import { toast } from "sonner";
 import { useDialog } from "@/ikon/components/alert-dialog/dialog-context";
 import Link from "next/link";
@@ -44,6 +45,7 @@ interface FolderNode {
   parentId?: string; // Add parentId property
 }
 
+
 const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
   return nodes
     .filter(
@@ -60,31 +62,19 @@ const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
     });
 };
 
-const deployProcess = async (processId:string) => {
-  const url = `/api/deploy-process/${processId}`;
-  const response = await fetch(
-    url,
-    {
-      method: "POST"
-    }
-  );
-
-  if(response.ok) {
-    const {deployed} = await response.json();
-    if(deployed) {
-      toast.success('successfully deployed the process');
-      return;
-    }
-    else {
-      toast.error("process already deployed");
-    }
-  }else{
-    toast.error("Failed to deploy the process");
-  }
 
 
-  
-}
+ 
+// const fetchData = async (folderId: string) => {
+//         try {
+//             const response = await apiReaquest(`/api/get-processMetadata?folderId=${folderId}`);
+//             console.log("response" ,response); // handle the response here
+//             debugger
+//             return response.isDeployed;
+//         } catch (error) {
+//             console.error('Error fetching project data:', error);
+//         }
+//       }
 
 export default function FileExplorer({
   node,
@@ -108,6 +98,27 @@ export default function FileExplorer({
   const [startProcessModalOpen, setStartProcessModalOpen] =
     useState<boolean>(false);
   const [startProcessId, setStartProcessId] = useState<string | null>(null);
+  const [isDeployed , setIsDeployed] = useState(false)
+
+  useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`/api/get-processMetadata?folderId=${node.id}`, {
+                  method: 'GET',
+                });
+                console.log("response", response);
+                if(response.ok){
+                   const data = await response.json();
+                   setIsDeployed(data.metadata.isDeployed);
+                }
+                
+            } catch (error) {
+                console.error('Error fetching project data:', error);
+            } 
+        };
+
+        fetchData();
+    }, [node.id]);
 
   const toggleFolder = (id: string) => {
     setOpenFolders((prev) => ({
@@ -169,6 +180,36 @@ export default function FileExplorer({
         node.name
       )}`
     ); // Navigate to the modal page
+  } 
+
+  const copyFolder = async (folderId : string)=>{
+     // Copy Folder
+      setIsLoading(true)
+      // ✅ Send request to backend
+      const response = await fetch("/api/copy-folder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(folderId),
+      });
+      if (!response.ok) {
+        var errorData = await response.json();
+        toast.error(errorData.error || "Failed to create folder");
+        console.error("Failed to create folder");
+        setIsLoading(false);
+        return;
+      }
+      else {
+        setIsLoading(false)
+        toast.success(`Process copied successfully`);
+        const data = await response.json();
+        if (data) {
+          const newFolderStructure = filterFolders(data?.fs); // Update the folder structure in the parent component
+          
+          setFolderStructure(newFolderStructure)
+          
+        }
+        // Handle successful response if needed
+      }
   }
 
   function openTasks(node: FileNode, showAllTasks: boolean) {
@@ -260,6 +301,30 @@ export default function FileExplorer({
     });
   };
 
+  const deployProcess = async (processId:string) => {
+  const url = `/api/deploy-process/${processId}`;
+  const response = await fetch(
+    url,
+    {
+      method: "POST"
+    }
+  );
+
+  if(response.ok) {
+    const {deployed} = await response.json();
+    if(deployed) {
+      setIsDeployed(true)
+      toast.success('successfully deployed the process');
+      return;
+    }
+    else {
+      toast.error("process already deployed");
+    }
+  }else{
+    toast.error("Failed to deploy the process");
+  }
+}
+
   return (
     <>
       <ProcessModal
@@ -315,6 +380,17 @@ export default function FileExplorer({
                   >
                     <Waypoints />
                     Modal
+                  </Button>
+                </Tooltip>
+                 <Tooltip tooltipContent="Copy" side={"top"}>
+                  <Button
+                    className="text-sm px-2 py-1 h-fit"
+                    variant="outline"
+                    size={"sm"}
+                    onClick={() => copyFolder(node.id)}
+                  >
+                    <Copy />
+                    Copy
                   </Button>
                 </Tooltip>
                 <Tooltip tooltipContent="Backup" side={"top"}>
@@ -379,6 +455,7 @@ export default function FileExplorer({
                     variant="outline"
                     size={"sm"}
                     onClick={() => deployProcess(node.id)}
+                    disabled={isDeployed} // Optional: disable while loading
                   >
                     <LayoutList /> Deploy
                   </Button>

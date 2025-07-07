@@ -124,7 +124,7 @@ export async function POST(req: Request) {
 
     let newFolderPath;
     if (parentNode.name === "src") {
-      newFolderPath = path.join(parentFolderPath, folderName+"_" + folderId);
+      newFolderPath = path.join(parentFolderPath, folderName + "_" + folderId);
     } else {
       const childrenFolderPath = path.join(parentFolderPath, "children");
 
@@ -143,7 +143,7 @@ export async function POST(req: Request) {
         );
       }
 
-      newFolderPath = path.join(childrenFolderPath, folderName+"_" + folderId);
+      newFolderPath = path.join(childrenFolderPath, folderName + "_" + folderId);
     }
 
     try {
