@@ -38,6 +38,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import EdgeTransitionCategory from "@/enums/edgeTransitionType";
 import { useParams } from "next/navigation";
 
+
+const XOR_TYPE = EdgeTransitionCategory.XOR_TYPE;
+const FORK_JOIN_TYPE = EdgeTransitionCategory.FORK_JOIN_TYPE
+const GENERIC_TYPE = EdgeTransitionCategory.GENERIC_TYPE
+
 interface EdgeInfoDefaultValues {
   //edge label
   edgeLabel : string,
@@ -91,9 +96,9 @@ const getZschema = (edgeTransitionCategory:EdgeTransitionCategory) => {
     jobRepeatationUnit: z.enum(["Hour", "Minute"]).optional(),
   };
 
-  if (edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE) {
+  if (edgeTransitionCategory === XOR_TYPE) {
     zSchemaObj.edgeCondition = z.string().optional();
-  } else if (edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE) {
+  } else if (edgeTransitionCategory === GENERIC_TYPE) {
     zSchemaObj.transitionScript = z.string().optional();
     zSchemaObj.actionValidatationScript = z.string().optional();
     zSchemaObj.messageBinding = z.string().optional();
@@ -121,7 +126,7 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
   }
 
   // action
-  if(edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE){
+  if(edgeTransitionCategory === GENERIC_TYPE){
     defaultValues = {
       ...defaultValues,
       transitionScript: currentValues.actionDefinition.transitionActionScriptId ? currentValues.actionDefinition.transitionActionScriptId : '',
@@ -131,7 +136,7 @@ const getDefaultValue = (edgeTransitionCategory:EdgeTransitionCategory, currentV
   }
 
   // condition
-  else if(edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE){
+  else if(edgeTransitionCategory === XOR_TYPE){
     defaultValues = {
       ...defaultValues,
       edgeCondition: currentValues.conditionId? currentValues.conditionId : "",
@@ -152,6 +157,8 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
   const formSchema = z.object(zSchemaObj);
   const params = useParams();
   const [scripts, setScripts] = useState<any[]>([]);
+
+  
 
   const defaultValues = getDefaultValue(edgeTransitionCategory, edgeInfoDefaultValues)
 
@@ -239,14 +246,14 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
             <Tabs defaultValue="genericInfo">
               <TabsList>
                 <TabsTrigger value="genericInfo">Generic</TabsTrigger>
-                {edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE && (
+                {edgeTransitionCategory === GENERIC_TYPE && (
                   <TabsTrigger value="actionInfo">Action</TabsTrigger>
                 )}
                 <TabsTrigger value="jobInfo">Job</TabsTrigger>
-                {edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE && (
+                {edgeTransitionCategory === XOR_TYPE && (
                   <TabsTrigger value="conditionInfo">Condition</TabsTrigger>
                 )}
-                {edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE && (
+                {edgeTransitionCategory === GENERIC_TYPE && (
                   <TabsTrigger value="notificationInfo">
                     Notification
                   </TabsTrigger>
@@ -271,8 +278,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                     )}
                   />
                 </TabsContent>
-                {edgeTransitionCategory ===
-                  EdgeTransitionCategory.GENERIC_TYPE && (
+                {edgeTransitionCategory === GENERIC_TYPE && (
                   <TabsContent value="actionInfo">
                     <FormField
                       control={form.control}
@@ -600,7 +606,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                   )}
                 </TabsContent>
 
-                {edgeTransitionCategory === EdgeTransitionCategory.XOR_TYPE && (
+                {edgeTransitionCategory === XOR_TYPE && (
                   <TabsContent value="conditionInfo">
                     <FormField
                       control={form.control}
@@ -638,7 +644,7 @@ const EdgeInfoModal: React.FC<edgeInfoModalProps> = ({
                   </TabsContent>
                 )}
 
-                {edgeTransitionCategory === EdgeTransitionCategory.GENERIC_TYPE && (
+                {edgeTransitionCategory === GENERIC_TYPE && (
                   <TabsContent value="notificationInfo"></TabsContent>
                 )}
               </ScrollArea>

@@ -96,9 +96,9 @@ interface Edge {
 }
 
 function getEdgeTransitionCategory(sourceType: string) {
-    if (sourceType === "xor") {
+    if (sourceType === "XOR") {
         return EdgeTransitionCategory.XOR_TYPE;
-    } else if (sourceType === "fork" || sourceType === "join") {
+    } else if (sourceType === "Fork" || sourceType === "Join") {
         return EdgeTransitionCategory.FORK_JOIN_TYPE;
     } else {
         return EdgeTransitionCategory.GENERIC_TYPE;
