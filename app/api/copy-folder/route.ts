@@ -16,11 +16,11 @@ interface FolderNode {
 
 export const runtime = "nodejs";
 const structurePath = path.join(process.cwd(), "public/folderStructure.json");
-const fileData = await fs.readFile(structurePath, "utf-8");
 
 
 export async function POST(req: Request) {
   try {
+    const fileData = await fs.readFile(structurePath, "utf-8");
     const folderId  = await req.json();
     const structure = JSON.parse(fileData);
 
