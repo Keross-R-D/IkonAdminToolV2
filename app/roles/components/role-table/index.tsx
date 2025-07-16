@@ -101,14 +101,14 @@ function RoleTable({
             setOpen(true);
           },
         },
-        // {
-        //   label: "Manage Users",
-        //   icon: User,
-        //   onClick: (row) => {
-        //     setSelectedRole(row);
-        //     setOpenUsersForm(true);
-        //   },
-        // },
+        {
+          label: "Manage Users",
+          icon: User,
+          onClick: (row) => {
+            setSelectedRole(row);
+            setOpenUsersForm(true);
+          },
+        },
         {
           label: "Manage Groups",
           icon: Group,
