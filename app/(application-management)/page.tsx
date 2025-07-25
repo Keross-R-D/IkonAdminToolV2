@@ -3,16 +3,30 @@ import { useState, useEffect } from "react";
 import { Plus, Upload } from "lucide-react";
 import FileExplorer from "@/components/ui/FileExplorer";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+} from "@/components/ui/select";
 import RestoreFolderDialog from "../components/restoreFolder";
-import { Tooltip } from "@/ikon/components/tooltip"
+import { Tooltip } from "@/ikon/components/tooltip";
 import { LoadingSpinner } from "@/ikon/components/loading-spinner";
 import { toast } from "sonner";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { set } from "zod";
+import { Checkbox } from "@/shadcn/ui/checkbox";
+import { Label } from "@/shadcn/ui/label";
 
 interface FolderNode {
   id: string;
@@ -23,9 +37,13 @@ interface FolderNode {
 }
 
 const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
-
   return nodes
-    .filter((node) => node.type === "folder" && node.name !== "instances" && node.name !== "scripts")
+    .filter(
+      (node) =>
+        node.type === "folder" &&
+        node.name !== "instances" &&
+        node.name !== "scripts"
+    )
     .flatMap((folder) => {
       if (folder.name === "children") {
         return filterFolders(folder.children);
@@ -35,7 +53,9 @@ const filterFolders = (nodes: FolderNode[]): FolderNode[] => {
 };
 
 export default function Home() {
-  const [folderStructure, setFolderStructure] = useState<FolderNode[] | null>(null);
+  const [folderStructure, setFolderStructure] = useState<FolderNode[] | null>(
+    null
+  );
   const [uploadedFolders, setUploadedFolders] = useState<FolderNode[]>([]); // Store uploaded folders
   const [showFolderCreationForm, setShowFolderCreationForm] = useState(false);
   const [showRestoreDialog, setShowRestoreDialog] = useState(false);
@@ -46,14 +66,19 @@ export default function Home() {
   useEffect(() => {
     fetch("/folderStructure.json")
       .then((res) => res.json())
-      .then((data) => { setShowSpinner(false); setFolderStructure(filterFolders(data)) })
+      .then((data) => {
+        setShowSpinner(false);
+        setFolderStructure(filterFolders(data));
+      })
       .catch((err) => console.error("Error fetching folder structure:", err));
-
   }, []);
 
-
-
-  const handleFolderOperation = async (parentId: string | null, folderId: string | null, name: string) => {
+  const handleFolderOperation = async (
+    parentId: string | null,
+    folderId: string | null,
+    name: string,
+    isSharedProcess: boolean
+  ) => {
     if (!folderStructure) return;
     setShowSpinner(true);
     let newFolderStructure: FolderNode[] = [...folderStructure];
@@ -78,7 +103,6 @@ export default function Home() {
 
       // ✅ Send request to backend (proper handling)
       try {
-
         const response = await fetch("/api/edit-folder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -92,8 +116,7 @@ export default function Home() {
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to edit folder");
-        }
-        else {
+        } else {
           setShowSpinner(false);
 
           toast.success(`Process Edited: ${name}`);
@@ -103,7 +126,6 @@ export default function Home() {
           }
           // Handle successful response if needed
         }
-
       } catch (err) {
         console.error("❌ Edit folder error:", err);
         alert("Failed to update folder. Please try again.");
@@ -120,9 +142,10 @@ export default function Home() {
         return null;
       };
 
-      const parentNode = parentId === "src"
-        ? folderStructure.find(node => node.name === "src")
-        : findParent(folderStructure);
+      const parentNode =
+        parentId === "src"
+          ? folderStructure.find((node) => node.name === "src")
+          : findParent(folderStructure);
 
       if (!parentNode) {
         alert("⚠️ Parent folder not found!");
@@ -141,7 +164,12 @@ export default function Home() {
       const response = await fetch("/api/create-folder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ parentId, folderName: name, folderId: newFolder.id }),
+        body: JSON.stringify({
+          parentId,
+          folderName: name,
+          folderId: newFolder.id,
+          isSharedProcess: isSharedProcess,
+        }),
       });
       if (!response.ok) {
         var errorData = await response.json();
@@ -149,8 +177,7 @@ export default function Home() {
         console.error("Failed to create folder");
         setShowSpinner(false);
         return;
-      }
-      else {
+      } else {
         setShowSpinner(false);
         toast.success(`Process Added: ${name}`);
         const data = await response.json();
@@ -165,10 +192,13 @@ export default function Home() {
     //window.location.reload();
   };
 
-
   const handleEditFolder = (folder: FolderNode) => {
     // Function to find the parent folder
-    const findParentFolder = (nodes: FolderNode[], childId: string, parent: FolderNode | null = null): FolderNode | null => {
+    const findParentFolder = (
+      nodes: FolderNode[],
+      childId: string,
+      parent: FolderNode | null = null
+    ): FolderNode | null => {
       for (const node of nodes) {
         if (node.id === childId) return parent; // Return parent if found
         const found = findParentFolder(node.children, childId, node);
@@ -177,32 +207,30 @@ export default function Home() {
       return null;
     };
 
-    const parentFolder = folderStructure ? findParentFolder(folderStructure, folder.id) : null;
+    const parentFolder = folderStructure
+      ? findParentFolder(folderStructure, folder.id)
+      : null;
 
     console.log("Editing Folder:", folder);
     console.log("Parent Folder:", parentFolder);
 
     folder.parentId = parentFolder?.id;
 
-
     setEditingFolder(folder);
     setShowFolderCreationForm(true);
   };
 
-
   return (
     <div className="p-4 h-full">
-
       <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 h-full">
         <LoadingSpinner visible={showSpinner} />
         {/* Header Section */}
         <div className="flex items-center justify-between p-3">
-        
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             Process
           </h1>
           <div className="flex gap-2">
-            <Tooltip tooltipContent="Restore Process" side={"top"} >
+            <Tooltip tooltipContent="Restore Process" side={"top"}>
               <Button
                 variant="outline"
                 size="sm"
@@ -211,7 +239,6 @@ export default function Home() {
               >
                 <Upload className="h-4 w-4" />
               </Button>
-
             </Tooltip>
 
             <Tooltip tooltipContent="Create Process" side={"top"}>
@@ -223,7 +250,6 @@ export default function Home() {
               >
                 <Plus className="h-4 w-4" />
               </Button>
-
             </Tooltip>
           </div>
         </div>
@@ -233,13 +259,19 @@ export default function Home() {
           {folderStructure ? (
             <div className="p-3 ">
               {folderStructure.map((node) => (
-                <FileExplorer key={node.id} node={node} openEditFolderModal={handleEditFolder} setFolderStructure={setFolderStructure}
+                <FileExplorer
+                  key={node.id}
+                  node={node}
+                  openEditFolderModal={handleEditFolder}
+                  setFolderStructure={setFolderStructure}
                   setIsLoading={setShowSpinner} // Pass the setShowSpinner function to the child component
                 />
               ))}
             </div>
           ) : (
-            <p className="text-gray-600 dark:text-gray-400 text-sm text-center">Loading...</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
+              Loading...
+            </p>
           )}
         </div>
 
@@ -258,51 +290,97 @@ export default function Home() {
         {/* Folder Creation Form */}
         {showFolderCreationForm && folderStructure && (
           <FolderCreationForm
-
             folders={folderStructure}
             onCreateFolder={handleFolderOperation}
             onClose={() => {
               setShowFolderCreationForm(false);
               setEditingFolder(null);
             }}
-            editingFolder={editingFolder ? { id: editingFolder.id, name: editingFolder.name, parentId: editingFolder.parentId || "" } : undefined}
-
+            editingFolder={
+              editingFolder
+                ? {
+                    id: editingFolder.id,
+                    name: editingFolder.name,
+                    parentId: editingFolder.parentId || "",
+                  }
+                : undefined
+            }
           />
         )}
       </div>
     </div>
-
   );
 }
 
-function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }: {
+function FolderCreationForm({
+  folders,
+  onCreateFolder,
+  onClose,
+  editingFolder,
+}: {
   folders: FolderNode[];
-  onCreateFolder: (parentId: string, folderId: string, name: string) => void;
+  onCreateFolder: (
+    parentId: string,
+    folderId: string,
+    name: string,
+    isSharedProcess: boolean
+  ) => void;
   onClose: () => void;
   editingFolder?: { id: string; name: string; parentId: string };
 }) {
   const [folderName, setFolderName] = useState("");
   const [selectedFolder, setSelectedFolder] = useState(""); // Default to "-1" (no parent)
+  const [isSharedProcess, setIsSharedProcess] = useState(false);
+  const fetchData = async (folderId: string) => {
+    try {
+      const response = await fetch(
+        `/api/get-processMetadata?folderId=${folderId}`,
+        {
+          method: "GET",
+        }
+      );
+      console.log("response", response);
+      if (response.ok) {
+        const data = await response.json();
+        setIsSharedProcess(data.metadata.isSharedProcess);
+      }
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
 
   useEffect(() => {
     if (editingFolder) {
       setFolderName(editingFolder.name);
       setSelectedFolder(editingFolder.parentId);
+      fetchData(editingFolder.id);
     }
   }, [editingFolder]);
 
   const handleSubmit = () => {
     if (!folderName) return;
-    onCreateFolder(selectedFolder, editingFolder?.id || "", folderName);
+    onCreateFolder(
+      selectedFolder,
+      editingFolder?.id || "",
+      folderName,
+      isSharedProcess
+    );
     onClose(); // Close dialog after saving
-
   };
 
   // Recursively flatten folder structure for dropdown
-  const flattenFolders = (nodes: FolderNode[], parentPath = ""): { id: string; name: string }[] => {
+  const flattenFolders = (
+    nodes: FolderNode[],
+    parentPath = ""
+  ): { id: string; name: string }[] => {
     return nodes.flatMap((folder) => {
-      const fullPath = parentPath ? `${parentPath} / ${folder.name}` : folder.name;
-      return [{ id: folder.id, name: folder.name }, ...flattenFolders(folder.children, fullPath)];
+      const fullPath = parentPath
+        ? `${parentPath} / ${folder.name}`
+        : folder.name;
+      return [
+        { id: folder.id, name: folder.name },
+        ...flattenFolders(folder.children, fullPath),
+      ];
     });
   };
 
@@ -312,7 +390,7 @@ function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }:
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editingFolder ? "Edit" : "Create"}  Process</DialogTitle>
+          <DialogTitle>{editingFolder ? "Edit" : "Create"} Process</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <Input
@@ -333,8 +411,21 @@ function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }:
               ))}
             </SelectContent>
           </Select>
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="sharedProcessCheck"
+              checked={isSharedProcess}
+              onCheckedChange={(checked) =>
+                setIsSharedProcess(checked as boolean)
+              }
+              disabled={editingFolder ? true : false}
+            />
+            <Label htmlFor="sharedProcessCheck">Shared Process</Label>
+          </div>
           <div className="flex justify-end">
-            <Button onClick={handleSubmit}>{editingFolder ? "Save Changes" : "Create"}</Button>
+            <Button onClick={handleSubmit}>
+              {editingFolder ? "Save Changes" : "Create"}
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -342,9 +433,11 @@ function FolderCreationForm({ folders, onCreateFolder, onClose, editingFolder }:
   );
 }
 
-
-const handleRestoreFolder = (folderStructure: FolderNode, setFolderStructure: any, setShowSpinner: any) => {
-
+const handleRestoreFolder = (
+  folderStructure: FolderNode,
+  setFolderStructure: any,
+  setShowSpinner: any
+) => {
   setShowSpinner(true);
   fetch("/api/restore-folder", {
     method: "POST",
@@ -353,13 +446,12 @@ const handleRestoreFolder = (folderStructure: FolderNode, setFolderStructure: an
   })
     .then(async (response) => {
       if (response.ok) {
-
         setShowSpinner(false);
         const data = await response.json();
 
         toast.success("Folder restored successfully!");
         if (data) {
-          setFolderStructure(filterFolders(data?.fs));// Update the folder structure in the parent component
+          setFolderStructure(filterFolders(data?.fs)); // Update the folder structure in the parent component
         }
         console.log("Folder restored successfully!");
       } else {
@@ -369,5 +461,3 @@ const handleRestoreFolder = (folderStructure: FolderNode, setFolderStructure: an
     })
     .catch((error) => console.error("Error restoring folder:", error));
 };
-
-

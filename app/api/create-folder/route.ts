@@ -4,7 +4,6 @@ import path from "path";
 import archiver from "archiver";
 import { folder } from "jszip";
 
-
 export const runtime = "nodejs";
 const structurePath = path.join(process.cwd(), "public/folderStructure.json");
 
@@ -48,7 +47,6 @@ async function deleteFolderRecursive(folderPath: string) {
   }
 }
 
-
 // ✅ DELETE - Deletes folder and updates folderStructure.json
 export async function DELETE(req: NextRequest) {
   try {
@@ -57,15 +55,23 @@ export async function DELETE(req: NextRequest) {
     if (!folderId) {
       return NextResponse.json({ error: "Missing folderId" }, { status: 400 });
     }
-    try{
-      await fs.access(structurePath)
-    }catch{
-      return NextResponse.json({ error: "folderStructure.json not found" }, { status: 404 });
+    try {
+      await fs.access(structurePath);
+    } catch {
+      return NextResponse.json(
+        { error: "folderStructure.json not found" },
+        { status: 404 }
+      );
     }
 
-    const structure = JSON.parse(await fs.readFile(structurePath, "utf-8")) as FolderNode[];
+    const structure = JSON.parse(
+      await fs.readFile(structurePath, "utf-8")
+    ) as FolderNode[];
 
-    const { updatedNodes, deletedPath } = findAndRemoveFolder(structure, folderId);
+    const { updatedNodes, deletedPath } = findAndRemoveFolder(
+      structure,
+      folderId
+    );
 
     if (!deletedPath) {
       return NextResponse.json({ error: "Folder not found" }, { status: 404 });
@@ -75,7 +81,11 @@ export async function DELETE(req: NextRequest) {
 
     await fs.writeFile(structurePath, JSON.stringify(updatedNodes, null, 2));
 
-    return NextResponse.json({ fs: updatedNodes, success: true, message: "Folder and contents deleted" });
+    return NextResponse.json({
+      fs: updatedNodes,
+      success: true,
+      message: "Folder and contents deleted",
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Internal Server Error", details: (error as any).message },
@@ -87,7 +97,8 @@ export async function DELETE(req: NextRequest) {
 // ✅ POST - Folder creation logic remains unchanged
 export async function POST(req: Request) {
   try {
-    const { parentId, folderName , folderId } = await req.json();
+    const { parentId, folderName, folderId, isSharedProcess } =
+      await req.json();
 
     const fileData = await fs.readFile(structurePath, "utf-8");
     const structure = JSON.parse(fileData);
@@ -119,7 +130,10 @@ export async function POST(req: Request) {
     }
 
     if (!parentFolderPath) {
-      return NextResponse.json({ error: "Parent folder not found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Parent folder not found" },
+        { status: 400 }
+      );
     }
 
     let newFolderPath;
@@ -132,23 +146,33 @@ export async function POST(req: Request) {
         const stats = await fs.stat(childrenFolderPath);
         if (!stats.isDirectory()) {
           return NextResponse.json(
-            { error: `⚠️ "children" is not a directory in ${parentFolderPath}` },
+            {
+              error: `⚠️ "children" is not a directory in ${parentFolderPath}`,
+            },
             { status: 400 }
           );
         }
       } catch {
         return NextResponse.json(
-          { error: `⚠️ "children" folder is missing inside ${parentFolderPath}` },
+          {
+            error: `⚠️ "children" folder is missing inside ${parentFolderPath}`,
+          },
           { status: 400 }
         );
       }
 
-      newFolderPath = path.join(childrenFolderPath, folderName + "_" + folderId);
+      newFolderPath = path.join(
+        childrenFolderPath,
+        folderName + "_" + folderId
+      );
     }
 
     try {
       await fs.access(newFolderPath);
-      return NextResponse.json({ error: "Folder already exists!" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Folder already exists!" },
+        { status: 400 }
+      );
     } catch {
       await fs.mkdir(newFolderPath, { recursive: true });
     }
@@ -186,17 +210,23 @@ export async function POST(req: Request) {
             processVersion: 1,
             parentProcess: {
               parent: parentName,
-              path: srcNode ? newFolderPath.replace(srcNode.path, "") : parentFolderPath,
+              path: srcNode
+                ? newFolderPath.replace(srcNode.path, "")
+                : parentFolderPath,
             },
             isLockRequired: true,
-            isSharedProcess: true,
+            isSharedProcess: isSharedProcess || false,
             isInstanceLockNeeded: false,
             isDeployed: false,
             scripts: [],
             processVariableFields: [],
           };
         }
-        await fs.writeFile(filePath, JSON.stringify(metadata, null, 2), "utf-8");
+        await fs.writeFile(
+          filePath,
+          JSON.stringify(metadata, null, 2),
+          "utf-8"
+        );
       }
     }
 
@@ -214,7 +244,7 @@ export async function POST(req: Request) {
 
     await fs.writeFile(structurePath, JSON.stringify(structure, null, 2));
 
-    return NextResponse.json({fs: structure, success: true, newFolderPath });
+    return NextResponse.json({ fs: structure, success: true, newFolderPath });
   } catch (error) {
     return NextResponse.json(
       { error: "Internal Server Error", details: (error as any).message },
