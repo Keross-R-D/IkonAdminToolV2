@@ -37,7 +37,7 @@ async function generateWorklow(workflowMsg: any,retryCallback:any) {
             requirement: workflowMsg,
         };
 
-        const response = await axios.post('https://ikoncloud-dev.keross.com/aiagent/webhook/generateworkflow', data);
+        const response = await axios.post('https://ikoncloud-dev.keross.com/aiagent/webhook/generateworkflowv2', data);
         
         const responseMessage: {nodes: any[], edges: any[]} = response.data?.output || {nodes: [], edges: []};
         console.log(responseMessage);
