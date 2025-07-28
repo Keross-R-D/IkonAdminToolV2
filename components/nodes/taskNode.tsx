@@ -35,7 +35,7 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
 
     let cardClassNames = "w-128";
     if (selected){
-        cardClassNames += "ring-2 ring-primary"
+        cardClassNames += " ring-2 ring-primary"
     }
 
     const [taskName, setTaskName] = useState((data.nodeName)? data.nodeName : "");
@@ -84,9 +84,6 @@ const TaskNode = ({data,selected, updateNodeLabel}: taskNodeProps) => {
                             //updateNodeLabel(data.id, event.target.value); // Update in ReactFlow state
                         }}/>
             </CardContent>
-            <CardFooter className="flex justify-end">
-                {/* <Button>click me</Button> */}
-            </CardFooter>
             <Handle 
                 type="source" 
                 position={Position.Right} 

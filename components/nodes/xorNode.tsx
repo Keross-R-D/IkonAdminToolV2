@@ -49,8 +49,6 @@ const XORNode = ({data,selected}: xorNodeProps) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
-            </CardContent>
             <Handle 
                 type="source" 
                 position={Position.Right} 

@@ -48,8 +48,6 @@ const ForkNode = ({data,selected}: forkNodeProps) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
-            </CardContent>
             <Handle 
                 type="source" 
                 position={Position.Right} 

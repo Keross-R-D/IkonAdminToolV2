@@ -55,11 +55,6 @@ const StartNode = ({data,selected}: startNodeProps) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-                <Button>start an instance</Button>
-            </CardFooter>
             <Handle 
                 type="source" 
                 position={Position.Right} 

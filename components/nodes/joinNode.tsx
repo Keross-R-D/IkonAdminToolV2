@@ -48,8 +48,6 @@ const JoinNode = ({data,selected}: joinNodeProps) => {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent>
-            </CardContent>
             <Handle 
                 type="source" 
                 position={Position.Right} 
