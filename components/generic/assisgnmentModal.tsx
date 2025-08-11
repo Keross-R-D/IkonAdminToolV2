@@ -56,7 +56,7 @@ const AssignmentSchema = z.object({
 });
 
 const AssignmentModal = (nodeInfoDefaultValues: any) => {
-  
+
   const params = useParams();
   const [scripts, setScripts] = useState<ScriptOption[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -184,15 +184,15 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
           },
         });
 
-        
+
 
         const data = response;
         console.log("groups ", data);
         // if (data.length > 0) {
         //   setLoading(false);
         // }else{
-          setLoading(false);
-      //  }
+        setLoading(false);
+        //  }
         setGroups(data);
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -354,9 +354,9 @@ const AssignmentModal = (nodeInfoDefaultValues: any) => {
     };
     nodeInfoDefaultValues[
       "nodeInfoDefaultValues"
-    ].nodeAdditionalInfo.assignment = result.assignment;
+    ].nodeAdditionalInfo["assignment"] = result.assignment;
     console.log("Form submitted:", result);
-    
+
     onSubmitCallback({
       nodeAdditionalInfo:
         nodeInfoDefaultValues["nodeInfoDefaultValues"].nodeAdditionalInfo,
